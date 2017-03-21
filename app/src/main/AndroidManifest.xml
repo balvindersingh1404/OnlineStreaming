@@ -311,7 +311,8 @@
         </service>
         <service
             android:name="com.headsupseven.corp.TokenService"
-            android:exported="false">
+            android:exported="false"
+            >
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -328,7 +329,8 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <service android:name="com.headsupseven.corp.service.LockScreenService" />
+        <service android:name="com.headsupseven.corp.service.LockScreenService"
+            />
 
     </application>
 
