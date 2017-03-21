@@ -5,9 +5,9 @@
 
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    <tm.chatlib.widget.ChatLayout
-        android:id="@+id/cl_chat"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <!--<tm.chatlib.widget.ChatLayout-->
+        <!--android:id="@+id/cl_chat"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"/>-->
 
 </LinearLayout>
