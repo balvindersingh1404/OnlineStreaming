@@ -31,7 +31,7 @@
             android:gravity="center_horizontal"
             android:visibility="visible" />
 
-        <tm.headsup.pageIndicator.CirclePageIndicator
+        <com.headsupseven.corp.pageIndicator.CirclePageIndicator
             android:id="@+id/viewpager_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
