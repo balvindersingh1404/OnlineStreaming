@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -33,11 +33,14 @@ import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.github.siyamed.shapeimageview.CircularImageView;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.utils.PersistentUser;
 import com.headsupseven.corp.utils.PopupAPI;
@@ -45,6 +48,11 @@ import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,11 +66,9 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class SignupActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+public class SignupActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private Context mContext;
-    CallbackManager callbackManager;
-    private GoogleApiClient mGoogleApiClient;
     private LinearLayout li_signup;
     private TextView text_terms_condition;
     private ImageView im_back;
@@ -81,11 +87,24 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
     private ProgressDialog mProgressDialog;
     private ImageView imgFacebook;
     private ImageView imgGooglePlus;
+    private ImageView img_twitter;
+
+    // Facebook
+    CallbackManager callbackManager;
+    //for google+
+    private GoogleApiClient mGoogleApiClient;
     private boolean mSignInClicked;
     private ConnectionResult mConnectionResult;
-    private boolean mIntentInProgress;
-    private static final int ERROR_DIALOG_REQUEST_CODE = 11;
     private static final int SIGN_IN_REQUEST_CODE = 10;
+    private static final int ERROR_DIALOG_REQUEST_CODE = 11;
+    private boolean mIntentInProgress;
+    //for twitter
+    private TwitterAuthClient client;
+    private static final String TWITTER_KEY = "WFr2rsX2lo8pkvq9O2fNE5mFF";
+    private static final String TWITTER_SECRET = "ogvWK1cB9l0fcUMwAkmZsJU7kfCxlyXxksfYNc2Bc15DMpEPMC";
+
+    private static final int RC_SIGN_IN = 007;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,14 +116,13 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
         mContext = this;
         getFacebookHashKey();
         facebookSDKInitialize();
-        buidNewGoogleApiClient();
-        mGoogleApiClient = buidNewGoogleApiClient();
+
+
         sp = getSharedPreferences(APIHandler.SHARED_KEY, Context.MODE_PRIVATE);
         Intent intent = new Intent(this, PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, APIHandler.Instance().config);
         startService(intent);
 
-//        setPermission();
         initUi();
     }
 
@@ -117,11 +135,114 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
         checkbox_Regular = (CheckBox) this.findViewById(R.id.checkbox_Regular);
         checkbox_Content = (CheckBox) this.findViewById(R.id.checkbox_Content);
         checkbox_terms = (CheckBox) this.findViewById(R.id.checkbox_terms);
-
         imgFacebook = (ImageView) this.findViewById(R.id.imgFacebook);
-        imgFacebook.setOnClickListener(socialSignUpListener);
         imgGooglePlus = (ImageView) this.findViewById(R.id.imgGooglePlus);
-        imgGooglePlus.setOnClickListener(socialSignUpListener);
+        img_twitter = (ImageView) this.findViewById(R.id.img_twitter);
+
+        imgFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Profile profile = Profile.getCurrentProfile().getCurrentProfile();
+                if (profile != null) {
+                    HashMap<String, String> authenPostData = new HashMap<String, String>();
+                    authenPostData.put("id", profile.getId());
+                    authenPostData.put("name", profile.getName());
+                    authenPostData.put("email", PersistentUser.getSocialLoginEmal(mContext));
+                    socialLoginAccess("authen/facebook", authenPostData, 1);
+                } else {
+                    LoginManager.getInstance().logInWithReadPermissions(SignupActivity.this, Arrays.asList("public_profile, email"));
+                }
+
+            }
+        });
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        GraphRequest request = GraphRequest.newMeRequest(
+                                loginResult.getAccessToken(),
+                                new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject object, GraphResponse response) {
+
+                                        Log.w("Facebook Response", "are" + response);
+
+                                        try {
+                                            String id = object.getString("id");
+                                            String name = object.getString("name");
+                                            String email = object.getString("email");
+                                            HashMap<String, String> authenPostData = new HashMap<String, String>();
+                                            authenPostData.put("id", id);
+                                            authenPostData.put("name", name);
+                                            authenPostData.put("email", email);
+                                            PersistentUser.setSocialLoginEmal(mContext, email);
+                                            socialLoginAccess("authen/facebook", authenPostData, 1);
+
+                                            try {
+                                                Profile.fetchProfileForCurrentAccessToken();
+
+                                            } catch (NullPointerException e) {
+
+                                            }
+
+
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "id,name,first_name,email,picture.width(300),last_name");
+                        request.setParameters(parameters);
+                        request.executeAsync();
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(SignupActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Toast.makeText(SignupActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+        imgGooglePlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                gPlusSignIn();
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        });
+        img_twitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                client.authorize(SignupActivity.this, new Callback<TwitterSession>() {
+                    @Override
+                    public void success(Result<TwitterSession> twitterSessionResult) {
+                        TwitterSession session = twitterSessionResult.data;
+                        String userId = "" + session.getUserId();
+                        String UserName = "" + session.getUserName();
+
+                        HashMap<String, String> authenPostData = new HashMap<String, String>();
+                        authenPostData.put("id", userId);
+                        authenPostData.put("name", UserName);
+                        authenPostData.put("email", "");
+                        socialLoginAccess("authen/tweeter", authenPostData, 2);
+                    }
+
+                    @Override
+                    public void failure(TwitterException e) {
+                        Toast.makeText(SignupActivity.this, "Twitter Login Fail", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
 
 
         li_signup = (LinearLayout) this.findViewById(R.id.li_signip);
@@ -167,57 +288,10 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
         });
 
 
-        LoginManager.getInstance().registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        GraphRequest request = GraphRequest.newMeRequest(
-                                loginResult.getAccessToken(),
-                                new GraphRequest.GraphJSONObjectCallback() {
-                                    @Override
-                                    public void onCompleted(JSONObject object, GraphResponse response) {
+    }
 
-                                        Log.w("Facebook Response", "are" + response);
-
-                                        try {
-                                            String id = object.getString("id");
-                                            String name = object.getString("name");
-                                            String email = object.getString("email");
-                                            String image = object.getJSONObject("picture").getJSONObject("data").getString("url");
-
-                                            try {
-                                                Profile.fetchProfileForCurrentAccessToken();
-
-                                            } catch (NullPointerException e) {
-
-                                            }
-
-
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                });
-
-                        Bundle parameters = new Bundle();
-                        parameters.putString("fields", "id,name,first_name,email,picture.width(300),last_name");
-                        request.setParameters(parameters);
-                        request.executeAsync();
-
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        Toast.makeText(SignupActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onError(FacebookException exception) {
-                        Toast.makeText(SignupActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-
+    protected void facebookSDKInitialize() {
+        callbackManager = CallbackManager.Factory.create();
     }
 
     public void validation() {
@@ -240,140 +314,9 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
             PopupAPI.showToast(mContext, "Please Read Terms & Condition");
             return;
         } else {
-
             webCallRegistraion();
-
-
         }
     }
-
-    protected void facebookSDKInitialize() {
-//        FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
-    }
-
-
-    View.OnClickListener socialSignUpListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.imgFacebook:
-
-                    Profile profile = Profile.getCurrentProfile().getCurrentProfile();
-                    if (profile != null) {
-//                    Map<String, String> params = new HashMap<String, String>();
-//                    params.put("fullName", profile.getName());
-//                    params.put("email", PersistentUser.GetFacebookEmail(mContext));
-//                    params.put("password", profile.getId());
-//                    params.put("socialType", "2");
-//                    params.put("socialId", "" + profile.getId());
-//                    params.put("pushKey", "" + PersistentUser.GetPushkey(mContext));
-//                    params.put("photo", "" + PersistentUser.GetFacebookPic(mContext));
-//                    params.put("securityCode", "" + Baseurl.securityCode);
-
-
-                    } else {
-                        LoginManager.getInstance().logInWithReadPermissions(SignupActivity.this, Arrays.asList("public_profile, email"));
-                        // user has not logged in
-                    }
-
-
-                    break;
-                case R.id.imgGooglePlus:
-                    gPlusSignIn();
-                    break;
-                default:
-                    break;
-            }
-
-        }
-    };
-
-    private void gPlusSignIn() {
-        if (!mGoogleApiClient.isConnecting()) {
-            processSignInError();
-            mSignInClicked = true;
-        }
-    }
-
-
-    private void processSignInError() {
-
-        if (mConnectionResult != null &&
-                mConnectionResult.hasResolution()) {
-            try {
-                mIntentInProgress = true;
-                mConnectionResult.startResolutionForResult(this,
-                        SIGN_IN_REQUEST_CODE);
-            } catch (IntentSender.SendIntentException e) {
-                mIntentInProgress = false;
-                mGoogleApiClient.connect();
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        if (!result.hasResolution()) {
-            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
-                    ERROR_DIALOG_REQUEST_CODE).show();
-            return;
-        }
-        if (!mIntentInProgress) {
-            mConnectionResult = result;
-
-            if (mSignInClicked) {
-                processSignInError();
-            }
-        }
-
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        mSignInClicked = false;
-
-
-        getProfileInfo();
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int cause) {
-        mGoogleApiClient.connect();
-
-    }
-
-    private void getProfileInfo() {
-
-        try {
-
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-                setPersonalInfo(currentPerson);
-
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "No Personal info mention", Toast.LENGTH_LONG).show();
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void setPersonalInfo(Person currentPerson) {
-
-        String personName = currentPerson.getDisplayName();
-        String personPhotoUrl = currentPerson.getImage().getUrl();
-        String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-        String personID = currentPerson.getId();
-
-        Log.w("Person Name", "" + personName);
-    }
-
 
     public void webCallRegistraion() {
         mProgressDialog = new ProgressDialog(mContext);
@@ -561,7 +504,6 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
         }
     }
 
-    private static final String TAG = "paymentExample";
     private static final int REQUEST_CODE_PAYMENT = 1;
 
     public void onBuyPressed() {
@@ -579,6 +521,9 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        client.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_CODE_PAYMENT) {
             if (resultCode == Activity.RESULT_OK) {
                 PaymentConfirmation confirm =
@@ -610,12 +555,13 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
             if (!mGoogleApiClient.isConnecting()) {
                 mGoogleApiClient.connect();
             }
+        } else if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
         }
     }
 
     public void webserviceupgrade(String paypal_d) {
-        Log.w("paylem", "are" + paypal_d);
-
         HashMap<String, String> param = new HashMap<String, String>();
         param.put("paypal-id", paypal_d);
         APIHandler.Instance().POST_BY_AUTHEN("payment/add-balance-upgrade", param, new APIHandler.RequestComplete() {
@@ -650,23 +596,14 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
 
     @Override
     public void onDestroy() {
-        // Stop service when done
         stopService(new Intent(this, PayPalService.class));
         super.onDestroy();
     }
 
-    private GoogleApiClient buidNewGoogleApiClient() {
-        return new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API, Plus.PlusOptions.builder().build())
-                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
-    }
-
-
     public void getFacebookHashKey() {
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
-                    "tm.headsup",
+                    "com.headsupseven.corp",
                     PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
@@ -680,20 +617,149 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
         }
     }
 
+
+    //=================== social login web-service================================
+
+    public void socialLoginAccess(final String url, HashMap<String, String> authenPostData, final int type) {
+        APIHandler.Instance().POST(url, authenPostData, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(int code, String response) {
+                Log.w("response", "are: " + response);
+                Log.w("code", "are: " + code);
+
+                if (code == 200 && response.length() > 0) {
+                    try {
+                        JSONObject reader = new JSONObject(response);
+                        int resultCode = reader.getInt("code");
+                        if (resultCode == 1) {
+                            JSONObject msgData = reader.getJSONObject("msg");
+                            APIHandler.Instance().user.SetAuthenData(msgData);
+                            PersistentUser.setUserDetails(mContext, response);
+                            APIHandler.Instance().InitChatClient();
+                            webCallPushLogin(type);
+
+                        } else {
+                            final String resultMessage = reader.getString("msg");
+                            SignupActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    PopupAPI.make(mContext, "Error", resultMessage);
+                                }
+                            });
+                        }
+                    } catch (Exception e) {
+                    }
+                } else {
+                    SignupActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            PopupAPI.make(mContext, "Error", "Can't connect to server");
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    // ===============================google sing end ===============================//
+    private static final String TAG = LoginActivity.class.getSimpleName();
+
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        PersistentUser.setLogin(mContext);
+                        Intent mm = new Intent(mContext, HomebaseActivity.class);
+                        mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(mm);
+                        SignupActivity.this.finish();
+
+                    }
+                });
+    }
+
+    private void revokeAccess() {
+        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                    }
+                });
+    }
+
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
-        // make sure to initiate connection
-        mGoogleApiClient.connect();
+
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        if (opr.isDone()) {
+            GoogleSignInResult result = opr.get();
+            handleSignInResult(result);
+        } else {
+            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(GoogleSignInResult googleSignInResult) {
+                    handleSignInResult(googleSignInResult);
+                }
+            });
+        }
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        // disconnect api if it is connected
-        if (mGoogleApiClient.isConnected())
-            mGoogleApiClient.disconnect();
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
+    private void handleSignInResult(GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            GoogleSignInAccount acct = result.getSignInAccount();
+            String personName = acct.getDisplayName();
+            String email = acct.getEmail();
+            String id = acct.getId();
+            HashMap<String, String> authenPostData = new HashMap<String, String>();
+            authenPostData.put("id", id);
+            authenPostData.put("name", personName);
+            authenPostData.put("email", email);
+            socialLoginAccess("authen/google", authenPostData, 3);
 
+        } else {
+//            Toast.makeText(LoginActivity.this, "Google Login Fail", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void webCallPushLogin(final int type) {
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("device-token", PersistentUser.GetPushkey(mContext));
+        APIHandler.Instance().POST_BY_AUTHEN("push/register-android", param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject mJsonObject = new JSONObject(response);
+                            int codePost = mJsonObject.getInt("code");
+                            String msg = mJsonObject.getString("msg");
+                            if (codePost == 1) {
+                                if (type == 3) {
+                                    signOut();
+                                } else {
+                                    PersistentUser.setLogin(mContext);
+                                    Intent mm = new Intent(mContext, HomebaseActivity.class);
+                                    mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(mm);
+                                    SignupActivity.this.finish();
+                                }
+
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }
+                });
+
+            }
+        });
+    }
 }

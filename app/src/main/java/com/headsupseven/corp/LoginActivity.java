@@ -3,7 +3,6 @@ package com.headsupseven.corp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -39,8 +38,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.utils.PersistentUser;
 import com.headsupseven.corp.utils.PopupAPI;
@@ -133,7 +130,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     authenPostData.put("id", profile.getId());
                     authenPostData.put("name", profile.getName());
                     authenPostData.put("email", PersistentUser.getSocialLoginEmal(mContext));
-                    socialLoginAccess("authen/facebook", authenPostData);
+                    socialLoginAccess("authen/facebook", authenPostData,1);
                 } else {
                     LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile, email"));
                 }
@@ -156,7 +153,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 client.authorize(LoginActivity.this, new Callback<TwitterSession>() {
                     @Override
                     public void success(Result<TwitterSession> twitterSessionResult) {
-                        Toast.makeText(LoginActivity.this, "success", Toast.LENGTH_SHORT).show();
                         TwitterSession session = twitterSessionResult.data;
                         String userId = "" + session.getUserId();
                         String UserName = "" + session.getUserName();
@@ -165,12 +161,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         authenPostData.put("id", userId);
                         authenPostData.put("name", UserName);
                         authenPostData.put("email", "");
-                        socialLoginAccess("authen/tweeter", authenPostData);
+                        socialLoginAccess("authen/tweeter", authenPostData,2);
                     }
 
                     @Override
                     public void failure(TwitterException e) {
-                        Toast.makeText(LoginActivity.this, "failure", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Twitter Login Fail", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -215,7 +211,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                             authenPostData.put("name", name);
                                             authenPostData.put("email", email);
                                             PersistentUser.setSocialLoginEmal(mContext, email);
-                                            socialLoginAccess("authen/facebook", authenPostData);
+                                            socialLoginAccess("authen/facebook", authenPostData,1);
 
                                             try {
                                                 Profile.fetchProfileForCurrentAccessToken();
@@ -284,7 +280,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         editor.apply();
 
                                         APIHandler.Instance().InitChatClient();
-                                        webCallPush();
+                                        webCallPush(0);
 
                                     } else {
                                         final String resultMessage = reader.getString("msg");
@@ -325,7 +321,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         callbackManager = CallbackManager.Factory.create();
     }
 
-    public void webCallPush() {
+    public void webCallPush(final int type) {
         HashMap<String, String> param = new HashMap<String, String>();
         param.put("device-token", PersistentUser.GetPushkey(mContext));
         APIHandler.Instance().POST_BY_AUTHEN("push/register-android", param, new APIHandler.RequestComplete() {
@@ -339,11 +335,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             int codePost = mJsonObject.getInt("code");
                             String msg = mJsonObject.getString("msg");
                             if (codePost == 1) {
-                                PersistentUser.setLogin(mContext);
-                                Intent mm = new Intent(mContext, HomebaseActivity.class);
-                                mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(mm);
-                                LoginActivity.this.finish();
+                                if (type == 3) {
+                                    signOut();
+                                } else {
+                                    PersistentUser.setLogin(mContext);
+                                    Intent mm = new Intent(mContext, HomebaseActivity.class);
+                                    mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(mm);
+                                    LoginActivity.this.finish();
+                                }
+
                             }
                         } catch (Exception e) {
 
@@ -387,7 +388,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         PackageInfo info;
         try {
-            info = getPackageManager().getPackageInfo("tm.headsup",
+            info = getPackageManager().getPackageInfo("com.headsupseven.corp",
                     PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md;
@@ -432,7 +433,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
     //=================== social login web-service================================
 
-    public void socialLoginAccess(final String url, HashMap<String, String> authenPostData) {
+    public void socialLoginAccess(final String url, HashMap<String, String> authenPostData, final int type) {
         APIHandler.Instance().POST(url, authenPostData, new APIHandler.RequestComplete() {
             @Override
             public void onRequestComplete(int code, String response) {
@@ -448,7 +449,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             APIHandler.Instance().user.SetAuthenData(msgData);
                             PersistentUser.setUserDetails(mContext, response);
                             APIHandler.Instance().InitChatClient();
-                            webCallPush();
+                            webCallPush(type);
 
                         } else {
                             final String resultMessage = reader.getString("msg");
@@ -473,163 +474,20 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         });
     }
 
-
-    // ===============================google sing in ===============================//
-
-//    private GoogleApiClient buidNewGoogleApiClient() {
-//        return new GoogleApiClient.Builder(this)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .addApi(Plus.API)
-//                .addScope(Plus.SCOPE_PLUS_LOGIN)
-//                .build();
-//    }
-//
-////    @Override
-////    protected void onStart() {
-////        if (mGoogleApiClient != null) {
-////            mGoogleApiClient.connect();
-////        }
-////        super.onStart();
-////    }
-//
-//    @Override
-//    protected void onStop() {
-//        if (mGoogleApiClient != null) {
-//            if (mGoogleApiClient.isConnected()) {
-//                mGoogleApiClient.disconnect();
-//            }
-//        }
-//        super.onStop();
-//    }
-//
-//    private void gPlusSignIn() {
-//        if (!mGoogleApiClient.isConnecting()) {
-//            processSignInError();
-//            mSignInClicked = true;
-//        }
-//    }
-
-    private void processSignInError() {
-
-        if (mConnectionResult != null &&
-                mConnectionResult.hasResolution()) {
-            try {
-                mIntentInProgress = true;
-                mConnectionResult.startResolutionForResult(this,
-                        SIGN_IN_REQUEST_CODE);
-            } catch (IntentSender.SendIntentException e) {
-                mIntentInProgress = false;
-                mGoogleApiClient.connect();
-            }
-        }
-    }
-
-//    @Override
-//    public void onConnectionFailed(ConnectionResult result) {
-//        if (!result.hasResolution()) {
-//            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
-//                    ERROR_DIALOG_REQUEST_CODE).show();
-//            return;
-//        }
-//        if (!mIntentInProgress) {
-//            mConnectionResult = result;
-//
-//            if (mSignInClicked) {
-//                processSignInError();
-//            }
-//        }
-//
-//    }
-//
-//    @Override
-//    public void onConnected(Bundle connectionHint) {
-//        mSignInClicked = false;
-//        getProfileInfo();
-//        Log.w("connectionHint", "connectionHint");
-//
-//    }
-//
-//    @Override
-//    public void onConnectionSuspended(int cause) {
-//        mGoogleApiClient.connect();
-//
-//    }
-//
-//    private void googlePlusLogout() {
-//
-//        if (mGoogleApiClient.isConnected()) {
-//            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-//            mGoogleApiClient.disconnect();
-//            mGoogleApiClient.connect();
-//        }
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        googlePlusLogout();
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        googlePlusLogout();
-//    }
-//
-//    protected void onResume() {
-//        super.onResume();
-//        googlePlusLogout();
-//
-//    }
-
-    private void getProfileInfo() {
-        Log.w("asddsfds", "asdsfsfd");
-        try {
-
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-                persong(currentPerson);
-
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "No Personal info mention", Toast.LENGTH_LONG).show();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void persong(Person currentPerson) {
-        String personName = currentPerson.getDisplayName();
-        String personPhotoUrl = currentPerson.getImage().getUrl();
-        String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-        String personID = currentPerson.getId();
-
-        HashMap<String, String> authenPostData = new HashMap<String, String>();
-        authenPostData.put("id", personID);
-        authenPostData.put("name", personName);
-        authenPostData.put("email", email);
-        socialLoginAccess("authen/google", authenPostData);
-    }
-
     // ===============================google sing end ===============================//
     private static final String TAG = LoginActivity.class.getSimpleName();
-
-    private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
 
     private void signOut() {
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
-//                        updateUI(false);
+                        PersistentUser.setLogin(mContext);
+                        Intent mm = new Intent(mContext, HomebaseActivity.class);
+                        mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(mm);
+                        LoginActivity.this.finish();
+
                     }
                 });
     }
@@ -639,7 +497,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
-//                        updateteUI(false);
                     }
                 });
     }
@@ -650,20 +507,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
         if (opr.isDone()) {
-            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
-            // and the GoogleSignInResult will be available instantly.
-            Log.d(TAG, "Got cached sign-in");
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);
         } else {
-            // If the user has not previously signed in on this device or the sign-in has expired,
-            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
-            // single sign-on will occur in this branch.
-            showProgressDialog();
             opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                 @Override
                 public void onResult(GoogleSignInResult googleSignInResult) {
-                    hideProgressDialog();
                     handleSignInResult(googleSignInResult);
                 }
             });
@@ -672,55 +521,28 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
-    private void showProgressDialog() {
-//        if (mProgressDialog == null) {
-//            mProgressDialog = new ProgressDialog(this);
-//            mProgressDialog.setMessage(getString(R.string.loading));
-//            mProgressDialog.setIndeterminate(true);
-//        }
-//
-//        mProgressDialog.show();
-    }
-
-    private void hideProgressDialog() {
-//        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-//            mProgressDialog.hide();
-//        }
-    }
-
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-
-            Log.e(TAG, "display name: " + acct.getDisplayName());
-
             String personName = acct.getDisplayName();
-            String personPhotoUrl = acct.getPhotoUrl().toString();
             String email = acct.getEmail();
+            String id = acct.getId();
+            HashMap<String, String> authenPostData = new HashMap<String, String>();
+            authenPostData.put("id", id);
+            authenPostData.put("name", personName);
+            authenPostData.put("email", email);
+            socialLoginAccess("authen/google", authenPostData, 3);
 
-            Log.e(TAG, "Name: " + personName + ", email: " + email
-                    + ", Image: " + personPhotoUrl);
-
-//            txtName.setText(personName);
-//            txtEmail.setText(email);
-//            Glide.with(getApplicationContext()).load(personPhotoUrl)
-//                    .thumbnail(0.5f)
-//                    .crossFade()
-//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    .into(imgProfilePic);
-//
-//            updateUI(true);
         } else {
-            // Signed out, show unauthenticated UI.
-//            updateUI(false);
+//            Toast.makeText(LoginActivity.this, "Google Login Fail", Toast.LENGTH_SHORT).show();
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

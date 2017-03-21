@@ -47,7 +47,7 @@ public class FCMMessageReceiverService extends FirebaseMessagingService {
                     .getRunningTasks(1);
             String topActivity = taskInfo.get(0).topActivity
                     .getClassName();
-            if (packageName.equalsIgnoreCase("tm.headsup")) {
+            if (packageName.equalsIgnoreCase("com.headsupseven.corp")) {
                 Intent mIntent = new Intent(getApplicationContext(), NotificaionvideoActiivty.class);
                 mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_CLEAR_TASK);
