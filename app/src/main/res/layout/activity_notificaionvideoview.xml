@@ -29,10 +29,10 @@
             android:gravity="center">
 
 
-            <!--<android.opengl.GLSurfaceView-->
-                <!--android:id="@+id/video_view"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent" />-->
+            <com.headsupseven.corp.customview.VideoView
+                android:id="@+id/video_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 
