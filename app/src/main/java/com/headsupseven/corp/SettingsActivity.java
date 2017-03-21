@@ -5,15 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.headsupseven.corp.api.APIHandler;
+import com.headsupseven.corp.service.LockScreenService;
+import com.headsupseven.corp.utils.PersistentUser;
 import com.headsupseven.corp.utils.PopupAPI;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
@@ -33,6 +37,7 @@ public class SettingsActivity extends AppCompatActivity {
     private LinearLayout ll_silding;
     private RelativeLayout rl_Changes;
     private TextView ugrade_account;
+    private SwitchCompat switch_Lock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +84,27 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        switch_Lock = (SwitchCompat) this.findViewById(R.id.switch_Lock);
+
+
+        switch_Lock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    PersistentUser.setLock(mContext, true);
+                    startService(new Intent(SettingsActivity.this, LockScreenService.class));
+
+                } else {
+                    PersistentUser.setLock(mContext, false);
+                    stopService(new Intent(SettingsActivity.this, LockScreenService.class));
+
+                }
+            }
+        });
+        if (PersistentUser.isLock(mContext))
+            switch_Lock.setChecked(true);
+        else
+            switch_Lock.setChecked(false);
     }
 
     private static final String TAG = "paymentExample";

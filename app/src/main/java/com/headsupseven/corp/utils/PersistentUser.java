@@ -105,6 +105,17 @@ public class PersistentUser {
         prefs.edit().putBoolean("SLIDER", true).commit();
     }
 
+    public static void setLock(Context c,boolean falg) {
+        final SharedPreferences prefs = c.getSharedPreferences(PREFS_FILE_NAME,
+                Context.MODE_PRIVATE);
+        prefs.edit().putBoolean("LOCK", falg).commit();
+    }
+    public static boolean isLock(Context c) {
+        final SharedPreferences prefs = c.getSharedPreferences(PREFS_FILE_NAME,
+                Context.MODE_PRIVATE);
+        return prefs.getBoolean("LOCK", true);
+    }
+
     public static boolean isSlider(Context c) {
         final SharedPreferences prefs = c.getSharedPreferences(PREFS_FILE_NAME,
                 Context.MODE_PRIVATE);

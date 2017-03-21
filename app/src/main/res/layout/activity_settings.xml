@@ -226,6 +226,40 @@
                         android:background="@drawable/next_arrow" />
                 </RelativeLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="#ACACAC"></View>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:text="Lock screen"
+                        android:textColor="#919191"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        android:id="@+id/textView" />
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/switch_Lock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/textView"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true" />
+
+
+                </RelativeLayout>
+
             </LinearLayout>
 
             <TextView

@@ -28,19 +28,18 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         mContext = this;
-        Log.w("scc","psuh "+ PersistentUser.GetPushkey(mContext));
-        startService(new Intent(this,LockScreenService.class));
 
-//        Intent mm = new Intent(SplashActivity.this, NotificaionvideoActiivty.class);
-//        startActivity(mm);
-//        SplashActivity.this.finish();
+        if (PersistentUser.isLock(mContext))
+            startService(new Intent(this, LockScreenService.class));
 
         mHandler.postDelayed(mPendingLauncherRunnable, 2000);
     }
+
     public void unlockScreen(View view) {
         //Instead of using finish(), this totally destroys the process
         android.os.Process.killProcess(android.os.Process.myPid());
     }
+
     private final Runnable mPendingLauncherRunnable = new Runnable() {
         @Override
         public void run() {
