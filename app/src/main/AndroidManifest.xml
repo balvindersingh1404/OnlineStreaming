@@ -13,12 +13,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <uses-sdk tools:overrideLibrary="tv.danmaku.ijk.media.player_arm64, tv.danmaku.ijk.media.player_x86_64" />
+
+    <!---For lock screen-->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -314,21 +316,20 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <!-- Don't forgot InitActivity -->
 
-        <service android:name="com.headsupseven.corp.utils.LockscreenService"></service>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="091b23842071dc48740f598b7bec00220930c4e5" />
 
         <receiver
-            android:name="com.headsupseven.corp.utils.LockscreenIntentReceiver"
+            android:name="com.headsupseven.corp.service.LockScreenReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <!-- for twitter login-->
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="091b23842071dc48740f598b7bec00220930c4e5" />
+        <service android:name="com.headsupseven.corp.service.LockScreenService" />
+
     </application>
 
 </manifest>

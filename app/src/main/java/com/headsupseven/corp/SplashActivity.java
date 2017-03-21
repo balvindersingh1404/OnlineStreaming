@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.headsupseven.corp.api.APIHandler;
+import com.headsupseven.corp.service.LockScreenService;
 import com.headsupseven.corp.utils.PersistentUser;
 
 import org.json.JSONObject;
@@ -27,6 +29,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         mContext = this;
         Log.w("scc","psuh "+ PersistentUser.GetPushkey(mContext));
+        startService(new Intent(this,LockScreenService.class));
 
 //        Intent mm = new Intent(SplashActivity.this, NotificaionvideoActiivty.class);
 //        startActivity(mm);
@@ -34,7 +37,10 @@ public class SplashActivity extends AppCompatActivity {
 
         mHandler.postDelayed(mPendingLauncherRunnable, 2000);
     }
-
+    public void unlockScreen(View view) {
+        //Instead of using finish(), this totally destroys the process
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
     private final Runnable mPendingLauncherRunnable = new Runnable() {
         @Override
         public void run() {
