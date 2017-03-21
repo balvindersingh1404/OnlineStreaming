@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#24ADAF</color>
+    <color name="colorPrimaryDark">#24ADAF</color>
+    <color name="colorAccent">#24adaf</color>
+    <color name="robin_egg_blue">#00c5c1</color>
+    <color name="white">#ffffff</color>
+    <color name="text_concord">#7C7C7C</color>
+    <color name="black">#000000</color>
+    <color name="light_white">#FAFAFA</color>
+    <color name="dim_gray">#6A6A6A</color>
+    <color name="active">#303F9F</color>
+    <color name="deactive">#7C7C7C</color>
+    <color name="bg_color">#f2f2f2</color>
+    <color name="alabaster">#FAFAFA</color>
+
+
+    <color name="ash">#DEDEDE</color>
+    <color name="ash_ash">#7f7e7e</color>
+    <color name="deep_ash">#636262</color>
+    <color name="red">#EC5E5C</color>
+    <color name="green">#60a673</color>
+    <color name="blue">#277ee7</color>
+    <color name="transparent">#00000000</color>
+    <color name="lightergrey">#d3d3d3</color>
+    <color name="ash_bloue">#a2a2a2</color>
+    <color name="oragen">#f89658</color>
+
+    <color name="rating_selected">#F08736</color>
+    <color name="rating_deselected">#B2B2B2</color>
+
+</resources>

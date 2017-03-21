@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="LineView">
+        <attr name="textColor_line" format="color"/>
+        <attr name="lineColor_line" format="color"/>
+        <attr name="lineWidth_line" format="dimension"/>
+        <attr name="dotRadius_line" format="dimension"/>
+        <attr name="dataFactor_line" format="integer"/>
+        <attr name="dashColor_line" format="color"/>
+        <attr name="isShowColumnLine" format="boolean"/>
+        <attr name="isShowRowLine" format="boolean"/>
+        <attr name="isLinearGradient" format="boolean"/>
+    </declare-styleable>
+
+</resources>

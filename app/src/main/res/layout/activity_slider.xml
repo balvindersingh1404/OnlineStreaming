@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:id="@+id/top_view"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Share Life"
+            android:gravity="center_horizontal"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:visibility="visible" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Capture and share everyday moments\nvideos and more.."
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:gravity="center_horizontal"
+            android:visibility="visible" />
+
+        <tm.headsup.pageIndicator.CirclePageIndicator
+            android:id="@+id/viewpager_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:padding="10dp" />
+    </LinearLayout>
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_below="@+id/top_view"
+        android:layout_above="@+id/layoutbelow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="20dp"
+        android:visibility="visible" />
+
+
+    <LinearLayout
+        android:id="@+id/layoutbelow"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:background="#FBFBFB"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/start_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="START"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
+            android:visibility="visible" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">HeadsUp7</string>
+    <string name="description">SWN Pawel, January 16,2017. @Footbal weekly # Coratai_sun_spain and joy for last auction of the game. Coratia win the mathch and Group B</string>
+    <string name="profile_title">We must let go of the life we have planned, so as to accept the one that is waiting for us</string>
+<string name="swon_king">swon_king</string>
+
+    <string name="facebook_app_id">271972873224417</string>
+
+    <string-array name="country_list">
+        <item>Dhaka, Bangladesh</item>
+
+    </string-array>
+    <string-array name="country">
+        <item>United States</item>
+    </string-array>
+    <string-array name="state">
+        <item>NY</item>
+    </string-array>
+
+    <string name="trams_condition">I agree to the Terms of Service and Privacy Policy.</string>
+
+    <string name="survey_text">Help us improve by taking this survey.It will only take a few minutes !</string>
+    <string name="about_us">We are a team of passionate millennials with a broad range of skill sets that want to create a platform for our generation. We are based in the NYC metro area. Our team consists of successful entrepreneurs, top business school MBA, filmmaking expert, AR/VR expert, and data scientist.</string>
+    <string name="contact_us"> Have questions ? Please reach out to us and we will respond as soon as possible.</string>
+
+</resources>

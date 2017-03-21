@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false" >
+
+    <item
+        android:drawable="@drawable/prograss1"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss2"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss3"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss4"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss5"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss6"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss7"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss8"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss9"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss10"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss11"
+        android:duration="200"/>
+    <item
+        android:drawable="@drawable/prograss12"
+        android:duration="200"/>
+
+</animation-list>

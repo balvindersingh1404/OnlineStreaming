@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="400dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/cross_btn"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/white_backround_rectshape"
+                    android:orientation="vertical">
+
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/top_bar_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/top_dilog"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rate this video"
+                        android:textColor="#fff"
+                        android:textSize="16sp"
+                        android:textStyle="normal" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:gravity="center_horizontal"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/top_bar_layout"
+                    android:orientation="vertical">
+
+                    <RatingBar
+                        android:id="@+id/rating_bar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="35dp"
+                        android:max="1"
+                        android:numStars="5"
+                        android:rating="3.5"
+                        android:stepSize="0.5"
+                        android:theme="@style/RatingBar">
+
+                    </RatingBar>
+
+
+                    <TextView
+                        android:id="@+id/tv_submit"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:gravity="center"
+                        android:layout_marginLeft="60dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="60dp"
+                        android:background="#1BC6C2"
+                        android:text="Submit"
+                        android:textColor="@color/white"
+                        android:textSize="16dp" />
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/cross_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/cross"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+</RelativeLayout>
