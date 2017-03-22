@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.headsupseven.corp.CommentActivity;
 import com.headsupseven.corp.DonateActivity;
+import com.headsupseven.corp.EventDetailsActivity;
 import com.headsupseven.corp.HomebaseActivity;
 import com.headsupseven.corp.LiveVideoPlayerActivity;
 import com.headsupseven.corp.OtherProfileActivity;
@@ -135,8 +136,8 @@ public class HomeDataAdapter extends RecyclerView
                         intent.putExtra("user_Name", "" + homeLsitModel.getCreatedByName());
                         intent.putExtra("CreatedBy", "" + homeLsitModel.getCreatedBy());
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
                         mContext.startActivity(intent);
+
                     }
                 });
 

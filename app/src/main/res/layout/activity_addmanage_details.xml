@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -137,20 +136,19 @@
                 android:background="@color/bg_color"
                 android:orientation="vertical">
 
-
-                <tm.headsup.customview.LineView
+                <com.headsupseven.corp.customview.LineView
                     android:id="@+id/lineView"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    app:dashColor="@color/colorPrimary"
-                    app:dataFactor="100"
-                    app:dotRadius="4dp"
+                    app:dashColor_line="@color/colorPrimary"
+                    app:dataFactor_line="100"
+                    app:dotRadius_line="4dp"
                     app:isLinearGradient="true"
                     app:isShowColumnLine="true"
                     app:isShowRowLine="false"
-                    app:lineColor="@color/colorAccent"
-                    app:lineWidth="2dp"
-                    app:textColor="@android:color/black" />
+                    app:lineColor_line="@color/colorAccent"
+                    app:lineWidth_line="2dp"
+                    app:textColor_line="@android:color/black" />
 
 
             </LinearLayout>

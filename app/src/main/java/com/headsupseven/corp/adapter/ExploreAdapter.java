@@ -483,7 +483,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             @Override
             public void onClick(View view) {
 
-                shareTo(mContext);
+                shareTo(mContext,"","");
                 d.dismiss();
 
             }
@@ -500,15 +500,23 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
-    public static void shareTo(Context mContext) {
+    public static void shareTo(Context mContext, String title, String thumbURl) {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
-        String shareBodyText = "Check it out. Your message goes here";
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Wasteminister App Shairing");
-        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBodyText);
-        mContext.startActivity(sharingIntent);
-
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, "" + thumbURl);
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "" + title);
+        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via"));
     }
+
+//    public static void shareTo(Context mContext) {
+//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+//        sharingIntent.setType("text/plain");
+//        String shareBodyText = "Check it out. Your message goes here";
+//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Wasteminister App Shairing");
+//        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBodyText);
+//        mContext.startActivity(sharingIntent);
+//
+//    }
 
     private ProgressDialog mProgressDialog;
 
