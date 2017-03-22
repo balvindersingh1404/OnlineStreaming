@@ -19,6 +19,8 @@ import com.headsupseven.corp.customview.VideoView;
 
 public class NotificaionvideoActiivty extends AppCompatActivity {
     private VideoView video_view ;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +47,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
         responseDataShow();
 
     }
-
     private void responseDataShow() {
-
         String responseData = "http://d1exh2z1dm71tm.cloudfront.net/uploaded/A14857078588661489939238012947800.1489939222621592816.FLV";
         Uri uri = Uri.parse(responseData);
         ImageView upview = (ImageView) this.findViewById(R.id.upview);
@@ -57,7 +57,6 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 jumpMain();
             }
         });
-
         video_view=(VideoView)this.findViewById(R.id.video_view);
         video_view.setVideoURI(uri);
 //        video_view.setVideoPath(responseData);
@@ -68,9 +67,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 video_view.start();
             }
         });
-
     }
-
     private synchronized void jumpMain() {
         finish();
     }
