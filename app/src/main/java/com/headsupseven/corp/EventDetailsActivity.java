@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -112,46 +111,24 @@ public class EventDetailsActivity extends AppCompatActivity {
         tv_join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//
-                HashMap<String, String> param = new HashMap<String, String>();
-                APIHandler.Instance().POST_BY_AUTHEN("contest/" + EventId + "/join", param, new APIHandler.RequestComplete() {
-                    @Override
-                    public void onRequestComplete(final int code, final String response) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                if (tv_join.getText().toString().equalsIgnoreCase("Joined")) {
+                    PopupAPI.showToast(mContext, "already join contest");
 
-                                try {
-                                    Log.w("sd", "ae" + response);
-                                    JSONObject mJsonObject = new JSONObject(response);
-                                    int codeServer = mJsonObject.getInt("code");
-                                    if (codeServer < 0 && mJsonObject.getString("msg") == "not-enough-balance") {
-                                        PopupAPI.showToast(mContext, "not enough balance");
-                                        Intent mIntent = new Intent(mContext, MypaymentActivity.class);
-                                        startActivity(mIntent);
-
-                                    } else if (codeServer < 0 && mJsonObject.getString("msg") == "You already join this contest") {
-                                        PopupAPI.showToast(mContext, "already join contest");
-
-                                    } else if (codeServer < 0 && mJsonObject.getString("msg") == "Contest invalid. Please check again") {
-                                        PopupAPI.showToast(mContext, "token ID wrong");
-
-                                    } else if (codeServer < 0 && mJsonObject.getString("msg") == "User ID wrong, User not found") {
-                                        PopupAPI.showToast(mContext, "token invalid or input user wrong");
-
-                                    } else if (codeServer == 1) {
-                                        tv_join.setVisibility(View.GONE);
-
-                                    }
-
-                                } catch (Exception e) {
-                                    PopupAPI.showToast(mContext, e.getMessage());
-
+                } else if (tv_join.getText().toString().equalsIgnoreCase("Join Now")) {
+                    HashMap<String, String> param = new HashMap<String, String>();
+                    APIHandler.Instance().POST_BY_AUTHEN("contest/" + EventId + "/join", param, new APIHandler.RequestComplete() {
+                        @Override
+                        public void onRequestComplete(final int code, final String response) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dataParsing(response);
                                 }
-                            }
-                        });
-                    }
-                });
+                            });
+                        }
+                    });
+                }
+
             }
 
         });
@@ -162,6 +139,34 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void dataParsing(String response) {
+        try {
+            JSONObject mJsonObject = new JSONObject(response);
+            int codeServer = mJsonObject.getInt("code");
+            if (codeServer < 0 && mJsonObject.getString("msg").contains("not-enough-balance")) {
+                PopupAPI.showToast(mContext, "not enough balance");
+                Intent mIntent = new Intent(mContext, MypaymentActivity.class);
+                startActivity(mIntent);
+            } else if (codeServer < 0 && mJsonObject.getString("msg").contains("You already join this contest")) {
+                PopupAPI.showToast(mContext, "already join contest");
+
+            } else if (codeServer < 0 && mJsonObject.getString("msg").contains("Contest invalid. Please check again")) {
+                PopupAPI.showToast(mContext, "token ID wrong");
+
+            } else if (codeServer < 0 && mJsonObject.getString("msg").contains("User ID wrong, User not found")) {
+                PopupAPI.showToast(mContext, "token invalid or input user wrong");
+
+            } else if (codeServer == 1) {
+                tv_join.setVisibility(View.GONE);
+
+            }
+
+        } catch (Exception e) {
+            PopupAPI.showToast(mContext, e.getMessage());
+
+        }
     }
 
     public void showInformationIntoUi(String response) {
@@ -186,9 +191,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                     active_jon.setVisibility(View.GONE);
                 }
                 if (IsJoin) {
-                    tv_join.setVisibility(View.GONE);
+                    tv_join.setVisibility(View.VISIBLE);
+                    tv_join.setText("Join Now");
                 } else {
                     tv_join.setVisibility(View.VISIBLE);
+                    tv_join.setText("Joined");
                 }
 
                 String RegistrationStart = contest.getString("RegistrationStart");
