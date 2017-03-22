@@ -104,7 +104,6 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                         }
                     });
                 } else {
-
                     responseDataShow(PersistentUser.getVideodetails(mContext));
 
                 }
@@ -134,6 +133,8 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 String video_description = msg.getString("video_description");
                 String video_name = msg.getString("video_name");
                 String video_type = msg.getString("video_type");
+
+                Log.w("video", "are" + video);
 
                 //===============Coding for play Video==================
                 Uri uri = Uri.parse(video);
