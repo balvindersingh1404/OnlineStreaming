@@ -12,7 +12,30 @@ public class PersistentUser {
     private static final String USERDETAILS = "userdetails";
     private static final String PASSWORD = "password";
     private static final String SOCIALLOGINEMAIL = "social_logn_email";
+    private static final String lastModified = "lastModified";
+    private static final String LOCKDETAILS = "lock_video_list";
 
+
+    public static String getVideodetails(final Context ctx) {
+        return ctx.getSharedPreferences(PersistentUser.PREFS_FILE_NAME, Context.MODE_PRIVATE).getString(PersistentUser.LOCKDETAILS, "");
+    }
+
+    public static void setVideolist(final Context ctx, final String FILEPATH) {
+        final SharedPreferences prefs = ctx.getSharedPreferences(PersistentUser.PREFS_FILE_NAME, Context.MODE_PRIVATE);
+        final Editor editor = prefs.edit();
+        editor.putString(PersistentUser.LOCKDETAILS, FILEPATH);
+        editor.commit();
+    }
+    public static String getlastModified(final Context ctx) {
+        return ctx.getSharedPreferences(PersistentUser.PREFS_FILE_NAME, Context.MODE_PRIVATE).getString(PersistentUser.lastModified, "");
+    }
+
+    public static void setlastModified(final Context ctx, final String FILEPATH) {
+        final SharedPreferences prefs = ctx.getSharedPreferences(PersistentUser.PREFS_FILE_NAME, Context.MODE_PRIVATE);
+        final Editor editor = prefs.edit();
+        editor.putString(PersistentUser.lastModified, FILEPATH);
+        editor.commit();
+    }
 
     public static String getSocialLoginEmal(final Context ctx) {
         return ctx.getSharedPreferences(PersistentUser.PREFS_FILE_NAME,
