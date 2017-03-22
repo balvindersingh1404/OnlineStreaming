@@ -87,8 +87,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         tv_Registration = (TextView) this.findViewById(R.id.tv_Registration);
         tv_end = (TextView) this.findViewById(R.id.tv_end);
-
-
+        active_jon = (RelativeLayout) this.findViewById(R.id.active_jon);
         tv_Registration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,6 +95,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
         event_report = (ImageView) this.findViewById(R.id.event_report);
+        //======event detials ==========
         HashMap<String, String> param = new HashMap<String, String>();
         param.put("event_id", "" + EventId);
         APIHandler.Instance().GET_BY_AUTHEN("contest/details", param, new APIHandler.RequestComplete() {
@@ -104,13 +104,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.w("response", "are" + response);
                         showInformationIntoUi(response);
                     }
                 });
             }
         });
-        active_jon = (RelativeLayout) this.findViewById(R.id.active_jon);
         tv_join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
