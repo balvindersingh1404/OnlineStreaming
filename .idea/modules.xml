@@ -3,14 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Headsup7New.iml" filepath="$PROJECT_DIR$/Headsup7New.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Headsup7New.iml" filepath="$PROJECT_DIR$/Headsup7New.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/chatlib/chatlib.iml" filepath="$PROJECT_DIR$/chatlib/chatlib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/chatlib/chatlib.iml" filepath="$PROJECT_DIR$/chatlib/chatlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/vrlib/vrlib.iml" filepath="$PROJECT_DIR$/vrlib/vrlib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/vrlib/vrlib.iml" filepath="$PROJECT_DIR$/vrlib/vrlib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/yasealib/yasealib.iml" filepath="$PROJECT_DIR$/yasealib/yasealib.iml" />
       <module fileurl="file://$PROJECT_DIR$/yasealib/yasealib.iml" filepath="$PROJECT_DIR$/yasealib/yasealib.iml" />
     </modules>
   </component>

@@ -112,8 +112,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (tv_join.getText().toString().equalsIgnoreCase("Joined")) {
-                    PopupAPI.showToast(mContext, "already join contest");
-
+                    //PopupAPI.showToast(mContext, "already join contest");
+                    return;
                 } else if (tv_join.getText().toString().equalsIgnoreCase("Join Now")) {
                     HashMap<String, String> param = new HashMap<String, String>();
                     APIHandler.Instance().POST_BY_AUTHEN("contest/" + EventId + "/join", param, new APIHandler.RequestComplete() {
@@ -159,8 +159,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 PopupAPI.showToast(mContext, "token invalid or input user wrong");
 
             } else if (codeServer == 1) {
-                tv_join.setVisibility(View.GONE);
-
+                tv_join.setVisibility(View.VISIBLE);
+                tv_join.setText("Joined");
             }
 
         } catch (Exception e) {
