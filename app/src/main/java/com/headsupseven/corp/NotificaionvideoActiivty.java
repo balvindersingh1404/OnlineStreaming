@@ -45,6 +45,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         mContext = this;
+        //http://www.coders-hub.com/2013/11/how-to-get-battery-level-using.html#.WNI-8xKGOuU
         init();
     }
 

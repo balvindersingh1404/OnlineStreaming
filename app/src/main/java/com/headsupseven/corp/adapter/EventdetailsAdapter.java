@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,55 +15,45 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
-import com.androidquery.callback.AjaxStatus;
-import com.androidquery.callback.BitmapAjaxCallback;
 import com.headsupseven.corp.CommentActivity;
 import com.headsupseven.corp.DonateActivity;
-import com.headsupseven.corp.FollowerActivity;
-import com.headsupseven.corp.FollowingActivity;
 import com.headsupseven.corp.LiveVideoPlayerActivity;
 import com.headsupseven.corp.OtherProfileActivity;
+import com.headsupseven.corp.R;
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.customview.Channgecustomview;
 import com.headsupseven.corp.customview.VideoViewShouldClose;
 import com.headsupseven.corp.model.HomeLsitModel;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Vector;
 
-import com.headsupseven.corp.R;
-
 /**
  * Created by Prosanto on 3/7/17.
  */
-//http://www.gadgetsaint.com/android/recyclerview-header-footer-pagination/#.WL5_EhKGOuU
-public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_FOOTER = 2;
     private AQuery androidQuery;
-
-
     Vector<HomeLsitModel> myDataset = new Vector<>();
     private Context mContext;
-    private String response;
-
+    private String response = "";
     private VideoViewShouldClose videoCallback = null;
 
     public void setVideoTapCallback(VideoViewShouldClose callback) {
         this.videoCallback = callback;
     }
 
-    public ProfileAdapter(Context context, Vector<HomeLsitModel> myDataset) {
+    public EventdetailsAdapter(Context context, Vector<HomeLsitModel> myDataset) {
         mContext = context;
         this.myDataset = myDataset;
-
         androidQuery = new AQuery(mContext);
     }
 
@@ -115,7 +104,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return new ItemViewHolder(view);
 
         } else if (viewType == TYPE_HEADER) {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_profile, viewGroup, false);
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_event, viewGroup, false);
             return new HeaderViewHolder(view);
 
         }
@@ -129,90 +118,57 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         if (viewHolder instanceof HeaderViewHolder) {
             final HeaderViewHolder holder = (HeaderViewHolder) viewHolder;
+            if (!response.equalsIgnoreCase("")) {
+                try {
+                    JSONObject mJsonObject = new JSONObject(response);
+                    holder.event_title.setText(mJsonObject.getString("Title"));
+                    holder.event_details.setText(mJsonObject.getString("Description"));
 
-            try {
-                JSONObject mJsonObject = new JSONObject(response);
+                    String CoverUrl = mJsonObject.getString("CoverUrl");
+                    String ProfileUrl = mJsonObject.getString("ProfileUrl");
+                    String StartDate = mJsonObject.getString("StartDate");
+                    String EndDate = mJsonObject.getString("EndDate");
+                    if (!CoverUrl.equalsIgnoreCase("")) {
+                        Picasso.with(mContext)
+                                .load(CoverUrl)
+                                .into(holder.event_cover_image);
+                    }
 
-                Log.w("response", "are" + response);
-                int code = mJsonObject.getInt("code");
-                if (code == 1) {
-                    JSONObject msg = mJsonObject.getJSONObject("msg");
-                    String Follower = msg.getString("Follower");
-                    String Following = msg.getString("Following");
-                    String PostCount = msg.getString("PostCount");
-                    JSONObject userObject = msg.getJSONObject("UserModel");
-                    int ID = userObject.getInt("ID");
-                    String CreatedAt = userObject.getString("CreatedAt");
-                    String UpdatedAt = userObject.getString("UpdatedAt");
-                    String UserName = userObject.getString("UserName");
-                    String FullName = userObject.getString("FullName");
-                    String Email = userObject.getString("Email");
-                    String AccountType = userObject.getString("AccountType");
-                    String AvatarUrl = userObject.getString("AvatarUrl");
-                    String BannerUrl = userObject.getString("BannerUrl");
-                    String ShortBio = userObject.getString("ShortBio");
+                    if (!ProfileUrl.equalsIgnoreCase("")) {
+                        Picasso.with(mContext)
+                                .load(ProfileUrl)
+                                .into(holder.event_image);
+                    }
+                    //========= calculation of start date
+                    //2017-03-22T11:04:03
+                    String dateStr=StartDate;//.substring(0,(StartDate.length()-1));
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("EEEE hh:mm a");
 
+                    SimpleDateFormat currentDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'H:m:s'Z'");
+                    Date date = currentDateFormat.parse(dateStr);
 
-                    holder.text_short_bio.setText(ShortBio);
-                    holder.tv_number_post.setText("" + PostCount);
-                    holder.tv_number_follower.setText("" + Follower);
-                    holder.tv_number_follower.setTag("" + Follower);
-                    holder.tv_number_following.setText("" + Following);
-                    holder.tv_number_following.setTag("" + Following);
-                    holder.tv_username.setText("" + UserName);
-                    holder.tv_full_name.setText("" + FullName);
+                    String dateStrDate = dateFormat.format(date);
+                    String dateStrTime = timeFormat.format(date);
+                    holder.Start_date.setText(dateStrDate);
+                    holder.Start_time.setText(dateStrTime);
+                    //2017-03-21T15:04:05Z
 
-                    Picasso.with(mContext).load(AvatarUrl)
-                            .memoryPolicy(MemoryPolicy.NO_CACHE)
-                            .networkPolicy(NetworkPolicy.NO_CACHE)
-                            .error(R.drawable.user_avater).into(holder.img_profile);
+                    String dateEnd=EndDate;//.substring(0,(EndDate.length()-1));
+                    Date dateEndw = currentDateFormat.parse(dateEnd);
 
-                    androidQuery.id(holder.img_banner).image(BannerUrl, true, true, 0, 0, new BitmapAjaxCallback() {
-                        @Override
-                        public void callback(String url, ImageView iv, Bitmap bm, AjaxStatus status) {
-                            iv.setImageBitmap(bm);
-                        }
-                    });
-
-                    holder.ll_post.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            holder.viewleft.setVisibility(View.VISIBLE);
-                            holder.viewmiddle.setVisibility(View.INVISIBLE);
-                            holder.viewright.setVisibility(View.INVISIBLE);
-                        }
-                    });
-
-                    holder.ll_follower.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            holder.viewleft.setVisibility(View.INVISIBLE);
-                            holder.viewmiddle.setVisibility(View.VISIBLE);
-                            holder.viewright.setVisibility(View.INVISIBLE);
-
-                            Intent intent = new Intent(mContext, FollowerActivity.class);
-                            intent.putExtra("user_id", "" + APIHandler.Instance().user.userID);
-                            mContext.startActivity(intent);
-
-                        }
-                    });
-                    holder.ll_following.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            holder.viewleft.setVisibility(View.INVISIBLE);
-                            holder.viewmiddle.setVisibility(View.INVISIBLE);
-                            holder.viewright.setVisibility(View.VISIBLE);
-
-                            Intent intent = new Intent(mContext, FollowingActivity.class);
-                            intent.putExtra("user_id", "" + APIHandler.Instance().user.userID);
-                            mContext.startActivity(intent);
-                        }
-                    });
+                    String dateEndDate = dateFormat.format(dateEndw);
+                    String dateEndTime = timeFormat.format(dateEndw);
+                    holder.End_date.setText(dateEndDate);
+                    holder.End_time.setText(dateEndTime);
 
 
+
+                } catch (Exception e) {
+                    Log.w("Exception","wre"+e.getMessage());
                 }
-            } catch (Exception ex) {
-                Log.w("exception", ex.toString());
+
+
             }
 
         } else if (viewHolder instanceof ItemViewHolder) {
@@ -237,10 +193,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 public void onClick(View view) {
                     if (mHomeLsitModel.getPostType().equalsIgnoreCase("ads")) {
                         String urlData = "ads/" + mHomeLsitModel.getID() + "/like";
-                        webCallForAdsLike(position-1, urlData);
+                        webCallForAdsLike(position - 1, urlData);
                     } else {
                         String urlData = "feeds/" + mHomeLsitModel.getID() + "/like";
-                        webCallForAdsLike(position-1, urlData);
+                        webCallForAdsLike(position - 1, urlData);
 
                     }
 
@@ -283,7 +239,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     } else {
                         Intent intent = new Intent(mContext, DonateActivity.class);
                         intent.putExtra("user_Name", "" + mHomeLsitModel.getCreatedByName());
-                        intent.putExtra("CreatedBy", "" + mHomeLsitModel.getCreatedBy());                        mContext.startActivity(intent);
+                        intent.putExtra("CreatedBy", "" + mHomeLsitModel.getCreatedBy());
+                        mContext.startActivity(intent);
                     }
                 }
             });
@@ -412,10 +369,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         private ImageView menu;
-
         private LinearLayout ll_like, ll_comment;
         TextView vote;
-        private ImageView row_video_icon,profilePic;
+        private ImageView row_video_icon, profilePic;
         private ImageView event_image, ic_live, ic_video_type;
         private TextView tv_name, tv_posttime, tv_watching, even_title, event_description, tv_like, tv_comment;
         private ImageView like_unlike;
@@ -446,39 +402,27 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    // The ViewHolders for Header, Item and Footer
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
-        public View View;
-        private LinearLayout ll_post, ll_follower, ll_following;
-        private View viewleft, viewmiddle, viewright;
-        private TextView tv_number_post, tv_number_follower, tv_number_following;
-        private TextView tv_full_name, tv_username;
-        private Intent intent;
-        private ImageView img_banner, img_profile;
-        private AQuery androidQuery;
-        private TextView text_short_bio;
+        private TextView event_title;
+        private TextView event_details;
+        private TextView Start_date;
+        private TextView Start_time;
+        private TextView End_date;
+        private TextView End_time;
+        private ImageView event_cover_image;
+        private ImageView event_image;
+
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
-            text_short_bio = (TextView) itemView.findViewById(R.id.text_short_bio);
-            ll_post = (LinearLayout) itemView.findViewById(R.id.ll_post);
-            ll_follower = (LinearLayout) itemView.findViewById(R.id.ll_follower);
-            ll_following = (LinearLayout) itemView.findViewById(R.id.ll_folowing);
-
-            tv_number_post = (TextView) itemView.findViewById(R.id.tv_number_post);
-            tv_number_follower = (TextView) itemView.findViewById(R.id.tv_number_follower);
-            tv_number_following = (TextView) itemView.findViewById(R.id.tv_number_following);
-
-            img_banner = (ImageView) itemView.findViewById(R.id.img_banner);
-            img_profile = (ImageView) itemView.findViewById(R.id.img_profile);
-
-            tv_full_name = (TextView) itemView.findViewById(R.id.tv_full_name);
-            tv_username = (TextView) itemView.findViewById(R.id.tv_username);
-
-            viewleft = (View) itemView.findViewById(R.id.viewleft);
-            viewmiddle = (View) itemView.findViewById(R.id.viewmiddle);
-            viewright = (View) itemView.findViewById(R.id.viewright);
-
+            event_title = (TextView) itemView.findViewById(R.id.event_title);
+            event_details = (TextView) itemView.findViewById(R.id.event_details);
+            Start_date = (TextView) itemView.findViewById(R.id.Start_date);
+            Start_time = (TextView) itemView.findViewById(R.id.Start_time);
+            End_date = (TextView) itemView.findViewById(R.id.End_date);
+            End_time = (TextView) itemView.findViewById(R.id.End_time);
+            event_image = (ImageView) itemView.findViewById(R.id.event_image);
+            event_cover_image = (ImageView) itemView.findViewById(R.id.event_cover_image);
 
         }
     }
@@ -494,13 +438,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         tv_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 shareTo(mContext,"","");
                 d.dismiss();
 
             }
         });
-
         ll_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -511,7 +453,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         d.show();
     }
 
-
     public static void shareTo(Context mContext, String title, String thumbURl) {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
@@ -519,6 +460,17 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "" + title);
         mContext.startActivity(Intent.createChooser(sharingIntent, "Share via"));
     }
+
+
+//    public static void shareTo(Context mContext) {
+//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+//        sharingIntent.setType("text/plain");
+//        String shareBodyText = "Check it out. Your message goes here";
+//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Wasteminister App Shairing");
+//        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBodyText);
+//        mContext.startActivity(sharingIntent);
+//
+//    }
 
 
 }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.headsupseven.corp.CommentActivity;
 import com.headsupseven.corp.DonateActivity;
+import com.headsupseven.corp.EventDetailsActivity;
 import com.headsupseven.corp.HomebaseActivity;
 import com.headsupseven.corp.LiveVideoPlayerActivity;
 import com.headsupseven.corp.OtherProfileActivity;
@@ -31,6 +32,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Vector;
+
 /**
  * Created by elanicdroid on 28/10/15.
  */
@@ -81,6 +83,13 @@ public class Headsup7Adapter extends RecyclerView
 
                         if (homeLsitModel.getPostType().equalsIgnoreCase("news")) {
                             return;
+                        }
+                        if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
+                            Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(webViewIntent);
+
                         } else {
                             sharePopupShow();
 
@@ -94,6 +103,13 @@ public class Headsup7Adapter extends RecyclerView
                     public void onClick(View view) {
                         if (homeLsitModel.getPostType().equalsIgnoreCase("news")) {
                             return;
+                        }
+                        if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
+                            Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(webViewIntent);
+
                         } else {
                             if (homeLsitModel.getPostType().equalsIgnoreCase("ads")) {
                                 String urlData = "ads/" + homeLsitModel.getID() + "/like";
@@ -112,6 +128,13 @@ public class Headsup7Adapter extends RecyclerView
                     public void onClick(View view) {
                         if (homeLsitModel.getPostType().equalsIgnoreCase("news")) {
                             return;
+                        }
+                        if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
+                            Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(webViewIntent);
+
                         } else {
                             Channgecustomview.commentTextView = viewHolder.tv_comment;
                             Channgecustomview.homeLsitModel = homeLsitModel;
@@ -130,6 +153,13 @@ public class Headsup7Adapter extends RecyclerView
                     public void onClick(View view) {
                         if (homeLsitModel.getPostType().equalsIgnoreCase("news")) {
                             return;
+                        }
+                        if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
+                            Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(webViewIntent);
+
                         } else {
                             Intent intent = new Intent(mContext, OtherProfileActivity.class);
                             intent.putExtra("user_id", "" + homeLsitModel.getCreatedBy());
@@ -145,6 +175,13 @@ public class Headsup7Adapter extends RecyclerView
                     public void onClick(View view) {
                         if (homeLsitModel.getPostType().equalsIgnoreCase("news")) {
                             return;
+                        }
+                        if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
+                            Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(webViewIntent);
+
                         } else {
                             Intent intent = new Intent(mContext, DonateActivity.class);
                             intent.putExtra("user_Name", "" + homeLsitModel.getCreatedByName());
@@ -171,6 +208,14 @@ public class Headsup7Adapter extends RecyclerView
                                 webViewIntent.putExtra("Title", homeLsitModel.getPostName());
                                 webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 mContext.startActivity(webViewIntent);
+
+                            }
+                            if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
+                                Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                                webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                                webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mContext.startActivity(webViewIntent);
+
                             } else {
                                 Intent intent = new Intent(mContext, LiveVideoPlayerActivity.class);
                                 intent.putExtra("Url_Stream", APIHandler.Instance().BuildLiveStreamWatchURL(homeLsitModel.getLiveStreamName()));
@@ -202,6 +247,12 @@ public class Headsup7Adapter extends RecyclerView
                     public void onClick(View view) {
                         if (homeLsitModel.getPostType().equalsIgnoreCase("news")) {
                             return;
+                        }
+                        if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
+                            Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(webViewIntent);
                         } else {
                             Intent intent = new Intent(mContext, OtherProfileActivity.class);
                             intent.putExtra("user_id", "" + homeLsitModel.getCreatedBy());
@@ -391,7 +442,7 @@ public class Headsup7Adapter extends RecyclerView
             @Override
             public void onClick(View view) {
 
-                shareTo(mContext);
+                shareTo(mContext,"","");
                 d.dismiss();
 
             }
@@ -408,15 +459,23 @@ public class Headsup7Adapter extends RecyclerView
     }
 
 
-    public static void shareTo(Context mContext) {
+    public static void shareTo(Context mContext, String title, String thumbURl) {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
-        String shareBodyText = "Check it out. Your message goes here";
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Wasteminister App Shairing");
-        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBodyText);
-        mContext.startActivity(sharingIntent);
-
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, "" + thumbURl);
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "" + title);
+        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via"));
     }
+
+//    public static void shareTo(Context mContext) {
+//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+//        sharingIntent.setType("text/plain");
+//        String shareBodyText = "Check it out. Your message goes here";
+//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Wasteminister App Shairing");
+//        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBodyText);
+//        mContext.startActivity(sharingIntent);
+//
+//    }
 }
 
 
