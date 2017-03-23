@@ -54,28 +54,6 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                     action.equals(Intent.ACTION_TIME_TICK)) {
 
                 setDateTime();
-
-//                Date d=new Date();
-//                SimpleDateFormat sdf=new SimpleDateFormat("hh:mm a");
-//                String currentDateTimeString = sdf.format(d);
-//                Log.w("time===",currentDateTimeString);
-//                tv_time.setText(currentDateTimeString+"");
-//
-//                Calendar c = Calendar.getInstance();
-//                System.out.println("Current time => "+currentDateTimeString);
-////                System.out.println("Current time => "+c.getTime());
-//
-//
-//                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-//                String formattedDate = df.format(c.getTime());
-//                // formattedDate have current date/time
-//                System.out.println("Current date => "+formattedDate);
-//                SimpleDateFormat ssdf = new SimpleDateFormat("EEEE");
-//                Date date = new Date();
-//                String dayOfTheWeek = ssdf.format(date);
-//                tv_date.setText(formattedDate+" "+dayOfTheWeek);
-
-                //doWorkSon();
             }
         }
     };
