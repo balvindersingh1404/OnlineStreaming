@@ -31,15 +31,6 @@
     </LinearLayout>
 
 
-    <!--<ImageView-->
-    <!--android:id="@+id/to_view"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_centerHorizontal="true"-->
-    <!--android:layout_marginTop="20dp"-->
-    <!--android:visibility="visible"-->
-    <!--android:background="@drawable/top_iamge" />-->
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -49,13 +40,11 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_centerInParent="true"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
+            android:layout_height="240dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:gravity="center">
-
-
             <com.headsupseven.corp.customview.VideoView
                 android:id="@+id/video_view"
                 android:layout_width="match_parent"
@@ -70,38 +59,39 @@
         android:id="@+id/slider1"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_margin="30dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_margin="30dp"
         android:background="@drawable/horizontal_back">
 
-            <FrameLayout
-                android:layout_width="60dp"
-                android:layout_height="match_parent">
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="1px"
-                    android:background="@drawable/button_bg" />
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginRight="6dp"
-                    android:layout_gravity="center_vertical|right"
-                    android:src="@drawable/ic_slide"/>
+        <FrameLayout
+            android:layout_width="60dp"
+            android:layout_height="match_parent">
 
-            </FrameLayout>
-            <TextView
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Slide to unlock"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                />
+                android:layout_margin="1px"
+                android:background="@drawable/button_bg" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="6dp"
+                android:src="@drawable/ic_slide" />
+
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Slide to unlock"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
 
     </com.headsupseven.corp.slideunlock.SlideLayout>
-
 
 
 </RelativeLayout>
