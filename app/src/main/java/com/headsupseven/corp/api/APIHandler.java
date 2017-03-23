@@ -25,7 +25,9 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 
 /**
@@ -796,6 +798,7 @@ public class APIHandler {
 
         }
     }
+
     public void Downloadfilefromserver(String query, String fileName, RequestComplete callback) {
         new Downloadfilefromserver(callback).execute(query, fileName);
     }
@@ -869,28 +872,45 @@ public class APIHandler {
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
     public static String getTimeAgo(String time) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'H:m:s'Z'");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date date = df.parse(time);
-            return getTimeAgo(date.getTime());
+            SimpleDateFormat currentDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'H:m:s'Z'");
+            currentDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = currentDateFormat.parse(time);
+            String dateStrTime = format.format(date);
+            Date dateDifference = format.parse(dateStrTime);
+
+
+            String CurrentDateAndTime = getCurrentDateAndTime();
+            Date dateCurrent = format.parse(CurrentDateAndTime);
+
+            return getTimeAgo(dateCurrent, dateDifference);
+
+//            Date date = df.parse(time);
+//            return getTimeAgo(date.getTime());
         } catch (Exception e) {
             return "";
         }
     }
 
-    public static String getTimeAgo(long time) {
-        if (time < 1000000000000L) {
-            // if timestamp given in seconds, convert to millis
-            time *= 1000;
-        }
+    public static String getTimeAgo(Date date1, Date date2) {
 
-        long now = System.currentTimeMillis();
-        if (time > now || time <= 0) {
-            return null;
-        }
+//        final long diff = now - time;
+        final long diff = date1.getTime() - date2.getTime();
 
-        // TODO: localize
-        final long diff = now - time;
+
+//        if (time < 1000000000000L) {
+//            // if timestamp given in seconds, convert to millis
+//            time *= 1000;
+//        }
+//
+//        long now = System.currentTimeMillis();
+//        if (time > now || time <= 0) {
+//            return null;
+//        }
+//
+//        // TODO: localize
+//        final long diff = now - time;
         if (diff < MINUTE_MILLIS) {
             return "just now";
         } else if (diff < 2 * MINUTE_MILLIS) {
@@ -906,5 +926,11 @@ public class APIHandler {
         } else {
             return diff / DAY_MILLIS + " days ago";
         }
+    }
+
+    public static String getCurrentDateAndTime() {
+        SimpleDateFormat simple = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        simple.setTimeZone(TimeZone.getDefault());
+        return simple.format(new Date());
     }
 }
