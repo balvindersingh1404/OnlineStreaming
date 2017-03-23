@@ -159,7 +159,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 PopupAPI.showToast(mContext, "token invalid or input user wrong");
 
             } else if (codeServer == 1) {
-                tv_join.setVisibility(View.GONE);
+                tv_join.setVisibility(View.VISIBLE);
+                tv_join.setText("Joined");
 
             }
 
@@ -192,10 +193,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
                 if (IsJoin) {
                     tv_join.setVisibility(View.VISIBLE);
-                    tv_join.setText("Join Now");
+                    tv_join.setText("Joined");
                 } else {
                     tv_join.setVisibility(View.VISIBLE);
-                    tv_join.setText("Joined");
+                    tv_join.setText("Join Now");
+
                 }
 
                 String RegistrationStart = contest.getString("RegistrationStart");
