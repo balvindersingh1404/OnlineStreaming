@@ -12,9 +12,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.customview.VideoView;
+import com.headsupseven.corp.renderers.ScaleRenderer;
+import com.headsupseven.corp.sliders.HorizontalSlider;
+import com.headsupseven.corp.slideunlock.ISlideListener;
+import com.headsupseven.corp.slideunlock.SlideLayout;
 import com.headsupseven.corp.utils.PersistentUser;
 
 import org.json.JSONObject;
@@ -33,6 +38,7 @@ import java.util.Locale;
 public class NotificaionvideoActiivty extends AppCompatActivity {
     private VideoView video_view;
     private Context mContext;
+    SlideLayout slider;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,12 +56,29 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     }
 
     private void init() {
-        ImageView btnUnlock = (ImageView) findViewById(R.id.upview);
-        btnUnlock.setOnTouchListener(new View.OnTouchListener() {
+//        ImageView btnUnlock = (ImageView) findViewById(R.id.upview);
+//        btnUnlock.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                jumpMain();
+//                return false;
+//            }
+//        });
+        slider = (SlideLayout) findViewById(R.id.slider1);
+
+        slider.setRenderer(new ScaleRenderer());
+        slider.setSlider(new HorizontalSlider());
+        slider.addSlideListener(new ISlideListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                jumpMain();
-                return false;
+            public void onSlideDone(SlideLayout slider, boolean done) {
+                if (done) {
+                    // restore start state
+                    Log.w("slide done","");
+                    jumpMain();
+                    slider.reset();
+                }else {
+
+                }
             }
         });
         if (PersistentUser.getlastModified(mContext).equalsIgnoreCase("")) {
@@ -139,13 +162,13 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
 
                 //===============Coding for play Video==================
                 Uri uri = Uri.parse(video);
-                ImageView upview = (ImageView) this.findViewById(R.id.upview);
-                upview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        jumpMain();
-                    }
-                });
+//                ImageView upview = (ImageView) this.findViewById(R.id.upview);
+//                upview.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        jumpMain();
+//                    }
+//                });
                 video_view = (VideoView) this.findViewById(R.id.video_view);
                 video_view.setVideoURI(uri);
                 video_view.requestFocus();

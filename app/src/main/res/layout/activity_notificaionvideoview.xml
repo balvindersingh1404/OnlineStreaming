@@ -43,8 +43,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/upview"
-        android:layout_below="@+id/to_view"
+        android:layout_above="@+id/slider1"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="20dp">
 
@@ -67,12 +66,42 @@
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/upview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <com.headsupseven.corp.slideunlock.SlideLayout
+        android:id="@+id/slider1"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_margin="30dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/bottom_image" />
+        android:background="@drawable/horizontal_back">
+
+            <FrameLayout
+                android:layout_width="60dp"
+                android:layout_height="match_parent">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1px"
+                    android:background="@drawable/button_bg" />
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_gravity="center_vertical|right"
+                    android:src="@drawable/ic_slide"/>
+
+            </FrameLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Slide to unlock"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                />
+
+    </com.headsupseven.corp.slideunlock.SlideLayout>
+
+
+
 </RelativeLayout>
