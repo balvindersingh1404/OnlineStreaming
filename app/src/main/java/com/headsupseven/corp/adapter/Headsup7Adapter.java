@@ -45,6 +45,7 @@ public class Headsup7Adapter extends RecyclerView
     private Vector<HomeLsitModel> mDataset;
     static OnItemClickListener mItemClickListener;
     private VideoViewShouldClose videoCallback = null;
+    String thumbURl = "";
 
     public void setVideoTapCallback(VideoViewShouldClose callback) {
         this.videoCallback = callback;
@@ -91,7 +92,7 @@ public class Headsup7Adapter extends RecyclerView
                             mContext.startActivity(webViewIntent);
 
                         } else {
-                            sharePopupShow();
+                            sharePopupShow(homeLsitModel.getCreatedByName(), thumbURl);
 
                         }
 
@@ -287,7 +288,6 @@ public class Headsup7Adapter extends RecyclerView
                 }
 
                 //-----------------------------------------------
-                String thumbURl = "";
                 boolean shouldUpdateThumb = false;
                 viewHolder.ic_live.setVisibility(View.INVISIBLE);
                 viewHolder.ic_video_type.setVisibility(View.INVISIBLE);
@@ -430,7 +430,7 @@ public class Headsup7Adapter extends RecyclerView
         }
     }
 
-    public void sharePopupShow() {
+    public void sharePopupShow(final String title, final String thumbURl) {
         final Dialog d = new Dialog((HomebaseActivity) mContext, android.R.style.Theme_Translucent);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d.setContentView(R.layout.share_popup);
@@ -442,7 +442,7 @@ public class Headsup7Adapter extends RecyclerView
             @Override
             public void onClick(View view) {
 
-                shareTo(mContext,"","");
+                shareTo(mContext, title, thumbURl);
                 d.dismiss();
 
             }
@@ -464,18 +464,9 @@ public class Headsup7Adapter extends RecyclerView
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(Intent.EXTRA_TEXT, "" + thumbURl);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "" + title);
-        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via"));
+        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via Headsup7"));
     }
 
-//    public static void shareTo(Context mContext) {
-//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-//        sharingIntent.setType("text/plain");
-//        String shareBodyText = "Check it out. Your message goes here";
-//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Wasteminister App Shairing");
-//        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBodyText);
-//        mContext.startActivity(sharingIntent);
-//
-//    }
 }
 
 

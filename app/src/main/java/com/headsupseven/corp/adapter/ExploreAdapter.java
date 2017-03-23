@@ -48,6 +48,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_FOOTER = 2;
+    String thumbURl = "";
     Vector<HomeLsitModel> myDataset = new Vector<>();
     private Context mContext;
     private Vector<CategoryList> allCategoryList = new Vector<CategoryList>();
@@ -180,7 +181,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                         mapCategory.clear();
                         mapCategory.put(mCategoryList.getName(), mCategoryList.getID());
-                        if (lastCategorySelect != null){
+                        if (lastCategorySelect != null) {
                             lastCategorySelect.setBackgroundColor(Color.parseColor("#DEDEDE"));
                         }
                         lastCategorySelect = button;
@@ -220,7 +221,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //                            button.setBackgroundColor(Color.parseColor("#00C5C1"));
 //                            mapTag.put(mSearchTag.getTagName(), mSearchTag.getID());
 //                        }
-                        if (lastTagSelect != null){
+                        if (lastTagSelect != null) {
                             lastTagSelect.setBackgroundColor(color);
                         }
                         lastTagSelect = button;
@@ -261,10 +262,10 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 public void onClick(View view) {
                     if (mHomeLsitModel.getPostType().equalsIgnoreCase("ads")) {
                         String urlData = "ads/" + mHomeLsitModel.getID() + "/like";
-                        webCallForAdsLike(position-1, urlData);
+                        webCallForAdsLike(position - 1, urlData);
                     } else {
                         String urlData = "feeds/" + mHomeLsitModel.getID() + "/like";
-                        webCallForAdsLike(position-1, urlData);
+                        webCallForAdsLike(position - 1, urlData);
                     }
                 }
             });
@@ -331,7 +332,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onClick(View view) {
 
-                    sharePopupShow();
+                    sharePopupShow(mHomeLsitModel.getCreatedByName(), thumbURl);
                 }
             });
             holder.tv_name.setOnClickListener(new View.OnClickListener() {
@@ -354,7 +355,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.profilePic.setImageResource(R.drawable.user_avater);
             }
 
-            String thumbURl = "";
 
             if (mHomeLsitModel.isPostStreaming()) {
                 holder.ic_live.setVisibility(View.VISIBLE);
@@ -426,7 +426,8 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private ImageView row_video_icon;
         private ImageView event_image, ic_live, ic_video_type;
         private TextView tv_name, tv_posttime, tv_watching, even_title, event_description, tv_like, tv_comment;
-        private  ImageView like_unlike;
+        private ImageView like_unlike;
+
         public ItemViewHolder(View v) {
             super(v);
             ll_like = (LinearLayout) itemView.findViewById(R.id.ll_like);
@@ -471,7 +472,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public void sharePopupShow() {
+    public void sharePopupShow(final String title, final String thumbURl) {
         final Dialog d = new Dialog(mContext, android.R.style.Theme_Translucent);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d.setContentView(R.layout.share_popup);
@@ -483,7 +484,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             @Override
             public void onClick(View view) {
 
-                shareTo(mContext,"","");
+                shareTo(mContext, title, thumbURl);
                 d.dismiss();
 
             }
@@ -505,18 +506,8 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(Intent.EXTRA_TEXT, "" + thumbURl);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "" + title);
-        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via"));
+        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via Headsup7"));
     }
-
-//    public static void shareTo(Context mContext) {
-//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-//        sharingIntent.setType("text/plain");
-//        String shareBodyText = "Check it out. Your message goes here";
-//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Wasteminister App Shairing");
-//        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBodyText);
-//        mContext.startActivity(sharingIntent);
-//
-//    }
 
     private ProgressDialog mProgressDialog;
 
@@ -564,7 +555,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         for (String key : mapTag.keySet()) {
             if (tag == "") {
                 tag = key;
-            }else{
+            } else {
                 tag = tag + "," + key;
             }
         }
@@ -636,7 +627,8 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 } else {
                     model.setID(mObject.getInt("ID"));
                     model.setFlagAdd(false);
-                }                myDataset.add(model);
+                }
+                myDataset.add(model);
             }
 
         } catch (Exception ex) {

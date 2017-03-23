@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,7 +89,7 @@ public class HomeDataAdapter extends RecyclerView
                     @Override
                     public void onClick(View view) {
 
-                        sharePopupShow(homeLsitModel.getPostName(), thumbURl);
+                        sharePopupShow(homeLsitModel.getCreatedByName(), thumbURl);
 
                     }
                 });
@@ -375,7 +376,7 @@ public class HomeDataAdapter extends RecyclerView
         tv_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                shareTo((HomebaseActivity) mContext, title, thumbURl);
+                shareTo(mContext, title, thumbURl);
                 d.dismiss();
 
             }
@@ -397,7 +398,7 @@ public class HomeDataAdapter extends RecyclerView
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(Intent.EXTRA_TEXT, "" + thumbURl);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "" + title);
-        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via"));
+        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via Headsup7"));
     }
 
 }
