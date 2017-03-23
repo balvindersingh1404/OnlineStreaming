@@ -1,62 +1,86 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/lockscreennew">
 
-    android:background="@drawable/background_image">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="30dp"
-        android:orientation="vertical">
-
-        <TextView
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="09.00 AM"
-            android:textColor="@color/white"
-            android:textSize="33sp"
-            android:textStyle="normal" />
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="09.00 AM"
+                android:textColor="@color/white"
+                android:textSize="33sp"
+                android:textStyle="normal" />
 
 
-        <TextView
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2007-01-30 Monday"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2007-01-30 Monday"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="normal" />
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_alignParentRight="true"
+            android:background="#00000000" >
 
-    </LinearLayout>
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:progressDrawable="@drawable/greenprogress"/>
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5%"
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                android:layout_gravity="center"
+                />
+        </LinearLayout>
+
+    </RelativeLayout>
 
 
-    <!--<ImageView-->
-    <!--android:id="@+id/to_view"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_centerHorizontal="true"-->
-    <!--android:layout_marginTop="20dp"-->
-    <!--android:visibility="visible"-->
-    <!--android:background="@drawable/top_iamge" />-->
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/upview"
-        android:layout_below="@+id/to_view"
+        android:layout_above="@+id/slider1"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_centerInParent="true"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
+            android:layout_height="240dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:gravity="center">
-
-
             <com.headsupseven.corp.customview.VideoView
                 android:id="@+id/video_view"
                 android:layout_width="match_parent"
@@ -67,12 +91,43 @@
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/upview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <com.headsupseven.corp.slideunlock.SlideLayout
+        android:id="@+id/slider1"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/bottom_image" />
+        android:layout_margin="30dp"
+        android:background="@drawable/horizontal_back">
+
+        <FrameLayout
+            android:layout_width="60dp"
+            android:layout_height="match_parent">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1px"
+                android:background="@drawable/button_bg" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="6dp"
+                android:src="@drawable/ic_slide" />
+
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Slide to unlock"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+    </com.headsupseven.corp.slideunlock.SlideLayout>
+
+
 </RelativeLayout>

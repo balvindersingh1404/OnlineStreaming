@@ -47,6 +47,7 @@ public class NewOtherProfileAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_FOOTER = 2;
     private AQuery androidQuery;
     private String AvatarUrl = "";
+    String thumbURl = "";
 
 
     Vector<HomeLsitModel> myDataset = new Vector<>();
@@ -340,7 +341,7 @@ public class NewOtherProfileAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 @Override
                 public void onClick(View view) {
 
-                    sharePopupShow();
+                    sharePopupShow(mHomeLsitModel.getCreatedByName(), thumbURl);
                 }
             });
             holder.tv_name.setOnClickListener(new View.OnClickListener() {
@@ -363,7 +364,7 @@ public class NewOtherProfileAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 holder.profilePic.setImageResource(R.drawable.user_avater);
             }
 
-            String thumbURl = "";
+
 
             if (mHomeLsitModel.isPostStreaming()) {
                 holder.ic_live.setVisibility(View.VISIBLE);
@@ -543,7 +544,7 @@ public class NewOtherProfileAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-    public void sharePopupShow() {
+    public void sharePopupShow(final String title, final String thumbURl) {
         final Dialog d = new Dialog(mContext, android.R.style.Theme_Translucent);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d.setContentView(R.layout.share_popup);
@@ -555,7 +556,7 @@ public class NewOtherProfileAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             @Override
             public void onClick(View view) {
 
-                shareTo(mContext,"","");
+                shareTo(mContext, title, thumbURl);
                 d.dismiss();
 
             }
@@ -571,23 +572,13 @@ public class NewOtherProfileAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         d.show();
     }
 
-
     public static void shareTo(Context mContext, String title, String thumbURl) {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(Intent.EXTRA_TEXT, "" + thumbURl);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "" + title);
-        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via"));
+        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via Headsup7"));
     }
-//    public static void shareTo(Context mContext) {
-//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-//        sharingIntent.setType("text/plain");
-//        String shareBodyText = "Check it out. Your message goes here";
-//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Wasteminister App Shairing");
-//        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBodyText);
-//        mContext.startActivity(sharingIntent);
-//
-//    }
 
 
 }

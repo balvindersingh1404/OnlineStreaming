@@ -49,6 +49,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_FOOTER = 2;
     private AQuery androidQuery;
+    String thumbURl = "";
+
 
 
     Vector<HomeLsitModel> myDataset = new Vector<>();
@@ -322,7 +324,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onClick(View view) {
 
-                    sharePopupShow();
+                    sharePopupShow(mHomeLsitModel.getCreatedByName(), thumbURl);
                 }
             });
             holder.tv_name.setOnClickListener(new View.OnClickListener() {
@@ -345,7 +347,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.profilePic.setImageResource(R.drawable.user_avater);
             }
 
-            String thumbURl = "";
 
             if (mHomeLsitModel.isPostStreaming()) {
                 holder.ic_live.setVisibility(View.VISIBLE);
@@ -483,7 +484,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public void sharePopupShow() {
+    public void sharePopupShow(final String title, final String thumbURl) {
         final Dialog d = new Dialog(mContext, android.R.style.Theme_Translucent);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d.setContentView(R.layout.share_popup);
@@ -495,7 +496,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             @Override
             public void onClick(View view) {
 
-                shareTo(mContext,"","");
+                shareTo(mContext, title, thumbURl);
                 d.dismiss();
 
             }
@@ -517,7 +518,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(Intent.EXTRA_TEXT, "" + thumbURl);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "" + title);
-        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via"));
+        mContext.startActivity(Intent.createChooser(sharingIntent, "Share via Headsup7"));
     }
 
 

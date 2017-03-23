@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -24,7 +23,9 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.headsupseven.corp.adapter.CategoryAdapter;
 import com.headsupseven.corp.api.APIHandler;
+import com.headsupseven.corp.model.Categoryaddvideo;
 import com.headsupseven.corp.utils.ImageFilePath;
 import com.headsupseven.corp.utils.PopupAPI;
 
@@ -49,10 +50,13 @@ public class AddvideoActivity extends AppCompatActivity {
     private Spinner category_spinner;
     private Spinner post_spinner;
     private Spinner spinner_Contact;
-    private ArrayList<String> categorySpinnerArray = new ArrayList<String>();
-    private HashMap<String, String> categoryHashMap = new HashMap<String, String>();
+//    private ArrayList<String> categorySpinnerArray = new ArrayList<String>();
+//    private HashMap<String, String> categoryHashMap = new HashMap<String, String>();
 
-    private ArrayAdapter<String> categorySpinnerArrayAdapter;
+    //    private ArrayAdapter<String> categorySpinnerArrayAdapter;
+    private CategoryAdapter mCategoryAdapter;
+    private ArrayList<Categoryaddvideo> categorySpinnerArray = new ArrayList<>();
+
     private int selection = 0;
     private RelativeLayout layout_spinner_Contact;
     private int mPostType = 0;
@@ -70,7 +74,6 @@ public class AddvideoActivity extends AppCompatActivity {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
-        categoryHashMap.clear();
         selection = 0;
         categorySpinnerArray.clear();
         setPermission();
@@ -102,10 +105,12 @@ public class AddvideoActivity extends AppCompatActivity {
 
         //for category spinner
 
-        categorySpinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categorySpinnerArray); //selected item will look like a spinner set from XML
-        categorySpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        category_spinner.setAdapter(categorySpinnerArrayAdapter);
-        categorySpinnerArrayAdapter.notifyDataSetChanged();
+
+        mCategoryAdapter = new CategoryAdapter(this, R.layout.spinner_item, R.id.item_name, categorySpinnerArray);
+//        categorySpinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categorySpinnerArray); //selected item will look like a spinner set from XML
+//        categorySpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        category_spinner.setAdapter(mCategoryAdapter);
+        mCategoryAdapter.notifyDataSetChanged();
 
         //for Post type spinner
 
@@ -148,10 +153,14 @@ public class AddvideoActivity extends AppCompatActivity {
                         authenPostData.put("PostName", txtVideoName.getText().toString());
                         authenPostData.put("PostDescription", txtVideoDesc.getText().toString());
                         authenPostData.put("VideoType", mVideoType);
-                        authenPostData.put("PostType", "live");
 
-                        String text = category_spinner.getSelectedItem().toString();
-                        String Category_ID = (String) categoryHashMap.get(text);
+                        Categoryaddvideo  mCategoryaddvideo =categorySpinnerArray.get(category_spinner.getSelectedItemPosition());
+                        if(mCategoryaddvideo.isFlaABoolean())
+                            authenPostData.put("PostType", "event-upload");
+                        else
+                            authenPostData.put("PostType", "live");
+
+                        String Category_ID = mCategoryaddvideo.getID();
                         authenPostData.put("Category", Category_ID);
 
                         APIHandler.Instance().POST_BY_AUTHEN("feeds//add-video-feed", authenPostData, new APIHandler.RequestComplete() {
@@ -219,12 +228,18 @@ public class AddvideoActivity extends AppCompatActivity {
                                     JSONArray msg = mJsonObject.getJSONArray("msg");
                                     for (int index = 0; index < msg.length(); index++) {
                                         JSONObject mObject = msg.getJSONObject(index);
-                                        categorySpinnerArray.add(mObject.getString("Name"));
-                                        categoryHashMap.put(mObject.getString("Name"), mObject.getString("ID"));
-                                        categorySpinnerArrayAdapter.notifyDataSetChanged();
+                                        Categoryaddvideo mCategoryaddvideo = new Categoryaddvideo();
+                                        mCategoryaddvideo.setName(mObject.getString("Name"));
+                                        mCategoryaddvideo.setID(mObject.getString("ID"));
+                                        mCategoryaddvideo.setFlaABoolean(false);
+                                        categorySpinnerArray.add(mCategoryaddvideo);
+
 
                                     }
                                 }
+                                mCategoryAdapter.notifyDataSetChanged();
+
+                                addListContest();
 
                             } catch (Exception e) {
                                 PopupAPI.make(mContext, "Error", "Can't connect to server");
@@ -238,20 +253,56 @@ public class AddvideoActivity extends AppCompatActivity {
 
             }
         });
-        post_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
 
         selectionVideoOption(0);
 
+    }
+
+    public void addListContest() {
+        APIHandler.Instance().GET_BY_AUTHEN("contest/joined-events", new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                Log.w("response", "are" + response);
+                if (response.length() > 0) {
+                    AddvideoActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject mJsonObject = new JSONObject(response);
+                                int codeServer = mJsonObject.getInt("code");
+                                if (codeServer == 1) {
+                                    JSONArray msg = mJsonObject.getJSONArray("msg");
+                                    for (int index = 0; index < msg.length(); index++) {
+                                        JSONObject mObject = msg.getJSONObject(index);
+                                        Categoryaddvideo mCategoryaddvideo = new Categoryaddvideo();
+                                        mCategoryaddvideo.setName(mObject.getString("ContestShortName"));
+                                        mCategoryaddvideo.setID(mObject.getString("ID"));
+                                        mCategoryaddvideo.setFlaABoolean(true);
+                                        boolean ContestActive = mObject.getBoolean("ContestActive");
+                                        boolean ContestUploaded = mObject.getBoolean("ContestUploaded");
+                                        if (ContestActive && !ContestUploaded) {
+                                            categorySpinnerArray.add(mCategoryaddvideo);
+
+                                        }
+
+                                    }
+                                }
+
+                                mCategoryAdapter.notifyDataSetChanged();
+
+
+                            } catch (Exception e) {
+                                PopupAPI.make(mContext, "Error", "Can't connect to server");
+
+                            }
+
+                        }
+                    });
+
+                }
+
+            }
+        });
     }
 
     @Override
@@ -277,14 +328,25 @@ public class AddvideoActivity extends AppCompatActivity {
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         mProgressDialog.show();
 
-        String text = category_spinner.getSelectedItem().toString();
-        String Category_ID = (String) categoryHashMap.get(text);
+
         HashMap<String, String> authenPostData = new HashMap<String, String>();
         authenPostData.put("PostName", txtVideoName.getText().toString());
         authenPostData.put("PostDescription", txtVideoDesc.getText().toString());
-        authenPostData.put("Category", Category_ID);
         authenPostData.put("VideoType", mVideoType);
-        authenPostData.put("PostType", "recorded");
+
+        Categoryaddvideo  mCategoryaddvideo =categorySpinnerArray.get(category_spinner.getSelectedItemPosition());
+        Log.w("mCategoryaddvideo","are"+mCategoryaddvideo.getName());
+        Log.w("isFlaABoolean","are"+mCategoryaddvideo.isFlaABoolean());
+
+        if(mCategoryaddvideo.isFlaABoolean())
+            authenPostData.put("PostType", "event-upload");
+        else
+            authenPostData.put("PostType", "recorded");
+
+        String Category_ID = mCategoryaddvideo.getID();
+        authenPostData.put("Category", Category_ID);
+
+
 
         HashMap<String, String> filePostData = new HashMap<String, String>();
         filePostData.put("videofile", selectedImagePath);
@@ -301,6 +363,7 @@ public class AddvideoActivity extends AppCompatActivity {
                             int codeServer = mJsonObject.getInt("code");
                             String msg = mJsonObject.getString("msg");
                             PopupAPI.showToast(mContext, msg);
+                            finish();
 
                         } catch (Exception e) {
                             PopupAPI.showToast(mContext, e.getMessage());

@@ -112,8 +112,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (tv_join.getText().toString().equalsIgnoreCase("Joined")) {
-                    //PopupAPI.showToast(mContext, "already join contest");
-                    return;
+                    PopupAPI.showToast(mContext, "already join contest");
+
                 } else if (tv_join.getText().toString().equalsIgnoreCase("Join Now")) {
                     HashMap<String, String> param = new HashMap<String, String>();
                     APIHandler.Instance().POST_BY_AUTHEN("contest/" + EventId + "/join", param, new APIHandler.RequestComplete() {
@@ -161,6 +161,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             } else if (codeServer == 1) {
                 tv_join.setVisibility(View.VISIBLE);
                 tv_join.setText("Joined");
+
             }
 
         } catch (Exception e) {
@@ -192,10 +193,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
                 if (IsJoin) {
                     tv_join.setVisibility(View.VISIBLE);
-                    tv_join.setText("Join Now");
+                    tv_join.setText("Joined");
                 } else {
                     tv_join.setVisibility(View.VISIBLE);
-                    tv_join.setText("Joined");
+                    tv_join.setText("Join Now");
+
                 }
 
                 String RegistrationStart = contest.getString("RegistrationStart");

@@ -1,20 +1,27 @@
 package com.headsupseven.corp;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.icu.util.Calendar;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.customview.VideoView;
+import com.headsupseven.corp.renderers.ScaleRenderer;
+import com.headsupseven.corp.sliders.HorizontalSlider;
+import com.headsupseven.corp.slideunlock.ISlideListener;
+import com.headsupseven.corp.slideunlock.SlideLayout;
 import com.headsupseven.corp.utils.PersistentUser;
 
 import org.json.JSONObject;
@@ -33,11 +40,71 @@ import java.util.Locale;
 public class NotificaionvideoActiivty extends AppCompatActivity {
     private VideoView video_view;
     private Context mContext;
+    SlideLayout slider;
+    IntentFilter s_intentFilter;
+    TextView tv_time, tv_date;
+
+    private final BroadcastReceiver m_timeChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(Intent.ACTION_TIME_CHANGED) ||
+                    action.equals(Intent.ACTION_TIMEZONE_CHANGED) ||
+                    action.equals(Intent.ACTION_TIME_TICK)) {
+
+                setDateTime();
+
+//                Date d=new Date();
+//                SimpleDateFormat sdf=new SimpleDateFormat("hh:mm a");
+//                String currentDateTimeString = sdf.format(d);
+//                Log.w("time===",currentDateTimeString);
+//                tv_time.setText(currentDateTimeString+"");
+//
+//                Calendar c = Calendar.getInstance();
+//                System.out.println("Current time => "+currentDateTimeString);
+////                System.out.println("Current time => "+c.getTime());
+//
+//
+//                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//                String formattedDate = df.format(c.getTime());
+//                // formattedDate have current date/time
+//                System.out.println("Current date => "+formattedDate);
+//                SimpleDateFormat ssdf = new SimpleDateFormat("EEEE");
+//                Date date = new Date();
+//                String dayOfTheWeek = ssdf.format(date);
+//                tv_date.setText(formattedDate+" "+dayOfTheWeek);
+
+                //doWorkSon();
+            }
+        }
+    };
+
+
+    private BroadcastReceiver mbcr = new BroadcastReceiver() {
+        //onReceive method will receive updates
+        public void onReceive(Context c, Intent i) {
+            //initially level has 0 value
+            //after getting update from broadcast receiver
+            //it will change and give battery status
+            int level = i.getIntExtra("level", 0);
+            //initialize all objects
+            ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
+            TextView tv = (TextView) findViewById(R.id.textView1);
+            //set level of progress bar
+            pb.setProgress(level);
+            //display level on text view
+            tv.setText(Integer.toString(level) + "%");
+        }
+    };
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notificaionvideoview);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         this.getWindow().setType(
                 WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
@@ -50,12 +117,39 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     }
 
     private void init() {
-        ImageView btnUnlock = (ImageView) findViewById(R.id.upview);
-        btnUnlock.setOnTouchListener(new View.OnTouchListener() {
+//        ImageView btnUnlock = (ImageView) findViewById(R.id.upview);
+//        btnUnlock.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                jumpMain();
+//                return false;
+//            }
+//        });
+        tv_time = (TextView) this.findViewById(R.id.tv_time);
+        tv_date = (TextView) this.findViewById(R.id.tv_date);
+
+        setDateTime();
+        s_intentFilter = new IntentFilter();
+        s_intentFilter.addAction(Intent.ACTION_TIME_TICK);
+        s_intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+        s_intentFilter.addAction(Intent.ACTION_TIME_CHANGED);
+        registerReceiver(m_timeChangedReceiver, s_intentFilter);
+        registerReceiver(mbcr, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        slider = (SlideLayout) findViewById(R.id.slider1);
+
+        slider.setRenderer(new ScaleRenderer());
+        slider.setSlider(new HorizontalSlider());
+        slider.addSlideListener(new ISlideListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                jumpMain();
-                return false;
+            public void onSlideDone(SlideLayout slider, boolean done) {
+                if (done) {
+                    // restore start state
+                    Log.w("slide done", "");
+                    jumpMain();
+                    slider.reset();
+                } else {
+
+                }
             }
         });
         if (PersistentUser.getlastModified(mContext).equalsIgnoreCase("")) {
@@ -139,13 +233,13 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
 
                 //===============Coding for play Video==================
                 Uri uri = Uri.parse(video);
-                ImageView upview = (ImageView) this.findViewById(R.id.upview);
-                upview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        jumpMain();
-                    }
-                });
+//                ImageView upview = (ImageView) this.findViewById(R.id.upview);
+//                upview.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        jumpMain();
+//                    }
+//                });
                 video_view = (VideoView) this.findViewById(R.id.video_view);
                 video_view.setVideoURI(uri);
                 video_view.requestFocus();
@@ -183,5 +277,31 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
         return minutes;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(m_timeChangedReceiver);
+        unregisterReceiver(mbcr);
+    }
 
+    public void setDateTime() {
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+        String currentDateTimeString = sdf.format(d);
+        tv_time.setText(currentDateTimeString + "");
+        Calendar c = Calendar.getInstance();
+        System.out.println("Current time => " + currentDateTimeString);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = df.format(c.getTime());
+        // formattedDate have current date/time
+        SimpleDateFormat ssdf = new SimpleDateFormat("EEE");
+        Date date = new Date();
+        String dayOfTheWeek = ssdf.format(date);
+        tv_date.setText(formattedDate + " " + dayOfTheWeek);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

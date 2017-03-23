@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.androidquery.AQuery;
 import com.headsupseven.corp.CommentActivity;
 import com.headsupseven.corp.DonateActivity;
+import com.headsupseven.corp.HomebaseActivity;
 import com.headsupseven.corp.LiveVideoPlayerActivity;
 import com.headsupseven.corp.OtherProfileActivity;
 import com.headsupseven.corp.R;
@@ -46,6 +47,8 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Context mContext;
     private String response = "";
     private VideoViewShouldClose videoCallback = null;
+    String thumbURl = "";
+
 
     public void setVideoTapCallback(VideoViewShouldClose callback) {
         this.videoCallback = callback;
@@ -279,7 +282,9 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View view) {
 
-                    sharePopupShow();
+
+                    sharePopupShow(mHomeLsitModel.getCreatedByName(), thumbURl);
+
                 }
             });
             holder.tv_name.setOnClickListener(new View.OnClickListener() {
@@ -302,7 +307,6 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 holder.profilePic.setImageResource(R.drawable.user_avater);
             }
 
-            String thumbURl = "";
 
             if (mHomeLsitModel.isPostStreaming()) {
                 holder.ic_live.setVisibility(View.VISIBLE);
@@ -427,7 +431,7 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    public void sharePopupShow() {
+    public void sharePopupShow(final String title, final String thumbURl) {
         final Dialog d = new Dialog(mContext, android.R.style.Theme_Translucent);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d.setContentView(R.layout.share_popup);
@@ -438,7 +442,8 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         tv_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                shareTo(mContext,"","");
+                shareTo(mContext, title, thumbURl);
+
                 d.dismiss();
 
             }
@@ -462,15 +467,6 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
 
-//    public static void shareTo(Context mContext) {
-//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-//        sharingIntent.setType("text/plain");
-//        String shareBodyText = "Check it out. Your message goes here";
-//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Wasteminister App Shairing");
-//        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBodyText);
-//        mContext.startActivity(sharingIntent);
-//
-//    }
 
 
 }
