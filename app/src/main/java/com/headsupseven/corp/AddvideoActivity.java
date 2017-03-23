@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -226,6 +225,8 @@ public class AddvideoActivity extends AppCompatActivity {
                                     }
                                 }
 
+                                addListContest();
+
                             } catch (Exception e) {
                                 PopupAPI.make(mContext, "Error", "Can't connect to server");
 
@@ -238,20 +239,46 @@ public class AddvideoActivity extends AppCompatActivity {
 
             }
         });
-        post_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
 
         selectionVideoOption(0);
 
+    }
+
+    public void addListContest() {
+        APIHandler.Instance().GET_BY_AUTHEN("contest/joined-events", new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                Log.w("response", "are" + response);
+                if (response.length() > 0) {
+                    AddvideoActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject mJsonObject = new JSONObject(response);
+                                int codeServer = mJsonObject.getInt("code");
+                                if (codeServer == 1) {
+                                    JSONArray msg = mJsonObject.getJSONArray("msg");
+                                    for (int index = 0; index < msg.length(); index++) {
+                                        JSONObject mObject = msg.getJSONObject(index);
+                                        categorySpinnerArray.add(mObject.getString("Name"));
+                                        categoryHashMap.put(mObject.getString("Name"), mObject.getString("ID"));
+                                        categorySpinnerArrayAdapter.notifyDataSetChanged();
+
+                                    }
+                                }
+
+                            } catch (Exception e) {
+                                PopupAPI.make(mContext, "Error", "Can't connect to server");
+
+                            }
+
+                        }
+                    });
+
+                }
+
+            }
+        });
     }
 
     @Override
@@ -301,6 +328,7 @@ public class AddvideoActivity extends AppCompatActivity {
                             int codeServer = mJsonObject.getInt("code");
                             String msg = mJsonObject.getString("msg");
                             PopupAPI.showToast(mContext, msg);
+                            finish();
 
                         } catch (Exception e) {
                             PopupAPI.showToast(mContext, e.getMessage());
