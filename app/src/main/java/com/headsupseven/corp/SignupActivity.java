@@ -552,7 +552,7 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
                 mSignInClicked = false;
             }
             mIntentInProgress = false;
-            if (!mGoogleApiClient.isConnecting()) {
+            if (mGoogleApiClient != null && !mGoogleApiClient.isConnecting()) {
                 mGoogleApiClient.connect();
             }
         } else if (requestCode == RC_SIGN_IN) {
