@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -23,6 +25,7 @@ import com.headsupseven.corp.sliders.HorizontalSlider;
 import com.headsupseven.corp.slideunlock.ISlideListener;
 import com.headsupseven.corp.slideunlock.SlideLayout;
 import com.headsupseven.corp.utils.PersistentUser;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
@@ -43,7 +46,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     SlideLayout slider;
     IntentFilter s_intentFilter;
     TextView tv_time, tv_date;
-
+    private ImageView image_view;
     private final BroadcastReceiver m_timeChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -54,28 +57,6 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                     action.equals(Intent.ACTION_TIME_TICK)) {
 
                 setDateTime();
-
-//                Date d=new Date();
-//                SimpleDateFormat sdf=new SimpleDateFormat("hh:mm a");
-//                String currentDateTimeString = sdf.format(d);
-//                Log.w("time===",currentDateTimeString);
-//                tv_time.setText(currentDateTimeString+"");
-//
-//                Calendar c = Calendar.getInstance();
-//                System.out.println("Current time => "+currentDateTimeString);
-////                System.out.println("Current time => "+c.getTime());
-//
-//
-//                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-//                String formattedDate = df.format(c.getTime());
-//                // formattedDate have current date/time
-//                System.out.println("Current date => "+formattedDate);
-//                SimpleDateFormat ssdf = new SimpleDateFormat("EEEE");
-//                Date date = new Date();
-//                String dayOfTheWeek = ssdf.format(date);
-//                tv_date.setText(formattedDate+" "+dayOfTheWeek);
-
-                //doWorkSon();
             }
         }
     };
@@ -84,16 +65,10 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     private BroadcastReceiver mbcr = new BroadcastReceiver() {
         //onReceive method will receive updates
         public void onReceive(Context c, Intent i) {
-            //initially level has 0 value
-            //after getting update from broadcast receiver
-            //it will change and give battery status
             int level = i.getIntExtra("level", 0);
-            //initialize all objects
             ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
             TextView tv = (TextView) findViewById(R.id.textView1);
-            //set level of progress bar
             pb.setProgress(level);
-            //display level on text view
             tv.setText(Integer.toString(level) + "%");
         }
     };
@@ -117,17 +92,11 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     }
 
     private void init() {
-//        ImageView btnUnlock = (ImageView) findViewById(R.id.upview);
-//        btnUnlock.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent) {
-//                jumpMain();
-//                return false;
-//            }
-//        });
+        video_view = (VideoView) this.findViewById(R.id.video_view);
+
+        image_view = (ImageView) this.findViewById(R.id.image_view);
         tv_time = (TextView) this.findViewById(R.id.tv_time);
         tv_date = (TextView) this.findViewById(R.id.tv_date);
-
         setDateTime();
         s_intentFilter = new IntentFilter();
         s_intentFilter.addAction(Intent.ACTION_TIME_TICK);
@@ -221,41 +190,174 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
             JSONObject mJsonObject = new JSONObject(details);
             if (mJsonObject.getInt("code") == 1) {
                 JSONObject msg = mJsonObject.getJSONObject("msg");
-                String post_id = msg.getString("post_id");
-                String post_type = msg.getString("post_type");
-                String thumb = msg.getString("thumb");
-                String video = msg.getString("video");
-                String video_description = msg.getString("video_description");
-                String video_name = msg.getString("video_name");
-                String video_type = msg.getString("video_type");
+                final String post_id = msg.getString("post_id");
+                final String post_type = msg.getString("post_type");
+                final String thumb = msg.getString("thumb");
+                final String video = msg.getString("video");
+                final String video_description = msg.getString("video_description");
+                final String video_name = msg.getString("video_name");
+                final String video_type = msg.getString("video_type");
 
-                Log.w("video", "are" + video);
+                Log.w("response", "are" + details);
 
-                //===============Coding for play Video==================
-                Uri uri = Uri.parse(video);
-//                ImageView upview = (ImageView) this.findViewById(R.id.upview);
-//                upview.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        jumpMain();
-//                    }
-//                });
-                video_view = (VideoView) this.findViewById(R.id.video_view);
-                video_view.setVideoURI(uri);
-                video_view.requestFocus();
-                video_view.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    // Close the progress bar and play the video
-                    public void onPrepared(MediaPlayer mp) {
-                        video_view.start();
+                Picasso.with(mContext)
+                        .load(thumb)
+                        .placeholder(R.drawable.user_avater)
+                        .error(R.drawable.user_avater)
+                        .into(image_view);
+                //======== check the post type==========
+                if (post_type.equalsIgnoreCase("news")) {
+                    video_view.setVisibility(View.GONE);
+                } else if (post_type.equalsIgnoreCase("event")) {
+                    video_view.setVisibility(View.GONE);
+
+                } else {
+                    /// adds or post
+                    if (video_type.equalsIgnoreCase("photo")) {
+                        video_view.setVisibility(View.GONE);
+
+                    } else {
+                        video_view.setVisibility(View.VISIBLE);
+                        //===============Coding for play Video==================
+                        Uri uri = Uri.parse(video);
+                        video_view.setVideoURI(uri);
+                        video_view.requestFocus();
+                        video_view.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            // Close the progress bar and play the video
+                            public void onPrepared(MediaPlayer mp) {
+                                video_view.start();
+                                image_view.setVisibility(View.GONE);
+                                video_view.mute();
+                            }
+                        });
+                        video_view.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                detailsOfPost(post_id);
+                            }
+                        });
+                    }
+
+                }
+                //========image click option=========================
+                image_view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.w("post_type", "wre" + post_type);
+
+                        if (post_type.equalsIgnoreCase("news")) {
+                            Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
+                            webViewIntent.putExtra("Url", video);
+                            webViewIntent.putExtra("Title", video_name);
+                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(webViewIntent);
+                            NotificaionvideoActiivty.this.finish();
+
+                        } else if (post_type.equalsIgnoreCase("event")) {
+                            Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                            webViewIntent.putExtra("EventId", post_id);
+                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(webViewIntent);
+                            NotificaionvideoActiivty.this.finish();
+
+
+                        } else {
+                            Log.w("post_type", "wre" + post_type);
+                            if (video_type.equalsIgnoreCase("photo")) {
+                                Intent webViewIntent = new Intent(mContext, NotificaionviewActivity.class);
+                                webViewIntent.putExtra("imagePath", video);
+                                webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(webViewIntent);
+                                NotificaionvideoActiivty.this.finish();
+
+                            } else {
+                                detailsOfPost(post_id);
+
+                            }
+
+                        }
                     }
                 });
             }
-
         } catch (Exception ex) {
-
+            Log.w("Exception", "wre" + ex.getMessage());
         }
 
 
+    }
+
+    public void loginInformation(final String postId) {
+        HashMap<String, String> authenPostData = new HashMap<String, String>();
+        authenPostData.put("UserName", PersistentUser.getUserName(mContext));
+        authenPostData.put("Password", PersistentUser.getPassword(mContext));
+        APIHandler.Instance().POST("authen/", authenPostData, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(int code, String response) {
+
+                if (code == 200 && response.length() > 0) {
+                    try {
+                        JSONObject reader = new JSONObject(response);
+                        int resultCode = reader.getInt("code");
+                        if (resultCode == 1) {
+                            PersistentUser.setUserDetails(mContext, response);
+                            JSONObject msgData = reader.getJSONObject("msg");
+                            APIHandler.Instance().user.SetAuthenData(msgData);
+                            APIHandler.Instance().InitChatClient();
+
+                            detailsOfPost(postId);
+                        }
+                    } catch (Exception ex) {
+
+                    }
+                }
+            }
+        });
+    }
+
+
+    public void detailsOfPost(final String postId) {
+        // api/feeds/ID/get
+        HashMap<String, String> param = new HashMap<String, String>();
+        APIHandler.Instance().POST_BY_AUTHEN("feeds/" + postId + "/get", param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.w("response", "are" + response);
+                            JSONObject mJsonObject = new JSONObject(response);
+                            int codePost = mJsonObject.getInt("code");
+                            if (codePost == 1) {
+                                JSONObject msg = mJsonObject.getJSONObject("msg");
+                                String LiveStreamName = msg.getString("LiveStreamName");
+                                String VideoName = msg.getString("VideoName");
+                                String is_360 = msg.getString("VideoType");
+                                boolean is_Live = msg.getBoolean("IsPostStreaming");
+                                String postType = msg.getString("PostType");
+
+                                Intent intent = new Intent(mContext, LiveVideoPlayerActivity.class);
+                                intent.putExtra("Url_Stream", LiveStreamName);
+                                intent.putExtra("Url_video", VideoName);
+                                intent.putExtra("is_360", !is_360.contentEquals("normal"));
+                                intent.putExtra("is_Live", is_Live);
+                                intent.putExtra("postID", Integer.parseInt(postId));
+                                intent.putExtra("PostType", postType);
+                                mContext.startActivity(intent);
+
+
+                            } else if (0 > codePost) {
+                                loginInformation(postId);
+                            }
+
+                        } catch (Exception e) {
+
+                        }
+                    }
+                });
+
+            }
+        });
     }
 
     private synchronized void jumpMain() {
