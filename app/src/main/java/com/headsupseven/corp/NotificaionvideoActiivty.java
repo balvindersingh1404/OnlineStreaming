@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.icu.util.Calendar;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -26,6 +28,7 @@ import com.headsupseven.corp.slideunlock.ISlideListener;
 import com.headsupseven.corp.slideunlock.SlideLayout;
 import com.headsupseven.corp.utils.PersistentUser;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONObject;
 
@@ -46,6 +49,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     SlideLayout slider;
     IntentFilter s_intentFilter;
     TextView tv_time, tv_date;
+    private Target mTarget;
     private ImageView image_view;
     private final BroadcastReceiver m_timeChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -200,11 +204,33 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
 
                 Log.w("response", "are" + details);
 
+//                Picasso.with(mContext)
+//                        .load(thumb)
+//                        .placeholder(R.drawable.user_avater)
+//                        .error(R.drawable.user_avater)
+//                        .into(image_view);
+
+                mTarget = new Target() {
+                    @Override
+                    public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                        //Do somethin
+                        image_view.setImageBitmap(bitmap);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                };
                 Picasso.with(mContext)
                         .load(thumb)
-                        .placeholder(R.drawable.user_avater)
-                        .error(R.drawable.user_avater)
-                        .into(image_view);
+                        .into(mTarget);
+
                 //======== check the post type==========
                 if (post_type.equalsIgnoreCase("news")) {
                     video_view.setVisibility(View.GONE);
