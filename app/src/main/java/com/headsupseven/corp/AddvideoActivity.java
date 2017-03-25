@@ -50,10 +50,6 @@ public class AddvideoActivity extends AppCompatActivity {
     private Spinner category_spinner;
     private Spinner post_spinner;
     private Spinner spinner_Contact;
-//    private ArrayList<String> categorySpinnerArray = new ArrayList<String>();
-//    private HashMap<String, String> categoryHashMap = new HashMap<String, String>();
-
-    //    private ArrayAdapter<String> categorySpinnerArrayAdapter;
     private CategoryAdapter mCategoryAdapter;
     private ArrayList<Categoryaddvideo> categorySpinnerArray = new ArrayList<>();
 
