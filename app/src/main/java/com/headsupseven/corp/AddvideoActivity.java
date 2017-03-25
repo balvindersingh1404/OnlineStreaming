@@ -158,6 +158,7 @@ public class AddvideoActivity extends AppCompatActivity {
                         if (mCategoryaddvideo.isFlaABoolean()) {
                             authenPostData.put("PostType", "event-upload");
                             String Category_ID = mCategoryaddvideo.getID();
+                            Log.w("AdditionData","are"+Category_ID);
                             authenPostData.put("AdditionData", Category_ID);
                         } else {
                             authenPostData.put("PostType", "live");
@@ -233,7 +234,7 @@ public class AddvideoActivity extends AppCompatActivity {
                                         JSONObject mObject = msg.getJSONObject(index);
                                         Categoryaddvideo mCategoryaddvideo = new Categoryaddvideo();
                                         mCategoryaddvideo.setName(mObject.getString("Name"));
-                                        mCategoryaddvideo.setID(mObject.getString("ContestPostID"));
+                                        mCategoryaddvideo.setID(mObject.getString("ID"));
                                         mCategoryaddvideo.setFlaABoolean(false);
                                         categorySpinnerArray.add(mCategoryaddvideo);
 
@@ -279,7 +280,7 @@ public class AddvideoActivity extends AppCompatActivity {
                                         JSONObject mObject = msg.getJSONObject(index);
                                         Categoryaddvideo mCategoryaddvideo = new Categoryaddvideo();
                                         mCategoryaddvideo.setName(mObject.getString("ContestShortName"));
-                                        mCategoryaddvideo.setID(mObject.getString("ID"));
+                                        mCategoryaddvideo.setID(mObject.getString("ContestID"));
                                         mCategoryaddvideo.setFlaABoolean(true);
                                         boolean ContestActive = mObject.getBoolean("ContestActive");
                                         boolean ContestUploaded = mObject.getBoolean("ContestUploaded");
