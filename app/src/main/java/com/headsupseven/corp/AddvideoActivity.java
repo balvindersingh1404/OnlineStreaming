@@ -154,14 +154,17 @@ public class AddvideoActivity extends AppCompatActivity {
                         authenPostData.put("PostDescription", txtVideoDesc.getText().toString());
                         authenPostData.put("VideoType", mVideoType);
 
-                        Categoryaddvideo  mCategoryaddvideo =categorySpinnerArray.get(category_spinner.getSelectedItemPosition());
-                        if(mCategoryaddvideo.isFlaABoolean())
+                        Categoryaddvideo mCategoryaddvideo = categorySpinnerArray.get(category_spinner.getSelectedItemPosition());
+                        if (mCategoryaddvideo.isFlaABoolean()) {
                             authenPostData.put("PostType", "event-upload");
-                        else
+                            String Category_ID = mCategoryaddvideo.getID();
+                            authenPostData.put("AdditionData", Category_ID);
+                        } else {
                             authenPostData.put("PostType", "live");
+                            String Category_ID = mCategoryaddvideo.getID();
+                            authenPostData.put("Category", Category_ID);
+                        }
 
-                        String Category_ID = mCategoryaddvideo.getID();
-                        authenPostData.put("Category", Category_ID);
 
                         APIHandler.Instance().POST_BY_AUTHEN("feeds//add-video-feed", authenPostData, new APIHandler.RequestComplete() {
                             @Override
@@ -230,7 +233,7 @@ public class AddvideoActivity extends AppCompatActivity {
                                         JSONObject mObject = msg.getJSONObject(index);
                                         Categoryaddvideo mCategoryaddvideo = new Categoryaddvideo();
                                         mCategoryaddvideo.setName(mObject.getString("Name"));
-                                        mCategoryaddvideo.setID(mObject.getString("ID"));
+                                        mCategoryaddvideo.setID(mObject.getString("ContestPostID"));
                                         mCategoryaddvideo.setFlaABoolean(false);
                                         categorySpinnerArray.add(mCategoryaddvideo);
 
@@ -334,18 +337,17 @@ public class AddvideoActivity extends AppCompatActivity {
         authenPostData.put("PostDescription", txtVideoDesc.getText().toString());
         authenPostData.put("VideoType", mVideoType);
 
-        Categoryaddvideo  mCategoryaddvideo =categorySpinnerArray.get(category_spinner.getSelectedItemPosition());
-        Log.w("mCategoryaddvideo","are"+mCategoryaddvideo.getName());
-        Log.w("isFlaABoolean","are"+mCategoryaddvideo.isFlaABoolean());
+        Categoryaddvideo mCategoryaddvideo = categorySpinnerArray.get(category_spinner.getSelectedItemPosition());
+        Log.w("mCategoryaddvideo", "are" + mCategoryaddvideo.getName());
+        Log.w("isFlaABoolean", "are" + mCategoryaddvideo.isFlaABoolean());
 
-        if(mCategoryaddvideo.isFlaABoolean())
+        if (mCategoryaddvideo.isFlaABoolean())
             authenPostData.put("PostType", "event-upload");
         else
             authenPostData.put("PostType", "recorded");
 
         String Category_ID = mCategoryaddvideo.getID();
         authenPostData.put("Category", Category_ID);
-
 
 
         HashMap<String, String> filePostData = new HashMap<String, String>();
