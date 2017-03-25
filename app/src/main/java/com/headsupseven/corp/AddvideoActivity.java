@@ -342,13 +342,16 @@ public class AddvideoActivity extends AppCompatActivity {
         Log.w("mCategoryaddvideo", "are" + mCategoryaddvideo.getName());
         Log.w("isFlaABoolean", "are" + mCategoryaddvideo.isFlaABoolean());
 
-        if (mCategoryaddvideo.isFlaABoolean())
+        if (mCategoryaddvideo.isFlaABoolean()) {
             authenPostData.put("PostType", "event-upload");
-        else
-            authenPostData.put("PostType", "recorded");
-
-        String Category_ID = mCategoryaddvideo.getID();
-        authenPostData.put("Category", Category_ID);
+            String Category_ID = mCategoryaddvideo.getID();
+            Log.w("AdditionData","are"+Category_ID);
+            authenPostData.put("AdditionData", Category_ID);
+        } else {
+            authenPostData.put("PostType", "live");
+            String Category_ID = mCategoryaddvideo.getID();
+            authenPostData.put("Category", Category_ID);
+        }
 
 
         HashMap<String, String> filePostData = new HashMap<String, String>();
