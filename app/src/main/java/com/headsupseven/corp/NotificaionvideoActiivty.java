@@ -206,7 +206,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 final String video_type = msg.getString("video_type");
 
                 Log.w("response", "are" + details);
-                
+
 
                 mTarget = new Target() {
                     @Override
