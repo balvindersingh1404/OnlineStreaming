@@ -1,7 +1,9 @@
 package com.headsupseven.corp;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -115,18 +117,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                     PopupAPI.showToast(mContext, "already join contest");
 
                 } else if (tv_join.getText().toString().equalsIgnoreCase("Join Now")) {
-                    HashMap<String, String> param = new HashMap<String, String>();
-                    APIHandler.Instance().POST_BY_AUTHEN("contest/" + EventId + "/join", param, new APIHandler.RequestComplete() {
-                        @Override
-                        public void onRequestComplete(final int code, final String response) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dataParsing(response);
-                                }
-                            });
-                        }
-                    });
+                    deletePopp();
+
                 }
 
             }
@@ -139,6 +131,39 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void forJOinWebServiceCall() {
+        HashMap<String, String> param = new HashMap<String, String>();
+        APIHandler.Instance().POST_BY_AUTHEN("contest/" + EventId + "/join", param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataParsing(response);
+                    }
+                });
+            }
+        });
+    }
+
+    private void deletePopp() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(EventDetailsActivity.this);
+        alertDialog.setTitle("Do u want to proceed ?")
+                .setMessage("You are about to join a paid contest. the fee will be deducted automatically with no refund policy.")
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        forJOinWebServiceCall();
+                    }
+                })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        // do nothing
+                    }
+                })
+                .show();
     }
 
     public void dataParsing(String response) {
