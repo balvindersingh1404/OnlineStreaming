@@ -82,7 +82,6 @@
             android:layout_marginRight="20dp"
             android:gravity="center">
 
-
             <com.headsupseven.corp.customview.VideoView
                 android:id="@+id/video_view"
                 android:layout_width="match_parent"
@@ -94,6 +93,13 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />
 
+            <LinearLayout
+                android:id="@+id/li_clickView"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </LinearLayout>
         </RelativeLayout>
 
 

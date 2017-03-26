@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -50,6 +51,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     IntentFilter s_intentFilter;
     TextView tv_time, tv_date;
     private Target mTarget;
+    private LinearLayout li_clickView;
     private ImageView image_view;
     private final BroadcastReceiver m_timeChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -96,8 +98,8 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     }
 
     private void init() {
+        li_clickView = (LinearLayout) this.findViewById(R.id.li_clickView);
         video_view = (VideoView) this.findViewById(R.id.video_view);
-
         image_view = (ImageView) this.findViewById(R.id.image_view);
         tv_time = (TextView) this.findViewById(R.id.tv_time);
         tv_date = (TextView) this.findViewById(R.id.tv_date);
@@ -125,6 +127,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 }
             }
         });
+
         if (PersistentUser.getlastModified(mContext).equalsIgnoreCase("")) {
             HashMap<String, String> param = new HashMap<String, String>();
             APIHandler.Instance().GET_BY_AUTHEN("android-lockscreen", new APIHandler.RequestComplete() {
@@ -203,12 +206,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 final String video_type = msg.getString("video_type");
 
                 Log.w("response", "are" + details);
-
-//                Picasso.with(mContext)
-//                        .load(thumb)
-//                        .placeholder(R.drawable.user_avater)
-//                        .error(R.drawable.user_avater)
-//                        .into(image_view);
+                
 
                 mTarget = new Target() {
                     @Override
@@ -259,17 +257,17 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                         video_view.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                detailsOfPost(post_id);
                             }
                         });
                     }
 
                 }
                 //========image click option=========================
-                image_view.setOnClickListener(new View.OnClickListener() {
+
+
+                li_clickView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.w("post_type", "wre" + post_type);
 
                         if (post_type.equalsIgnoreCase("news")) {
                             Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
@@ -286,9 +284,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                             startActivity(webViewIntent);
                             NotificaionvideoActiivty.this.finish();
 
-
                         } else {
-                            Log.w("post_type", "wre" + post_type);
                             if (video_type.equalsIgnoreCase("photo")) {
                                 Intent webViewIntent = new Intent(mContext, NotificaionviewActivity.class);
                                 webViewIntent.putExtra("imagePath", video);
@@ -297,13 +293,27 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                                 NotificaionvideoActiivty.this.finish();
 
                             } else {
-                                detailsOfPost(post_id);
+                                if (post_type.equalsIgnoreCase("ads")) {
+                                    Intent intent = new Intent(mContext, LiveVideoPlayerActivity.class);
+                                    intent.putExtra("Url_Stream", video);
+                                    intent.putExtra("Url_video", video);
+                                    intent.putExtra("is_360", !video_type.contentEquals("normal"));
+                                    intent.putExtra("is_Live", false);
+                                    intent.putExtra("postID", Integer.parseInt(post_id));
+                                    intent.putExtra("PostType", post_type);
+                                    startActivity(intent);
+                                    NotificaionvideoActiivty.this.finish();
+
+                                } else {
+                                    detailsOfPost(post_id);
+                                }
 
                             }
 
                         }
                     }
                 });
+
             }
         } catch (Exception ex) {
             Log.w("Exception", "wre" + ex.getMessage());
@@ -369,7 +379,8 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                                 intent.putExtra("is_Live", is_Live);
                                 intent.putExtra("postID", Integer.parseInt(postId));
                                 intent.putExtra("PostType", postType);
-                                mContext.startActivity(intent);
+                                startActivity(intent);
+                                NotificaionvideoActiivty.this.finish();
 
 
                             } else if (0 > codePost) {
