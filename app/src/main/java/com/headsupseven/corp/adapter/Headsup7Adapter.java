@@ -87,7 +87,7 @@ public class Headsup7Adapter extends RecyclerView
                         }
                         if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
                             Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
-                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.putExtra("EventId", homeLsitModel.getID());
                             webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mContext.startActivity(webViewIntent);
 
@@ -107,7 +107,7 @@ public class Headsup7Adapter extends RecyclerView
                         }
                         if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
                             Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
-                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.putExtra("EventId", homeLsitModel.getID());
                             webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mContext.startActivity(webViewIntent);
 
@@ -132,7 +132,7 @@ public class Headsup7Adapter extends RecyclerView
                         }
                         if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
                             Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
-                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.putExtra("EventId", homeLsitModel.getID());
                             webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mContext.startActivity(webViewIntent);
 
@@ -157,7 +157,7 @@ public class Headsup7Adapter extends RecyclerView
                         }
                         if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
                             Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
-                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.putExtra("EventId", homeLsitModel.getID());
                             webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mContext.startActivity(webViewIntent);
 
@@ -179,7 +179,7 @@ public class Headsup7Adapter extends RecyclerView
                         }
                         if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
                             Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
-                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.putExtra("EventId", homeLsitModel.getID());
                             webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mContext.startActivity(webViewIntent);
 
@@ -209,11 +209,9 @@ public class Headsup7Adapter extends RecyclerView
                                 webViewIntent.putExtra("Title", homeLsitModel.getPostName());
                                 webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 mContext.startActivity(webViewIntent);
-
-                            }
-                            if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
+                            } else if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
                                 Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
-                                webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                                webViewIntent.putExtra("EventId", homeLsitModel.getID());
                                 webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 mContext.startActivity(webViewIntent);
 
@@ -251,7 +249,7 @@ public class Headsup7Adapter extends RecyclerView
                         }
                         if (homeLsitModel.getPostType().equalsIgnoreCase("event")) {
                             Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
-                            webViewIntent.putExtra("EventId",homeLsitModel.getID());
+                            webViewIntent.putExtra("EventId", homeLsitModel.getID());
                             webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mContext.startActivity(webViewIntent);
                         } else {

@@ -14,6 +14,7 @@
         android:gravity="center">
 
         <TextView
+            android:id="@+id/title_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Share Life"
@@ -23,6 +24,7 @@
             android:visibility="visible" />
 
         <TextView
+            android:id="@+id/details_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Capture and share everyday moments\nvideos and more.."

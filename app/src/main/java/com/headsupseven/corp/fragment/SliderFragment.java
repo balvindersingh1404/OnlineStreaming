@@ -13,6 +13,7 @@ import com.headsupseven.corp.R;
 
 public final class SliderFragment extends Fragment {
     private static final String KEY_CONTENT = "TestFragment:Content";
+
     public static SliderFragment newInstance(int content) {
         SliderFragment fragment = new SliderFragment();
         fragment.mContent = content;
@@ -36,7 +37,16 @@ public final class SliderFragment extends Fragment {
                 container, false);
         mContext = getActivity().getApplicationContext();
         ImageView sliding_image = (ImageView) layout.findViewById(R.id.sliding_image);
-        sliding_image.setImageResource(R.drawable.device1);
+        if (mContent == 0)
+            sliding_image.setImageResource(R.drawable.mockup);
+        else if (mContent == 1)
+            sliding_image.setImageResource(R.drawable.mockup1);
+
+        else if (mContent == 2)
+            sliding_image.setImageResource(R.drawable.mockup2);
+
+        else if (mContent == 3)
+            sliding_image.setImageResource(R.drawable.mockup3);
         return layout;
     }
 

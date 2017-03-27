@@ -28,5 +28,7 @@
 
     <color name="rating_selected">#F08736</color>
     <color name="rating_deselected">#B2B2B2</color>
+    <color name="colorselecte">#24ADAF</color>
+    <color name="colorsdeelecte">#77000000</color>
 
 </resources>

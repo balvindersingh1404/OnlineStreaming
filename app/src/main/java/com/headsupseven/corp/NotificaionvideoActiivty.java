@@ -154,7 +154,6 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 String CurrentDateAndTime = getCurrentDateAndTime();
                 Date dateCurrent = format.parse(CurrentDateAndTime);
                 long minutes = distance(dateCurrent, dateSave);
-                Log.w("minutes", "are" + minutes);
                 if (minutes >= 10) {
 
                     HashMap<String, String> param = new HashMap<String, String>();

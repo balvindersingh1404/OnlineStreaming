@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -71,7 +72,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         listView.setLayoutManager(layoutManager);
-        mEventdetailsAdapter = new EventdetailsAdapter(mContext, alHomeLsitModels);
+        mEventdetailsAdapter = new EventdetailsAdapter(mContext, alHomeLsitModels,EventId);
         listView.setAdapter(mEventdetailsAdapter);
         listView.setNestedScrollingEnabled(false);
         listView.setFocusable(false);
@@ -198,6 +199,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     public void showInformationIntoUi(String response) {
         try {
 
+            Log.w("response","are"+response);
             JSONObject mJsonObject = new JSONObject(response);
             if (mJsonObject.getInt("code") == 1) {
                 JSONObject msg = mJsonObject.getJSONObject("msg");

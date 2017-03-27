@@ -26,6 +26,9 @@ public class SliderActivity extends AppCompatActivity {
     private ViewPager pager;
     private CirclePageIndicator viewpager_indicator;
     private int index = 0;
+    private TextView title_text;
+    private TextView details_text;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +46,9 @@ public class SliderActivity extends AppCompatActivity {
     }
 
     private void initUi() {
+        title_text = (TextView) this.findViewById(R.id.title_text);
+        details_text = (TextView) this.findViewById(R.id.details_text);
+
         pager = (ViewPager) this.findViewById(R.id.pager);
         viewpager_indicator = (CirclePageIndicator) this.findViewById(R.id.viewpager_indicator);
         mSliderAdapter = new SliderAdapter(getSupportFragmentManager());
@@ -69,6 +75,7 @@ public class SliderActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 Log.w("onPageSelected", "are" + position);
+                showTitleDetails(pager.getCurrentItem());
             }
 
             @Override
@@ -77,6 +84,30 @@ public class SliderActivity extends AppCompatActivity {
 
             }
         });
+        pager.setCurrentItem(0);
+        showTitleDetails(pager.getCurrentItem());
+
+    }
+
+    public void showTitleDetails(int position) {
+        if (position == 0) {
+            title_text.setText("News");
+            details_text.setText("Enjoy engaging news from all over\nthe world in Virtual reality.");
+
+        } else if (position == 1) {
+            title_text.setText("Contests");
+            details_text.setText("Participate in contests and\nwin mega prizes.");
+
+        } else if (position == 2) {
+            title_text.setText("Dating");
+            details_text.setText("Meet someone special, date virtually\nbefore dating physically.");
+
+        } else if (position == 3) {
+            title_text.setText("And");
+            details_text.setText("Many more features.");
+
+
+        }
 
     }
 
