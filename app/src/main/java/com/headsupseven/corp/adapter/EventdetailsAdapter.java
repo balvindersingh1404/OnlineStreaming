@@ -21,6 +21,7 @@ import com.headsupseven.corp.HomebaseActivity;
 import com.headsupseven.corp.LiveVideoPlayerActivity;
 import com.headsupseven.corp.OtherProfileActivity;
 import com.headsupseven.corp.R;
+import com.headsupseven.corp.VoteActivity;
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.customview.Channgecustomview;
 import com.headsupseven.corp.customview.VideoViewShouldClose;
@@ -48,15 +49,16 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private String response = "";
     private VideoViewShouldClose videoCallback = null;
     String thumbURl = "";
-
+    private int EventId =0;
 
     public void setVideoTapCallback(VideoViewShouldClose callback) {
         this.videoCallback = callback;
     }
 
-    public EventdetailsAdapter(Context context, Vector<HomeLsitModel> myDataset) {
+    public EventdetailsAdapter(Context context, Vector<HomeLsitModel> myDataset,final int EventId) {
         mContext = context;
         this.myDataset = myDataset;
+        this.EventId=EventId;
         androidQuery = new AQuery(mContext);
     }
 
@@ -190,7 +192,7 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.row_video_icon.setVisibility(View.VISIBLE);
             holder.ic_live.setVisibility(View.INVISIBLE);
             holder.ic_video_type.setVisibility(View.INVISIBLE);
-            holder.vote.setText("Gift");
+            holder.vote.setText("VOTE");
             holder.ll_like.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -240,9 +242,9 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     if (mHomeLsitModel.getPostType().equalsIgnoreCase("ads")) {
 
                     } else {
-                        Intent intent = new Intent(mContext, DonateActivity.class);
-                        intent.putExtra("user_Name", "" + mHomeLsitModel.getCreatedByName());
-                        intent.putExtra("CreatedBy", "" + mHomeLsitModel.getCreatedBy());
+                        Intent intent = new Intent(mContext, VoteActivity.class);
+                        intent.putExtra("voteId", EventId);
+                        intent.putExtra("post_id", mHomeLsitModel.getID());
                         mContext.startActivity(intent);
                     }
                 }

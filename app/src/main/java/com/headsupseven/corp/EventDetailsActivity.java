@@ -71,7 +71,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         listView.setLayoutManager(layoutManager);
-        mEventdetailsAdapter = new EventdetailsAdapter(mContext, alHomeLsitModels);
+        mEventdetailsAdapter = new EventdetailsAdapter(mContext, alHomeLsitModels,EventId);
         listView.setAdapter(mEventdetailsAdapter);
         listView.setNestedScrollingEnabled(false);
         listView.setFocusable(false);

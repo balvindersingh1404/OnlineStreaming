@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 
 import com.headsupseven.corp.api.APIHandler;
@@ -33,11 +32,6 @@ public class SplashActivity extends AppCompatActivity {
             startService(new Intent(this, LockScreenService.class));
 
         mHandler.postDelayed(mPendingLauncherRunnable, 2000);
-    }
-
-    public void unlockScreen(View view) {
-        //Instead of using finish(), this totally destroys the process
-        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     private final Runnable mPendingLauncherRunnable = new Runnable() {
