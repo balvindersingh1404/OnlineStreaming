@@ -75,6 +75,7 @@ public class HomebaseActivity extends AppCompatActivity {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
+        Log.w("user_id","are"+APIHandler.Instance().user.userID);
 
         androidQuery = new AQuery(mContext);
         startService(new Intent(this, ChatService.class));

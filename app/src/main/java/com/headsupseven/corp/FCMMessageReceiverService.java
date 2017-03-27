@@ -15,6 +15,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Prosanto on 8/24/16.
@@ -22,22 +23,30 @@ import java.util.List;
 public class FCMMessageReceiverService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        String order_status = remoteMessage.getData().toString();
-        Log.w("order_status", "are: " + order_status);
-        //       sendNotificationPlace(order_status);
-//        CustomNotification();
-        checkView(order_status);
+
+        try {
+            Map<String, String> params = remoteMessage.getData();
+            JSONObject object = new JSONObject(params);
+            Log.e("JSON_OBJECT", object.toString());
+            checkView(object.toString());
+
+        } catch (Exception ex) {
+            Log.w("Exception", "ere" + ex.getMessage());
+        }
+
     }
 
     public void checkView(String order_status) {
 
         try {
 
+            //{action=1, message=test notificaition, thumb-url=this is image url}
             JSONObject mJsonObject = new JSONObject(order_status);
-            int action=mJsonObject.getInt("action");
-            String message=mJsonObject.getString("message");
-            String thumb=mJsonObject.getString("thumb");
+            int action = mJsonObject.getInt("action");
+            String message = mJsonObject.getString("message");
             sendNotificationPlace(message);
+
+            //String thumb=mJsonObject.getString("thumb-url");
 
             ActivityManager am = (ActivityManager) getApplicationContext()
                     .getSystemService(Activity.ACTIVITY_SERVICE);
@@ -58,8 +67,8 @@ public class FCMMessageReceiverService extends FirebaseMessagingService {
                         | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(mIntent);
             }
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
+            Log.w("Exception", "Exception" + ex.getMessage());
 
         }
 

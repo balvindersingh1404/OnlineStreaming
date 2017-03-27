@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.service.LockScreenService;
 import com.headsupseven.corp.utils.PersistentUser;
@@ -27,6 +29,12 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         mContext = this;
+
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        PersistentUser.SetPushkey(mContext, refreshedToken);
+
+        Log.w("refreshedToken","are"+refreshedToken);
+
 
         if (PersistentUser.isLock(mContext))
             startService(new Intent(this, LockScreenService.class));

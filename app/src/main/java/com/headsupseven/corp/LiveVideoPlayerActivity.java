@@ -14,8 +14,6 @@ import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
@@ -44,24 +42,16 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaController.MediaPlayerControl {
 
     public Context mContext;
-    private String urlData = "";
-    private LinearLayout layout_loader;
-    private ImageView loader_image;
-    private RotateAnimation rotateAnimation;
-    private ImageView back_player;
-    private ImageView view_360;
-    private ImageView view_vr;
-    private ImageView video_play_paush;
-    private SeekBar seek_video;
-    private TextView video_progress;
-    private Boolean is360, isLive;
-    private String urlWatch, urlVideo;
+    private MDVRLibrary mVRLibrary;
+    private ImageView ic_video_type, ic_live;
+    private boolean is360mode = false;
+    private SeekBar seekBar;
+    private ImageView play_push_btn;
+    Boolean is360, isLive;
+    String urlWatch, urlVideo;
     private String PostType = "";
 
-
-    //==================== old data for video play ============================================
-    private MDVRLibrary mVRLibrary;
-    private boolean is360mode = false;
+    //-----------------------------------
     // video player
     protected IMediaPlayer mMediaPlayer;
     private static final int STATUS_IDLE = 0;
@@ -75,20 +65,20 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
     private int mSeekWhenPrepared;
     private int mCurrentBufferPercentage;
     private boolean isShowRating = false;
-
+    //=====Back buttn=====
+    LinearLayout ll_silding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_live_video_player);
-        mContext = this;
-        isLive = getIntent().getBooleanExtra("is_Live", false);
-        is360 = getIntent().getBooleanExtra("is_360", false);
-        urlWatch = getIntent().getStringExtra("Url_Stream");
-        urlVideo = getIntent().getStringExtra("Url_video");
-        PostType = getIntent().getStringExtra("PostType");
 
+        mContext = this;
+        PlayUsingVitamio();
+
+        String urlData = "";
+        PostType = getIntent().getStringExtra("PostType");
         int postId = getIntent().getIntExtra("postID", 0);
         if (PostType.equalsIgnoreCase("ads")) {
             urlData = "ads/" + postId + "/add-view";
@@ -109,41 +99,23 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
             }
         });
 
-        layout_loader = (LinearLayout) this.findViewById(R.id.layout_loader);
-        loader_image = (ImageView) this.findViewById(R.id.loader_image);
-        rotateAnimation = new RotateAnimation(0, 359, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setRepeatCount(Animation.INFINITE);
-        rotateAnimation.setRepeatMode(Animation.RESTART);
-        rotateAnimation.setDuration(3000);
-        loader_image.startAnimation(rotateAnimation);
-
-        back_player = (ImageView) this.findViewById(R.id.back_player);
-        view_360 = (ImageView) this.findViewById(R.id.view_360);
-        view_vr = (ImageView) this.findViewById(R.id.view_vr);
-
-        back_player.setOnClickListener(new View.OnClickListener() {
+        ll_silding = (LinearLayout) this.findViewById(R.id.ll_silding);
+        ll_silding.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LiveVideoPlayerActivity.this.finish();
             }
         });
-        video_play_paush = (ImageView) this.findViewById(R.id.video_play_paush);
-        seek_video = (SeekBar) this.findViewById(R.id.seek_video);
-        video_progress = (TextView) this.findViewById(R.id.video_progress);
-        video_play_paush.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                VideoPlyPaush();
-            }
-        });
-
-        PlayUsingVitamio();
     }
 
-    public void VideoPlyPaush() {
 
-    }
     public void PlayUsingVitamio() {
+        isLive = getIntent().getBooleanExtra("is_Live", false);
+        is360 = getIntent().getBooleanExtra("is_360", false);
+        urlWatch = getIntent().getStringExtra("Url_Stream");
+        urlVideo = getIntent().getStringExtra("Url_video");
+
+        busy();
 
         mVRLibrary = MDVRLibrary.with(this)
                 .displayMode(MDVRLibrary.DISPLAY_MODE_NORMAL)
@@ -179,35 +151,36 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
                 .build(R.id.video_view);
 
 
-//        ic_live = (ImageView) findViewById(R.id.ic_live3);
-//        ic_video_type = (ImageView) findViewById(R.id.ic_video_type3);
-//        ic_live.setVisibility(View.INVISIBLE);
-//        ic_video_type.setVisibility(View.INVISIBLE);
-//        ic_video_type.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (is360mode) {
-//                    is360mode = false;
-//                    ic_video_type.setImageResource(R.drawable.virtual_reality);
-//
-//                    mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_GLASS);
-//                    mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
-//                    mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_MOTION);
-//                    mVRLibrary.setAntiDistortionEnabled(true);
-//                } else {
-//                    is360mode = true;
-//                    ic_video_type.setImageResource(R.drawable.degrees_360);
-//
-//                    mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_NORMAL);
-//                    mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
-//                    mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_TOUCH);
-//                    mVRLibrary.setAntiDistortionEnabled(false);
-//                }
-//            }
-//        });
+        ic_live = (ImageView) findViewById(R.id.ic_live3);
+        ic_video_type = (ImageView) findViewById(R.id.ic_video_type3);
+        ic_live.setVisibility(View.INVISIBLE);
+        ic_video_type.setVisibility(View.INVISIBLE);
+        ic_video_type.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (is360mode) {
+                    is360mode = false;
+                    ic_video_type.setImageResource(R.drawable.virtual_reality);
+
+                    mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_GLASS);
+                    mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
+                    mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_MOTION);
+                    mVRLibrary.setAntiDistortionEnabled(true);
+                } else {
+                    is360mode = true;
+                    ic_video_type.setImageResource(R.drawable.degrees_360);
+
+                    mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_NORMAL);
+                    mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
+                    mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_TOUCH);
+                    mVRLibrary.setAntiDistortionEnabled(false);
+                }
+            }
+        });
 
         if (is360) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            ic_video_type.setVisibility(View.VISIBLE);
             is360mode = true;
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -215,12 +188,14 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
             mVRLibrary.switchProjectionMode(this, MDVRLibrary.PROJECTION_MODE_PLANE_FIT);
             mVRLibrary.switchInteractiveMode(this, MDVRLibrary.INTERACTIVE_MODE_TOUCH);
         }
+
         //-------------------------------------------------
         // init video player
         mMediaPlayer = new IjkMediaPlayer();
         mMediaPlayer.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(IMediaPlayer iMediaPlayer) {
+                cancelBusy();
                 mStatus = STATUS_PREPARED;
                 playerStart();
                 mVRLibrary.notifyPlayerChanged();
@@ -267,10 +242,10 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
                     case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
                         break;
                     case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
-                        layout_loader.setVisibility(View.VISIBLE);
+                        busy();
                         break;
                     case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
-                        layout_loader.setVisibility(View.GONE);
+                        cancelBusy();
                         break;
                     case IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH:
                         break;
@@ -295,7 +270,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         mMediaPlayer.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
-                switch (i) {
+                switch (i){
                     case IMediaPlayer.MEDIA_ERROR_IO:
                         break;
                     case IMediaPlayer.MEDIA_ERROR_MALFORMED:
@@ -330,6 +305,15 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         } else {
             playerOpenURL(urlVideo);
         }
+    }
+
+
+    public void cancelBusy() {
+        findViewById(R.id.progress).setVisibility(View.GONE);
+    }
+
+    public void busy() {
+        findViewById(R.id.progress).setVisibility(View.VISIBLE);
     }
 
 
