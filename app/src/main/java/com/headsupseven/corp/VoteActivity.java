@@ -113,9 +113,7 @@ public class VoteActivity extends BaseActivity {
     }
 
     public void webservcieForVote() {
-        Log.w("post_id","are"+post_id);
-        Log.w("voteId","are"+voteId);
-
+        
         HashMap<String, String> param = new HashMap<String, String>();
         param.put("amount", "" + amount_donate.getText().toString());
         param.put("post_id", "" + post_id);

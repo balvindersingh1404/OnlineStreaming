@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -198,6 +199,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     public void showInformationIntoUi(String response) {
         try {
 
+            Log.w("response","are"+response);
             JSONObject mJsonObject = new JSONObject(response);
             if (mJsonObject.getInt("code") == 1) {
                 JSONObject msg = mJsonObject.getJSONObject("msg");
