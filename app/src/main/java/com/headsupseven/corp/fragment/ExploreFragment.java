@@ -1,11 +1,14 @@
 package com.headsupseven.corp.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +18,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.headsupseven.corp.HomebaseActivity;
 import com.headsupseven.corp.R;
 import com.headsupseven.corp.adapter.ExploreAdapter;
 import com.headsupseven.corp.api.APIHandler;
+import com.headsupseven.corp.application.MyApplication;
 import com.headsupseven.corp.customview.EndlessRecyclerViewScrollListener;
 import com.headsupseven.corp.customview.VideoViewShouldClose;
 import com.headsupseven.corp.model.CategoryList;
 import com.headsupseven.corp.model.HomeLsitModel;
 import com.headsupseven.corp.model.SearchTag;
+import com.headsupseven.corp.utils.AdapterCallback;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,8 +43,6 @@ import java.util.Vector;
 
 public class ExploreFragment extends Fragment {
     private Context mContext;
-
-
     private Vector<HomeLsitModel> allHomeLsitModels = new Vector<HomeLsitModel>();
     ExploreAdapter mExploreListAdapter;
     private Vector<CategoryList> allCategoryList = new Vector<CategoryList>();
@@ -48,14 +52,18 @@ public class ExploreFragment extends Fragment {
     private ImageView img_search;
     private View view;
     RecyclerView listView_explorer;
-
     private LinearLayoutManager mLinearLayoutManager;
-    private boolean isSearching = false;
-    private boolean isLoadingData = false;
+    private int typeforLazyLoader = 0;
+    private Activity mActivity;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mActivity = activity;
     }
 
     @Override
@@ -66,6 +74,15 @@ public class ExploreFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (((HomebaseActivity) getActivity()) != null) {
+                ((HomebaseActivity) getActivity()).showProgressDialog();
+            }
+            webserverLoadCategoryList();
+
+        } else {
+            // Do your Work
+        }
     }
 
     @Override
@@ -83,7 +100,6 @@ public class ExploreFragment extends Fragment {
 
     public void initUI() {
         mExploreListAdapter = new ExploreAdapter(getActivity(), allHomeLsitModels);
-
         img_search = (ImageView) view.findViewById(R.id.img_search);
         edt_search = (EditText) view.findViewById(R.id.edt_search);
         homedata_refresh = (SwipeRefreshLayout) view.findViewById(R.id.homedata_refresh);
@@ -91,6 +107,7 @@ public class ExploreFragment extends Fragment {
             @Override
             public void onRefresh() {
                 refreshContent();
+                mExploreListAdapter.deleteAllItemTag();
             }
         });
 
@@ -120,17 +137,31 @@ public class ExploreFragment extends Fragment {
         listView_explorer.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                homedata_refresh.setRefreshing(false);
-                loadMoreData(page);
+
+                if ((page) * MyApplication.Max_post_per_page <= totalItemsCount) {
+                    if (typeforLazyLoader == 0) {
+                        homedata_refresh.setRefreshing(false);
+                        defaultloadMoreData(page);
+                    } else if (typeforLazyLoader == 1) {
+                        CategoryloadMoreData(page);
+                    } else if (typeforLazyLoader == 2) {
+                        TagloadMoreData(2);
+
+                    } else if (typeforLazyLoader == 3) {
+                        searchLazyLoader(page);
+                    }
+                }
             }
         });
-
 
         img_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mExploreListAdapter.deleteAllItems();
-                search();
+                if (edt_search.getText().toString().length() > 0) {
+                    mExploreListAdapter.deleteAllItems();
+                    ((HomebaseActivity) getActivity()).showProgressDialog();
+                    searchLazyLoader(0);
+                }
 
             }
         });
@@ -138,58 +169,46 @@ public class ExploreFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    search();
+                    if (edt_search.getText().toString().length() > 0) {
+                        mExploreListAdapter.deleteAllItems();
+                        ((HomebaseActivity) getActivity()).showProgressDialog();
+                        searchLazyLoader(0);
+                    }
                     return true;
                 }
                 return false;
             }
         });
-        webserverLoadCategoryList();
-        gwebserverLoadTagList();
-
-    }
-
-
-    public void search() {
-        isSearching = true;
-        HashMap<String, String> param = new HashMap<String, String>();
-        param.put("s", "" + edt_search.getText().toString().trim());
-        param.put("max", "10");
-        param.put("page", "0");
-        APIHandler.Instance().GET_BY_AUTHEN("feeds/search", param, new APIHandler.RequestComplete() {
+        //========== check
+        mExploreListAdapter.setAdapterCallback(new AdapterCallback() {
             @Override
-            public void onRequestComplete(final int code, final String response) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mExploreListAdapter.deleteAllItem();
-                        mExploreListAdapter.notifyDataSetChanged();
-                        responseDataShow(response);
-                        mExploreListAdapter.notifyDataSetChanged();
-                    }
-                });
+            public void onMethodCallback(int type, String searchText) {
 
+                ((HomebaseActivity) getActivity()).showProgressDialog();
+
+                if (type == 1) {
+                    typeforLazyLoader = 1;
+                    mExploreListAdapter.deleteAllItems();
+                    CategoryloadMoreData(0);
+                } else if (type == 2) {
+                    typeforLazyLoader = 2;
+                    mExploreListAdapter.deleteAllItems();
+                    TagloadMoreData(0);
+                } else if (type == 3) {
+                    typeforLazyLoader = 3;
+                    mExploreListAdapter.deleteAllItems();
+                    searchLazyLoader(0);
+                }
             }
         });
+
     }
 
-
-    private void loadMoreData(int page) {
-        if(isLoadingData) return;
-        //------------------------------------------
-        // NOTE: if we are searching thing then please avoid load data ( this will cause data refresh )
-        if(isSearching) return;
-        //------------------------------------------
-        // on set if passing here.
-        isLoadingData = true;
-
-        //------------------------------------------
-        if(page==0){
-            mExploreListAdapter.deleteAllItem();
-            mExploreListAdapter.notifyDataSetChanged();
-        }
+    //=================default server laod data====================
+    private void defaultloadMoreData(int page) {
+        typeforLazyLoader = 0;
         HashMap<String, String> param = new HashMap<String, String>();
-        param.put("max", "10");
+        param.put("max", "" + MyApplication.Max_post_per_page);
         param.put("page", "" + page);
         APIHandler.Instance().GET_BY_AUTHEN("feeds/explore", new APIHandler.RequestComplete() {
             @Override
@@ -197,20 +216,128 @@ public class ExploreFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        ((HomebaseActivity) getActivity()).closeProgressDialog();
+
                         if (code == 200) {
                             responseDataShow(response);
                             mExploreListAdapter.notifyDataSetChanged();
                         }
-                        isLoadingData = false;
                     }
                 });
             }
         });
     }
+    //============== Category loader =======================
+
+    public void CategoryloadMoreData(final int page) {
+        typeforLazyLoader = 1;
+        HashMap<String, String> mapCategory = mExploreListAdapter.loadCategory();
+        String categoriesId = "";
+        for (String key : mapCategory.keySet()) {
+            String value = mapCategory.get(key);
+            if (TextUtils.isEmpty(categoriesId))
+                categoriesId = value;
+            else
+                categoriesId = categoriesId + "," + value;
+        }
+        if (categoriesId.length() == 0)
+            return;
+
+        searchForCategoryList(categoriesId, page);
+    }
+
+    public void searchForCategoryList(String categoriesId, final int page) {
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("categories", categoriesId);
+        param.put("max", "" + MyApplication.Max_post_per_page);
+        param.put("page", "" + page);
+        APIHandler.Instance().GET_BY_AUTHEN("feeds/search-by-categories", param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                Log.w("CategoryList ", "Date: " + response);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((HomebaseActivity) getActivity()).closeProgressDialog();
+                        responseDataShow(response);
+                    }
+                });
+
+            }
+        });
+    }
+    //============== Tag loader =======================
+
+    public void TagloadMoreData(final int page) {
+        typeforLazyLoader = 2;
+        HashMap<String, String> mapCategory = mExploreListAdapter.loadTag();
+        String categoriesId = "";
+        for (String key : mapCategory.keySet()) {
+            String value = mapCategory.get(key);
+            if (TextUtils.isEmpty(categoriesId))
+                categoriesId = value;
+            else
+                categoriesId = categoriesId + "," + value;
+        }
+        if (categoriesId.length() == 0)
+            return;
+
+        webRqquestTag(categoriesId, page);
+    }
+
+    public void webRqquestTag(String tag, final int page) {
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("tags", "" + tag);
+        param.put("max", "" + MyApplication.Max_post_per_page);
+        param.put("page", "" + page);
+        APIHandler.Instance().GET_BY_AUTHEN("feeds/search-by-tag", param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                Log.w("Tag ", "Date: " + response);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((HomebaseActivity) getActivity()).closeProgressDialog();
+
+
+                        responseDataShow(response);
+
+                    }
+                });
+
+            }
+        });
+    }
+
+    //======================= search list loader=========================
+    //typeforLazyLoader==3
+    public void searchLazyLoader(final int page) {
+        typeforLazyLoader = 3;
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("s", "" + edt_search.getText().toString().trim());
+        param.put("max", "" + MyApplication.Max_post_per_page);
+        param.put("page", "" + page);
+        APIHandler.Instance().GET_BY_AUTHEN("feeds/search", param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        ((HomebaseActivity) getActivity()).closeProgressDialog();
+
+
+                        responseDataShow(response);
+                    }
+                });
+
+            }
+        });
+    }
+
 
     public void responseDataShow(final String response) {
         homedata_refresh.setRefreshing(false);
-
         try {
             final JSONObject json_ob = new JSONObject(response);
             final JSONArray json = json_ob.getJSONArray("msg");
@@ -275,6 +402,7 @@ public class ExploreFragment extends Fragment {
                                 }
                             } catch (Exception e) {
                             }
+                            webserverLoadTagList();
                         }
                     });
                 }
@@ -282,7 +410,7 @@ public class ExploreFragment extends Fragment {
         });
     }
 
-    public void gwebserverLoadTagList() {
+    public void webserverLoadTagList() {
         allSearchTag.removeAllElements();
         APIHandler.Instance().GET_BY_AUTHEN("feeds/hot-tag", new APIHandler.RequestComplete() {
             @Override
@@ -311,34 +439,22 @@ public class ExploreFragment extends Fragment {
                                 }
                             } catch (Exception e) {
                             }
-                            loadMoreData(0);
+                            mExploreListAdapter.deleteAllItems();
+                            defaultloadMoreData(0);
+
                         }
+
                     });
                 }
             }
         });
-
     }
 
-
-    //Auto refresh web-service call
-    private void refreshContent() {
-        if(isSearching){
-            isSearching = false;
-            mExploreListAdapter.deleteAllItems();
-            mExploreListAdapter.notifyDataSetChanged();
-            edt_search.setText("");
-            loadMoreData(0);
-            return;
-        }
-
-        if (mExploreListAdapter.topFeedsID() != -1) {
-            loadMoreData(0);
-        } else {
-            homedata_refresh.setRefreshing(false);
-        }
-
+    public void refreshContent() {
+        mExploreListAdapter.deleteAllItems();
+        defaultloadMoreData(0);
     }
+
 }
 
 

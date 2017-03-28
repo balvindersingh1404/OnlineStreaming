@@ -135,7 +135,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             try {
                 JSONObject mJsonObject = new JSONObject(response);
 
-                Log.w("response", "are" + response);
                 int code = mJsonObject.getInt("code");
                 if (code == 1) {
                     JSONObject msg = mJsonObject.getJSONObject("msg");
@@ -214,7 +213,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 }
             } catch (Exception ex) {
-                Log.w("exception", ex.toString());
             }
 
         } else if (viewHolder instanceof ItemViewHolder) {

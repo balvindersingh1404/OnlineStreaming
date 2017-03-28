@@ -2,7 +2,6 @@ package com.headsupseven.corp.adapter;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import com.github.lzyzsd.randomcolor.RandomColor;
 import com.headsupseven.corp.CommentActivity;
 import com.headsupseven.corp.DonateActivity;
-import com.headsupseven.corp.HomebaseActivity;
 import com.headsupseven.corp.LiveVideoPlayerActivity;
 import com.headsupseven.corp.OtherProfileActivity;
 import com.headsupseven.corp.R;
@@ -30,9 +28,9 @@ import com.headsupseven.corp.customview.VideoViewShouldClose;
 import com.headsupseven.corp.model.CategoryList;
 import com.headsupseven.corp.model.HomeLsitModel;
 import com.headsupseven.corp.model.SearchTag;
+import com.headsupseven.corp.utils.AdapterCallback;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -48,29 +46,34 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_FOOTER = 2;
-    String thumbURl = "";
-    Vector<HomeLsitModel> myDataset = new Vector<>();
+    private String thumbURl = "";
+    private Vector<HomeLsitModel> myDataset = new Vector<>();
     private Context mContext;
     private Vector<CategoryList> allCategoryList = new Vector<CategoryList>();
     private HashMap<String, String> mapCategory = new HashMap<>();
-
     private Vector<SearchTag> allSearchTag = new Vector<SearchTag>();
     private HashMap<String, String> mapTag = new HashMap<>();
     private VideoViewShouldClose videoCallback = null;
+    private AdapterCallback mAdapterCallback = null;
 
     private Button lastCategorySelect = null;
     private Button lastTagSelect = null;
 
+    public void setAdapterCallback(AdapterCallback callback) {
+        this.mAdapterCallback = callback;
+    }
     public void setVideoTapCallback(VideoViewShouldClose callback) {
         this.videoCallback = callback;
     }
-
     public HomeLsitModel getModelAt(int index) {
         return myDataset.get(index);
     }
-
     public ExploreAdapter(Context context, Vector<HomeLsitModel> myDataset) {
         mContext = context;
+        this.allCategoryList.clear();
+        this.allSearchTag.clear();
+        this.mapTag.clear();
+        this.mapCategory.clear();
         this.myDataset = myDataset;
     }
 
@@ -84,8 +87,15 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return TYPE_ITEM;
     }
 
+    public void deleteAllItemTag() {
+        this.allSearchTag.clear();
+        this.mapTag.clear();
+        notifyItemChanged(0);
+
+    }
     public void deleteAllItem() {
         myDataset.removeAllElements();
+
     }
 
 
@@ -106,9 +116,17 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.allSearchTag.addAll(allSearchTag);
     }
 
+    public HashMap<String, String> loadCategory() {
+        return mapCategory;
+    }
+
+    public HashMap<String, String> loadTag() {
+        return mapTag;
+    }
 
     public void deleteAllItems() {
         myDataset.removeAllElements();
+        notifyDataSetChanged();
     }
 
     public void addnewItem(HomeLsitModel dataObj) {
@@ -154,6 +172,9 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             LinearLayout.LayoutParams param;
             holder.ll_catories.removeAllViews();
             for (int i = 0; i < allCategoryList.size(); i++) {
+
+                CategoryList mCategoryList=allCategoryList.get(i);
+
                 final Button button = new Button(mContext);
                 button.setBackgroundColor(Color.parseColor("#DEDEDE"));
                 param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -161,9 +182,13 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 button.setLayoutParams(param);
                 button.setId(i);
                 final int id_ = button.getId();
-                button.setText(allCategoryList.get(i).getName());
-                button.setTag(allCategoryList.get(i));
+                button.setText(mCategoryList.getName());
+                button.setTag(mCategoryList);
 
+                if (mapCategory.containsKey(allCategoryList.get(i).getName())) {
+                    button.setBackgroundColor(Color.parseColor("#00C5C1"));
+
+                }
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -178,15 +203,14 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //                            mapCategory.put(mCategoryList.getName(), mCategoryList.getID());
 //                        }
 
+                        Log.w("mCategoryList","are"+mCategoryList.getName());
 
+                        mapTag.clear();
                         mapCategory.clear();
                         mapCategory.put(mCategoryList.getName(), mCategoryList.getID());
-                        if (lastCategorySelect != null) {
-                            lastCategorySelect.setBackgroundColor(Color.parseColor("#DEDEDE"));
-                        }
-                        lastCategorySelect = button;
-                        button.setBackgroundColor(Color.parseColor("#00C5C1"));
-                        searchForCategoryList();
+                        notifyItemChanged(0);
+                        mAdapterCallback.onMethodCallback(1, "");
+
                     }
                 });
                 holder.ll_catories.addView(button);
@@ -204,11 +228,18 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 button.setText(allSearchTag.get(i).getTagName());
                 param.setMargins(5, 5, 5, 5);
                 button.setLayoutParams(param);
-                final int id_ = button.getId();
-                RandomColor randomColor = new RandomColor();
-                final int color = randomColor.randomColor();
-                button.setBackgroundColor(color);
+                // int id_ = button.getId();
+                //RandomColor randomColor = new RandomColor();
+                //final int color = randomColor.randomColor();
+                //button.setBackgroundColor(color);
+                button.setBackgroundColor(Color.parseColor("#DEDEDE"));
                 button.setTag(allSearchTag.get(i));
+
+                if (mapTag.containsKey(allSearchTag.get(i).getTagName())) {
+                    button.setBackgroundColor(Color.parseColor("#00C5C1"));
+
+                }
+
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -221,14 +252,15 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //                            button.setBackgroundColor(Color.parseColor("#00C5C1"));
 //                            mapTag.put(mSearchTag.getTagName(), mSearchTag.getID());
 //                        }
-                        if (lastTagSelect != null) {
-                            lastTagSelect.setBackgroundColor(color);
-                        }
-                        lastTagSelect = button;
-                        button.setBackgroundColor(Color.parseColor("#00C5C1"));
+//                        if (lastTagSelect != null) {
+//                            lastTagSelect.setBackgroundColor(color);
+//                        }
+                        mapCategory.clear();
                         mapTag.clear();
                         mapTag.put(mSearchTag.getTagName(), mSearchTag.getID());
-                        searchExplorerByTag();
+                        notifyItemChanged(0);
+                        mAdapterCallback.onMethodCallback(2, "");
+
                     }
                 });
                 holder.ll_tag.addView(button);
@@ -509,133 +541,92 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mContext.startActivity(Intent.createChooser(sharingIntent, "Share via Headsup7"));
     }
 
-    private ProgressDialog mProgressDialog;
+//    public void searchExplorerByTag() {
+//        String tag = "";
+//        for (String key : mapTag.keySet()) {
+//            if (tag == "") {
+//                tag = key;
+//            } else {
+//                tag = tag + "," + key;
+//            }
+//        }
+//        if (tag.length() == 0)
+//            return;
+//
+//        mProgressDialog = new ProgressDialog(mContext);
+//        mProgressDialog.setCancelable(true);
+//        mProgressDialog.setMessage("Uploading...");
+//        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        mProgressDialog.show();
+//        HashMap<String, String> param = new HashMap<String, String>();
+//        param.put("tags", "" + tag);
+//        APIHandler.Instance().GET_BY_AUTHEN("feeds/search-by-tag", param, new APIHandler.RequestComplete() {
+//            @Override
+//            public void onRequestComplete(final int code, final String response) {
+//                Log.w("Tag ", "Date: " + response);
+//                ((HomebaseActivity) mContext).runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //responseDataShow(response);
+//                        mProgressDialog.dismiss();
+//                    }
+//                });
+//
+//            }
+//        });
+//    }
 
-    public void searchForCategoryList() {
-        String categoriesId = "";
-        for (String key : mapCategory.keySet()) {
-            String value = mapCategory.get(key);
-            categoriesId = categoriesId + "," + value;
-        }
-
-        if (categoriesId.length() > 0)
-            categoriesId = categoriesId.substring(1, categoriesId.length());
-
-        if (categoriesId.length() == 0)
-            return;
-
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setCancelable(true);
-        mProgressDialog.setMessage("Uploading...");
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        mProgressDialog.show();
-
-        HashMap<String, String> param = new HashMap<String, String>();
-        param.put("categories", categoriesId);
-        APIHandler.Instance().GET_BY_AUTHEN("feeds/search-by-categories", param, new APIHandler.RequestComplete() {
-            @Override
-            public void onRequestComplete(final int code, final String response) {
-                Log.w("CategoryList ", "Date: " + response);
-                ((HomebaseActivity) mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        responseDataShow(response);
-                        mProgressDialog.dismiss();
-                    }
-                });
-
-            }
-        });
-
-
-    }
-
-    public void searchExplorerByTag() {
-        String tag = "";
-        for (String key : mapTag.keySet()) {
-            if (tag == "") {
-                tag = key;
-            } else {
-                tag = tag + "," + key;
-            }
-        }
-        if (tag.length() == 0)
-            return;
-
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setCancelable(true);
-        mProgressDialog.setMessage("Uploading...");
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        mProgressDialog.show();
-        HashMap<String, String> param = new HashMap<String, String>();
-        param.put("tags", "" + tag);
-        APIHandler.Instance().GET_BY_AUTHEN("feeds/search-by-tag", param, new APIHandler.RequestComplete() {
-            @Override
-            public void onRequestComplete(final int code, final String response) {
-                Log.w("Tag ", "Date: " + response);
-                ((HomebaseActivity) mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        responseDataShow(response);
-                        mProgressDialog.dismiss();
-                    }
-                });
-
-            }
-        });
-    }
-
-    public void responseDataShow(final String response) {
-        try {
-            myDataset.clear();
-            final JSONObject json_ob = new JSONObject(response);
-            final JSONArray json = json_ob.getJSONArray("msg");
-            for (int index = 0; index < json.length(); index++) {
-
-                HomeLsitModel model = new HomeLsitModel();
-                JSONObject mObject = json.getJSONObject(index);
-                model.setCreatedAt(mObject.getString("CreatedAt"));
-                model.setUpdatedAt(mObject.getString("UpdatedAt"));
-                model.setPublish(mObject.getString("Publish"));
-                model.setCreatedBy(mObject.getString("CreatedBy"));
-                model.setCreatedByName(mObject.getString("CreatedByName"));
-                model.setDeviceID(mObject.getString("DeviceID"));
-                model.setPostName(mObject.getString("PostName"));
-                model.setPostDescription(mObject.getString("PostDescription"));
-                model.setPostThumbUrl(mObject.getString("PostThumbUrl"));
-                model.setView(mObject.getString("View"));
-                model.setCreatedByAvatar(mObject.getString("CreatedByAvatar"));
-                model.setLike(mObject.getString("Like"));
-                model.setComment(mObject.getString("Comment"));
-                model.setRate(mObject.getString("Rate"));
-                model.setRateValue(mObject.getString("RateValue"));
-                model.setPostType(mObject.getString("PostType"));
-                model.setLiveStreamApp(mObject.getString("LiveStreamApp"));
-                model.setLiveStreamName(mObject.getString("LiveStreamName"));
-                model.setPostStreaming(mObject.getBoolean("IsPostStreaming"));
-                model.setVideoType(mObject.getString("VideoType"));
-                model.setVideoName(mObject.getString("VideoName"));
-
-                String PostType = mObject.getString("PostType");
-                model.setLiked(mObject.getBoolean("Liked"));
-
-                model.setPostType(PostType);
-
-                if (PostType.contains("ads")) {
-                    model.setFlagAdd(true);
-                    model.setID(mObject.getInt("AdsID"));
-                } else {
-                    model.setID(mObject.getInt("ID"));
-                    model.setFlagAdd(false);
-                }
-                myDataset.add(model);
-            }
-
-        } catch (Exception ex) {
-
-        }
-        notifyDataSetChanged();
-    }
+//    public void responseDataShow(final String response) {
+//        try {
+//            myDataset.clear();
+//            final JSONObject json_ob = new JSONObject(response);
+//            final JSONArray json = json_ob.getJSONArray("msg");
+//            for (int index = 0; index < json.length(); index++) {
+//
+//                HomeLsitModel model = new HomeLsitModel();
+//                JSONObject mObject = json.getJSONObject(index);
+//                model.setCreatedAt(mObject.getString("CreatedAt"));
+//                model.setUpdatedAt(mObject.getString("UpdatedAt"));
+//                model.setPublish(mObject.getString("Publish"));
+//                model.setCreatedBy(mObject.getString("CreatedBy"));
+//                model.setCreatedByName(mObject.getString("CreatedByName"));
+//                model.setDeviceID(mObject.getString("DeviceID"));
+//                model.setPostName(mObject.getString("PostName"));
+//                model.setPostDescription(mObject.getString("PostDescription"));
+//                model.setPostThumbUrl(mObject.getString("PostThumbUrl"));
+//                model.setView(mObject.getString("View"));
+//                model.setCreatedByAvatar(mObject.getString("CreatedByAvatar"));
+//                model.setLike(mObject.getString("Like"));
+//                model.setComment(mObject.getString("Comment"));
+//                model.setRate(mObject.getString("Rate"));
+//                model.setRateValue(mObject.getString("RateValue"));
+//                model.setPostType(mObject.getString("PostType"));
+//                model.setLiveStreamApp(mObject.getString("LiveStreamApp"));
+//                model.setLiveStreamName(mObject.getString("LiveStreamName"));
+//                model.setPostStreaming(mObject.getBoolean("IsPostStreaming"));
+//                model.setVideoType(mObject.getString("VideoType"));
+//                model.setVideoName(mObject.getString("VideoName"));
+//
+//                String PostType = mObject.getString("PostType");
+//                model.setLiked(mObject.getBoolean("Liked"));
+//
+//                model.setPostType(PostType);
+//
+//                if (PostType.contains("ads")) {
+//                    model.setFlagAdd(true);
+//                    model.setID(mObject.getInt("AdsID"));
+//                } else {
+//                    model.setID(mObject.getInt("ID"));
+//                    model.setFlagAdd(false);
+//                }
+//                myDataset.add(model);
+//            }
+//
+//        } catch (Exception ex) {
+//
+//        }
+//        notifyDataSetChanged();
+//    }
 
 
 }
