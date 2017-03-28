@@ -408,7 +408,7 @@ public class Headsup7Adapter extends RecyclerView
         private ImageView event_image, ic_live, ic_video_type;
         private TextView tv_name, tv_posttime, tv_watching, even_title, event_description, tv_like, tv_comment;
         private ImageView like_unlike;
-        private RelativeLayout rl_like_unlike;
+       // private RelativeLayout rl_like_unlike;
 
         public DataObjectHolder(View itemView) {
             super(itemView);
@@ -431,7 +431,7 @@ public class Headsup7Adapter extends RecyclerView
             ic_video_type = (ImageView) itemView.findViewById(R.id.ic_video_type);
             row_video_icon.setVisibility(View.GONE);
             like_unlike = (ImageView) itemView.findViewById(R.id.like_unlike);
-            rl_like_unlike = (RelativeLayout) itemView.findViewById(R.id.rl_like_unlike);
+            //rl_like_unlike = (RelativeLayout) itemView.findViewById(R.id.rl_like_unlike);
 
             itemView.setTag(getPosition());
             itemView.setOnClickListener(this);

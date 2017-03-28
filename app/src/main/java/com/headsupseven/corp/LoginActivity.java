@@ -131,6 +131,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     authenPostData.put("name", profile.getName());
                     authenPostData.put("email", PersistentUser.getSocialLoginEmal(mContext));
                     socialLoginAccess("authen/facebook", authenPostData,1);
+                    authenPostData.put("Platform", "mobile");
+
                 } else {
                     LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile, email"));
                 }
@@ -161,6 +163,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         authenPostData.put("id", userId);
                         authenPostData.put("name", UserName);
                         authenPostData.put("email", "");
+                        authenPostData.put("Platform", "mobile");
                         socialLoginAccess("authen/tweeter", authenPostData,2);
                     }
 
@@ -210,6 +213,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                             authenPostData.put("id", id);
                                             authenPostData.put("name", name);
                                             authenPostData.put("email", email);
+                                            authenPostData.put("Platform", "mobile");
                                             PersistentUser.setSocialLoginEmal(mContext, email);
                                             socialLoginAccess("authen/facebook", authenPostData,1);
 
@@ -259,6 +263,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     HashMap<String, String> authenPostData = new HashMap<String, String>();
                     authenPostData.put("UserName", txtUserName.getText().toString());
                     authenPostData.put("Password", txtPassword.getText().toString());
+                    authenPostData.put("Platform", "mobile");
+
                     APIHandler.Instance().POST("authen/", authenPostData, new APIHandler.RequestComplete() {
                         @Override
                         public void onRequestComplete(int code, String response) {
@@ -534,6 +540,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             authenPostData.put("id", id);
             authenPostData.put("name", personName);
             authenPostData.put("email", email);
+            authenPostData.put("Platform", "mobile");
             socialLoginAccess("authen/google", authenPostData, 3);
 
         } else {

@@ -74,6 +74,9 @@ public class SplashActivity extends AppCompatActivity {
         HashMap<String, String> authenPostData = new HashMap<String, String>();
         authenPostData.put("UserName", PersistentUser.getUserName(mContext));
         authenPostData.put("Password", PersistentUser.getPassword(mContext));
+        authenPostData.put("Platform", "mobile");
+
+
         APIHandler.Instance().POST("authen/", authenPostData, new APIHandler.RequestComplete() {
             @Override
             public void onRequestComplete(int code, String response) {
