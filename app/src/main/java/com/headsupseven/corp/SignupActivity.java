@@ -312,10 +312,10 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
             PopupAPI.showToast(mContext, "Please Enter UserName");
             return;
         } else if (edittext_email.getText().toString().trim().equalsIgnoreCase("")) {
-            PopupAPI.showToast(mContext, "Please Enter Email Address");
+            PopupAPI.showToast(mContext, "Please Need Enter Mail");
             return;
         } else if (edittext_password.getText().toString().trim().equalsIgnoreCase("")) {
-            PopupAPI.showToast(mContext, "Please Enter Password");
+            PopupAPI.showToast(mContext, "Please Need Enter password ");
             return;
         } else if (edittext_password.getText().toString().trim().length() < 6) {
             PopupAPI.showToast(mContext, "Please Enter Password Min 6 Char");

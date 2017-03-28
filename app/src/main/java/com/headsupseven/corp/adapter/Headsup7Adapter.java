@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.headsupseven.corp.CommentActivity;
@@ -269,6 +270,20 @@ public class Headsup7Adapter extends RecyclerView
                 viewHolder.event_description.setText(homeLsitModel.getPostDescription());
                 viewHolder.row_video_icon.setVisibility(View.VISIBLE);
 
+
+                // many of the news articles have a play button on the image. remove the play button since they aren't videos   ."gift" "comment" "like" need to be removed if we are not allowing them (headsup7 tab)
+//                if (homeLsitModel.getPostType().equalsIgnoreCase("news")) {
+//                    viewHolder.rl_like_unlike.setVisibility(View.VISIBLE);
+//                    viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+//
+//                } else {
+//                    viewHolder.rl_like_unlike.setVisibility(View.GONE);
+//                    viewHolder.row_video_icon.setVisibility(View.GONE);
+//                }
+
+
+
+
                 if (homeLsitModel.isLiked())
                     viewHolder.like_unlike.setImageResource(R.drawable.like_active);
                 else
@@ -393,6 +408,7 @@ public class Headsup7Adapter extends RecyclerView
         private ImageView event_image, ic_live, ic_video_type;
         private TextView tv_name, tv_posttime, tv_watching, even_title, event_description, tv_like, tv_comment;
         private ImageView like_unlike;
+        private RelativeLayout rl_like_unlike;
 
         public DataObjectHolder(View itemView) {
             super(itemView);
@@ -415,6 +431,7 @@ public class Headsup7Adapter extends RecyclerView
             ic_video_type = (ImageView) itemView.findViewById(R.id.ic_video_type);
             row_video_icon.setVisibility(View.GONE);
             like_unlike = (ImageView) itemView.findViewById(R.id.like_unlike);
+            rl_like_unlike = (RelativeLayout) itemView.findViewById(R.id.rl_like_unlike);
 
             itemView.setTag(getPosition());
             itemView.setOnClickListener(this);
