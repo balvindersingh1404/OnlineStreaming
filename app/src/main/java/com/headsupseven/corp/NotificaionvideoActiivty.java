@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -53,6 +54,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     private Target mTarget;
     private LinearLayout li_clickView;
     private ImageView image_view;
+    private ImageView charging;
     private final BroadcastReceiver m_timeChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -76,6 +78,21 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
             TextView tv = (TextView) findViewById(R.id.textView1);
             pb.setProgress(level);
             tv.setText(Integer.toString(level) + "%");
+
+
+            int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            boolean bCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                    status == BatteryManager.BATTERY_STATUS_FULL;
+
+            if(bCharging){
+                charging.setVisibility(View.VISIBLE);
+                Log.w("charging","charging");
+            }else {
+                charging.setVisibility(View.GONE);
+                Log.w("not charging","not charging");
+
+            }
+
         }
     };
 
@@ -98,9 +115,13 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     }
 
     private void init() {
+
+
+
         li_clickView = (LinearLayout) this.findViewById(R.id.li_clickView);
         video_view = (VideoView) this.findViewById(R.id.video_view);
         image_view = (ImageView) this.findViewById(R.id.image_view);
+        charging=(ImageView)this.findViewById(R.id.imgCharging);
         tv_time = (TextView) this.findViewById(R.id.tv_time);
         tv_date = (TextView) this.findViewById(R.id.tv_date);
         setDateTime();
@@ -397,7 +418,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     }
 
     private synchronized void jumpMain() {
-        finish();
+        NotificaionvideoActiivty.this.finish();
     }
 
     private String getCurrentDateAndTime() {
@@ -440,6 +461,6 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Log.w("do","nothing");
     }
 }
