@@ -23,6 +23,7 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.headsupseven.corp.api.APIHandler;
+import com.headsupseven.corp.application.MyApplication;
 import com.headsupseven.corp.service.ChatService;
 import com.headsupseven.corp.tabpager.TabsPagerAdapter;
 import com.headsupseven.corp.utils.PersistentUser;
@@ -80,6 +81,7 @@ public class HomebaseActivity extends AppCompatActivity {
         Log.w("user_id", "are" + APIHandler.Instance().user.userID);
         this.mHomebaseActivity = this;
         androidQuery = new AQuery(mContext);
+        MyApplication.checkHomeActivty=true;
         startService(new Intent(this, ChatService.class));
         initUIBaseActivity();
 

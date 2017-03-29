@@ -1,6 +1,7 @@
 package com.headsupseven.corp;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.headsupseven.corp.api.APIHandler;
+import com.headsupseven.corp.application.MyApplication;
 import com.headsupseven.corp.customview.VideoView;
 import com.headsupseven.corp.renderers.ScaleRenderer;
 import com.headsupseven.corp.sliders.HorizontalSlider;
@@ -38,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -66,6 +69,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
 
                 setDateTime();
             }
+
         }
     };
 
@@ -84,12 +88,12 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
             boolean bCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                     status == BatteryManager.BATTERY_STATUS_FULL;
 
-            if(bCharging){
+            if (bCharging) {
                 charging.setVisibility(View.VISIBLE);
-                Log.w("charging","charging");
-            }else {
+                Log.w("charging", "charging");
+            } else {
                 charging.setVisibility(View.GONE);
-                Log.w("not charging","not charging");
+                Log.w("not charging", "not charging");
 
             }
 
@@ -117,11 +121,10 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     private void init() {
 
 
-
         li_clickView = (LinearLayout) this.findViewById(R.id.li_clickView);
         video_view = (VideoView) this.findViewById(R.id.video_view);
         image_view = (ImageView) this.findViewById(R.id.image_view);
-        charging=(ImageView)this.findViewById(R.id.imgCharging);
+        charging = (ImageView) this.findViewById(R.id.imgCharging);
         tv_time = (TextView) this.findViewById(R.id.tv_time);
         tv_date = (TextView) this.findViewById(R.id.tv_date);
         setDateTime();
@@ -289,48 +292,55 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-                        if (post_type.equalsIgnoreCase("news")) {
-                            Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
-                            webViewIntent.putExtra("Url", video);
-                            webViewIntent.putExtra("Title", video_name);
-                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(webViewIntent);
-                            NotificaionvideoActiivty.this.finish();
+                        if (MyApplication.checkHomeActivty) {
+                            if (post_type.equalsIgnoreCase("news")) {
+                                Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
+                                webViewIntent.putExtra("Url", video);
+                                webViewIntent.putExtra("Title", video_name);
+                                webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(webViewIntent);
+                                NotificaionvideoActiivty.this.finish();
 
-                        } else if (post_type.equalsIgnoreCase("event")) {
-                            Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
-                            webViewIntent.putExtra("EventId", post_id);
-                            webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(webViewIntent);
-                            NotificaionvideoActiivty.this.finish();
-
-                        } else {
-                            if (video_type.equalsIgnoreCase("photo")) {
-                                Intent webViewIntent = new Intent(mContext, NotificaionviewActivity.class);
-                                webViewIntent.putExtra("imagePath", video);
+                            } else if (post_type.equalsIgnoreCase("event")) {
+                                Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                                webViewIntent.putExtra("EventId", post_id);
                                 webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(webViewIntent);
                                 NotificaionvideoActiivty.this.finish();
 
                             } else {
-                                if (post_type.equalsIgnoreCase("ads")) {
-                                    Intent intent = new Intent(mContext, LiveVideoPlayerActivity.class);
-                                    intent.putExtra("Url_Stream", video);
-                                    intent.putExtra("Url_video", video);
-                                    intent.putExtra("is_360", !video_type.contentEquals("normal"));
-                                    intent.putExtra("is_Live", false);
-                                    intent.putExtra("postID", Integer.parseInt(post_id));
-                                    intent.putExtra("PostType", post_type);
-                                    startActivity(intent);
+                                if (video_type.equalsIgnoreCase("photo")) {
+                                    Intent webViewIntent = new Intent(mContext, NotificaionviewActivity.class);
+                                    webViewIntent.putExtra("imagePath", video);
+                                    webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(webViewIntent);
                                     NotificaionvideoActiivty.this.finish();
 
                                 } else {
-                                    detailsOfPost(post_id);
+                                    if (post_type.equalsIgnoreCase("ads")) {
+                                        Intent intent = new Intent(mContext, LiveVideoPlayerActivity.class);
+                                        intent.putExtra("Url_Stream", video);
+                                        intent.putExtra("Url_video", video);
+                                        intent.putExtra("is_360", !video_type.contentEquals("normal"));
+                                        intent.putExtra("is_Live", false);
+                                        intent.putExtra("postID", Integer.parseInt(post_id));
+                                        intent.putExtra("PostType", post_type);
+                                        startActivity(intent);
+                                        NotificaionvideoActiivty.this.finish();
+
+                                    } else {
+                                        detailsOfPost(post_id);
+                                    }
+
                                 }
 
                             }
-
+                        } else {
+                            Log.w("ads", "ads");
+                            loginInformationOtherCall();
                         }
+
+
                     }
                 });
 
@@ -339,13 +349,130 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
             Log.w("Exception", "wre" + ex.getMessage());
         }
 
+    }
 
+    public static boolean isServiceRunning(Context context) {
+        boolean isServiceFound = false;
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> services = activityManager.getRunningTasks(Integer.MAX_VALUE);
+        for (int i = 0; i < services.size(); i++) {
+            Log.w("sd", "ae" + services.get(i).numRunning);
+
+        }
+
+        return isServiceFound;
+
+    }
+    //http://tips.androidhive.info/2015/04/android-how-to-check-if-the-app-is-in-background-or-foreground/
+    public void checkServerData() {
+        try {
+
+            String details = PersistentUser.getVideodetails(mContext);
+            JSONObject mJsonObject = new JSONObject(details);
+            if (mJsonObject.getInt("code") == 1) {
+                JSONObject msg = mJsonObject.getJSONObject("msg");
+                final String post_id = msg.getString("post_id");
+                final String post_type = msg.getString("post_type");
+                final String thumb = msg.getString("thumb");
+                final String video = msg.getString("video");
+                final String video_description = msg.getString("video_description");
+                final String video_name = msg.getString("video_name");
+                final String video_type = msg.getString("video_type");
+
+                if (post_type.equalsIgnoreCase("news")) {
+                    Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
+                    webViewIntent.putExtra("Url", video);
+                    webViewIntent.putExtra("Title", video_name);
+                    webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(webViewIntent);
+                    NotificaionvideoActiivty.this.finish();
+
+                } else if (post_type.equalsIgnoreCase("event")) {
+                    Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
+                    webViewIntent.putExtra("EventId", post_id);
+                    webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(webViewIntent);
+                    NotificaionvideoActiivty.this.finish();
+
+                } else {
+                    if (video_type.equalsIgnoreCase("photo")) {
+                        Intent webViewIntent = new Intent(mContext, NotificaionviewActivity.class);
+                        webViewIntent.putExtra("imagePath", video);
+                        webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(webViewIntent);
+                        NotificaionvideoActiivty.this.finish();
+
+                    } else {
+                        if (post_type.equalsIgnoreCase("ads")) {
+                            Intent intent = new Intent(mContext, LiveVideoPlayerActivity.class);
+                            intent.putExtra("Url_Stream", video);
+                            intent.putExtra("Url_video", video);
+                            intent.putExtra("is_360", !video_type.contentEquals("normal"));
+                            intent.putExtra("is_Live", false);
+                            intent.putExtra("postID", Integer.parseInt(post_id));
+                            intent.putExtra("PostType", post_type);
+                            startActivity(intent);
+                            NotificaionvideoActiivty.this.finish();
+
+                        } else {
+                            detailsOfPost(post_id);
+                        }
+
+                    }
+
+                }
+
+            }
+        } catch (Exception ex) {
+            Log.w("Exception", "Exception" + ex.getMessage());
+
+        }
+    }
+
+    public void loginInformationOtherCall() {
+
+        HashMap<String, String> authenPostData = new HashMap<String, String>();
+        authenPostData.put("UserName", PersistentUser.getUserName(mContext));
+        authenPostData.put("Password", PersistentUser.getPassword(mContext));
+        authenPostData.put("Platform", "mobile");
+
+        APIHandler.Instance().POST("authen/", authenPostData, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.w("response", "are" + response);
+                        if (code == 200 && response.length() > 0) {
+                            try {
+                                JSONObject reader = new JSONObject(response);
+                                int resultCode = reader.getInt("code");
+                                if (resultCode == 1) {
+                                    PersistentUser.setUserDetails(mContext, response);
+                                    JSONObject msgData = reader.getJSONObject("msg");
+                                    APIHandler.Instance().user.SetAuthenData(msgData);
+                                    APIHandler.Instance().InitChatClient();
+
+                                    checkServerData();
+                                }
+                            } catch (Exception ex) {
+                                Log.w("Exception", "wre" + ex.getMessage());
+
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
     }
 
     public void loginInformation(final String postId) {
         HashMap<String, String> authenPostData = new HashMap<String, String>();
         authenPostData.put("UserName", PersistentUser.getUserName(mContext));
         authenPostData.put("Password", PersistentUser.getPassword(mContext));
+        authenPostData.put("Platform", "mobile");
+
         APIHandler.Instance().POST("authen/", authenPostData, new APIHandler.RequestComplete() {
             @Override
             public void onRequestComplete(int code, String response) {
@@ -461,6 +588,6 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.w("do","nothing");
+        Log.w("do", "nothing");
     }
 }
