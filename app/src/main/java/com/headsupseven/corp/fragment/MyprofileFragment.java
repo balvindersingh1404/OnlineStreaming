@@ -139,7 +139,6 @@ public class MyprofileFragment extends Fragment {
         }
     }
     public void loadMoreData(int page) {
-        Log.w("page", "are: " + page);
         HashMap<String, String> param = new HashMap<String, String>();
         param.put("max", "12");
         param.put("page", "" + page);
@@ -164,7 +163,6 @@ public class MyprofileFragment extends Fragment {
 
     public void responseDataShow(final String response) {
         try {
-            Log.w("response", "are: " + response);
 
             final JSONObject json_ob = new JSONObject(response);
             final JSONArray json = json_ob.getJSONArray("msg");
@@ -211,7 +209,6 @@ public class MyprofileFragment extends Fragment {
             }
             mProfileAdapter.notifyDataSetChanged();
         } catch (Exception ex) {
-            Log.w("Exception", "are: " + ex.getMessage());
 
         }
     }

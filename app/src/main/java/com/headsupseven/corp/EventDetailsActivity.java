@@ -1,12 +1,15 @@
 package com.headsupseven.corp;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -69,7 +72,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         listView.setLayoutManager(layoutManager);
-        mEventdetailsAdapter = new EventdetailsAdapter(mContext, alHomeLsitModels);
+        mEventdetailsAdapter = new EventdetailsAdapter(mContext, alHomeLsitModels,EventId);
         listView.setAdapter(mEventdetailsAdapter);
         listView.setNestedScrollingEnabled(false);
         listView.setFocusable(false);
@@ -115,18 +118,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                     PopupAPI.showToast(mContext, "already join contest");
 
                 } else if (tv_join.getText().toString().equalsIgnoreCase("Join Now")) {
-                    HashMap<String, String> param = new HashMap<String, String>();
-                    APIHandler.Instance().POST_BY_AUTHEN("contest/" + EventId + "/join", param, new APIHandler.RequestComplete() {
-                        @Override
-                        public void onRequestComplete(final int code, final String response) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dataParsing(response);
-                                }
-                            });
-                        }
-                    });
+                    deletePopp();
+
                 }
 
             }
@@ -139,6 +132,39 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void forJOinWebServiceCall() {
+        HashMap<String, String> param = new HashMap<String, String>();
+        APIHandler.Instance().POST_BY_AUTHEN("contest/" + EventId + "/join", param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataParsing(response);
+                    }
+                });
+            }
+        });
+    }
+
+    private void deletePopp() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(EventDetailsActivity.this);
+        alertDialog.setTitle("Do u want to proceed ?")
+                .setMessage("You are about to join a paid contest. the fee will be deducted automatically with no refund policy.")
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        forJOinWebServiceCall();
+                    }
+                })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        // do nothing
+                    }
+                })
+                .show();
     }
 
     public void dataParsing(String response) {
@@ -159,7 +185,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 PopupAPI.showToast(mContext, "token invalid or input user wrong");
 
             } else if (codeServer == 1) {
-                tv_join.setVisibility(View.GONE);
+                tv_join.setVisibility(View.VISIBLE);
+                tv_join.setText("Joined");
 
             }
 
@@ -172,6 +199,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     public void showInformationIntoUi(String response) {
         try {
 
+            Log.w("response","are"+response);
             JSONObject mJsonObject = new JSONObject(response);
             if (mJsonObject.getInt("code") == 1) {
                 JSONObject msg = mJsonObject.getJSONObject("msg");
@@ -192,10 +220,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
                 if (IsJoin) {
                     tv_join.setVisibility(View.VISIBLE);
-                    tv_join.setText("Join Now");
+                    tv_join.setText("Joined");
                 } else {
                     tv_join.setVisibility(View.VISIBLE);
-                    tv_join.setText("Joined");
+                    tv_join.setText("Join Now");
+
                 }
 
                 String RegistrationStart = contest.getString("RegistrationStart");

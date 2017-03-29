@@ -282,6 +282,11 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name="com.headsupseven.corp.NotificaionviewActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
 
         <meta-data
@@ -297,6 +302,7 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
 
         <service
             android:name="com.headsupseven.corp.service.ChatService"

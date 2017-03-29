@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.service.LockScreenService;
 import com.headsupseven.corp.utils.PersistentUser;
@@ -29,15 +30,16 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         mContext = this;
 
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        PersistentUser.SetPushkey(mContext, refreshedToken);
+
+        Log.w("refreshedToken","are"+refreshedToken);
+
+
         if (PersistentUser.isLock(mContext))
             startService(new Intent(this, LockScreenService.class));
 
         mHandler.postDelayed(mPendingLauncherRunnable, 2000);
-    }
-
-    public void unlockScreen(View view) {
-        //Instead of using finish(), this totally destroys the process
-        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     private final Runnable mPendingLauncherRunnable = new Runnable() {
@@ -72,6 +74,9 @@ public class SplashActivity extends AppCompatActivity {
         HashMap<String, String> authenPostData = new HashMap<String, String>();
         authenPostData.put("UserName", PersistentUser.getUserName(mContext));
         authenPostData.put("Password", PersistentUser.getPassword(mContext));
+        authenPostData.put("Platform", "mobile");
+
+
         APIHandler.Instance().POST("authen/", authenPostData, new APIHandler.RequestComplete() {
             @Override
             public void onRequestComplete(int code, String response) {

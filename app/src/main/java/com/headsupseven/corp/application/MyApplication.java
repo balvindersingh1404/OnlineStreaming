@@ -14,7 +14,7 @@ import com.headsupseven.corp.model.AddmanagerList;
 public class MyApplication extends Application {
 
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
-
+    public static  final int Max_post_per_page=10;
     public static AddmanagerList mAddmanagerList = null;
 
     @Override

@@ -1,6 +1,7 @@
 package com.headsupseven.corp;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,6 +35,7 @@ import java.util.HashMap;
 
 public class HomebaseActivity extends AppCompatActivity {
 
+    private ProgressDialog mProgressDialog;
     public Context mContext;
     public FrameLayout frameLayout;
     private ViewPager mViewPager;
@@ -62,7 +64,7 @@ public class HomebaseActivity extends AppCompatActivity {
     private TextView full_name;
     private AQuery androidQuery;
     private TextView notitification_text;
-
+    private HomebaseActivity mHomebaseActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +77,25 @@ public class HomebaseActivity extends AppCompatActivity {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
-
+        Log.w("user_id", "are" + APIHandler.Instance().user.userID);
+        this.mHomebaseActivity = this;
         androidQuery = new AQuery(mContext);
         startService(new Intent(this, ChatService.class));
         initUIBaseActivity();
 
+    }
+
+    public void showProgressDialog() {
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setCancelable(true);
+        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.show();
+    }
+
+    public void closeProgressDialog() {
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
     }
 
     public void initUIBaseActivity() {
@@ -176,9 +192,11 @@ public class HomebaseActivity extends AppCompatActivity {
         selecteddeselectedTab(0);
 
     }
-    public ImageView geteditprofile(){
-        return  editprofile;
+
+    public ImageView geteditprofile() {
+        return editprofile;
     }
+
     // listener of Side Menu
     View.OnClickListener listener = new View.OnClickListener() {
         @Override

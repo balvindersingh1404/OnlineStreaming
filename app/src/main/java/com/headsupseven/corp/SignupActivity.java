@@ -157,6 +157,7 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
                     HashMap<String, String> authenPostData = new HashMap<String, String>();
                     authenPostData.put("id", profile.getId());
                     authenPostData.put("name", profile.getName());
+                    authenPostData.put("Platform", "mobile");
                     authenPostData.put("email", PersistentUser.getSocialLoginEmal(mContext));
                     socialLoginAccess("authen/facebook", authenPostData, 1);
                 } else {
@@ -185,6 +186,7 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
                                             authenPostData.put("id", id);
                                             authenPostData.put("name", name);
                                             authenPostData.put("email", email);
+                                            authenPostData.put("Platform", "mobile");
                                             PersistentUser.setSocialLoginEmal(mContext, email);
                                             socialLoginAccess("authen/facebook", authenPostData, 1);
 
@@ -243,6 +245,7 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
                         authenPostData.put("id", userId);
                         authenPostData.put("name", UserName);
                         authenPostData.put("email", "");
+                        authenPostData.put("Platform", "mobile");
                         socialLoginAccess("authen/tweeter", authenPostData, 2);
                     }
 
@@ -312,10 +315,10 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
             PopupAPI.showToast(mContext, "Please Enter UserName");
             return;
         } else if (edittext_email.getText().toString().trim().equalsIgnoreCase("")) {
-            PopupAPI.showToast(mContext, "Please Enter Email Address");
+            PopupAPI.showToast(mContext, "Please Need Enter Mail");
             return;
         } else if (edittext_password.getText().toString().trim().equalsIgnoreCase("")) {
-            PopupAPI.showToast(mContext, "Please Enter Password");
+            PopupAPI.showToast(mContext, "Please Need Enter password ");
             return;
         } else if (edittext_password.getText().toString().trim().length() < 6) {
             PopupAPI.showToast(mContext, "Please Enter Password Min 6 Char");
@@ -377,6 +380,7 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
         HashMap<String, String> authenPostData = new HashMap<String, String>();
         authenPostData.put("UserName", edittext_username.getText().toString());
         authenPostData.put("Password", edittext_password.getText().toString());
+        authenPostData.put("Platform", "mobile");
 
         APIHandler.Instance().POST("authen/", authenPostData, new APIHandler.RequestComplete() {
             @Override
@@ -562,7 +566,7 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
                 mSignInClicked = false;
             }
             mIntentInProgress = false;
-            if (!mGoogleApiClient.isConnecting()) {
+            if (mGoogleApiClient != null && !mGoogleApiClient.isConnecting()) {
                 mGoogleApiClient.connect();
             }
         } else if (requestCode == RC_SIGN_IN) {
@@ -731,6 +735,7 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
             authenPostData.put("id", id);
             authenPostData.put("name", personName);
             authenPostData.put("email", email);
+            authenPostData.put("Platform", "mobile");
             socialLoginAccess("authen/google", authenPostData, 3);
 
         } else {
