@@ -5,9 +5,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.SensorManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Surface;
@@ -18,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,13 +47,19 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
 
     public Context mContext;
     private MDVRLibrary mVRLibrary;
-    private ImageView ic_video_type, ic_live;
-    private boolean is360mode = false;
-    private SeekBar seekBar;
-    private ImageView play_push_btn;
+
+    // UI
+    private RelativeLayout mTopView, mBottomView;
+    private ImageView mBtnBack, m360Mode, mVRMode;
+    private ImageView mBtnPlay;
+    private SeekBar mSeekBar;
+    private TextView mPlayTime;
+
+    // video variables
     Boolean is360, isLive;
     String urlWatch, urlVideo;
     private String PostType = "";
+    private boolean is360mode = false;
 
     //-----------------------------------
     // video player
@@ -65,14 +75,12 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
     private int mSeekWhenPrepared;
     private int mCurrentBufferPercentage;
     private boolean isShowRating = false;
-    //=====Back buttn=====
-    LinearLayout ll_silding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_live_video_player);
+        setContentView(R.layout.activity_live_video_player_new);
 
         mContext = this;
         PlayUsingVitamio();
@@ -98,9 +106,8 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
                 });
             }
         });
-
-        ll_silding = (LinearLayout) this.findViewById(R.id.ll_silding);
-        ll_silding.setOnClickListener(new View.OnClickListener() {
+        mBtnBack = (ImageView) this.findViewById(R.id.back_player);
+        mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LiveVideoPlayerActivity.this.finish();
@@ -150,43 +157,66 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
                 .barrelDistortionConfig(new BarrelDistortionConfig().setDefaultEnabled(false).setScale(0.95f))
                 .build(R.id.video_view);
 
-
-        ic_live = (ImageView) findViewById(R.id.ic_live3);
-        ic_video_type = (ImageView) findViewById(R.id.ic_video_type3);
-        ic_live.setVisibility(View.INVISIBLE);
-        ic_video_type.setVisibility(View.INVISIBLE);
-        ic_video_type.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (is360mode) {
-                    is360mode = false;
-                    ic_video_type.setImageResource(R.drawable.virtual_reality);
-
-                    mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_GLASS);
-                    mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
-                    mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_MOTION);
-                    mVRLibrary.setAntiDistortionEnabled(true);
-                } else {
-                    is360mode = true;
-                    ic_video_type.setImageResource(R.drawable.degrees_360);
-
-                    mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_NORMAL);
-                    mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
-                    mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_TOUCH);
-                    mVRLibrary.setAntiDistortionEnabled(false);
-                }
-            }
-        });
-
+        // init overlay UI
+        m360Mode = (ImageView)findViewById(R.id.view_360);
+        mVRMode = (ImageView)findViewById(R.id.view_vr);
+        mBtnPlay = (ImageView)findViewById(R.id.video_play_paush);
+        mSeekBar = (SeekBar)findViewById(R.id.seek_video);
+        mPlayTime = (TextView)findViewById(R.id.video_progress);
+        // init event
+        //--------------------------------------------
+        // if video is 360 mode
         if (is360) {
+            // set default select is 360 video player
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            ic_video_type.setVisibility(View.VISIBLE);
+
+            m360Mode.setVisibility(View.VISIBLE);
+            m360Mode.setColorFilter(R.color.colorPrimary, PorterDuff.Mode.DST);
+            mVRMode.setVisibility(View.VISIBLE);
+            mVRMode.setColorFilter(R.color.white, PorterDuff.Mode.DST);
+
+            // setup event for button mode
+            m360Mode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!is360mode){
+                        is360mode = true;
+                        m360Mode.setColorFilter(R.color.colorPrimary, PorterDuff.Mode.DST);
+                        mVRMode.setColorFilter(R.color.white, PorterDuff.Mode.DST);
+                        mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_NORMAL);
+                        mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
+                        mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_TOUCH);
+                        mVRLibrary.setAntiDistortionEnabled(false);
+                    }
+                }
+            });
+            mVRMode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(is360mode){
+                        is360mode = false;
+                        m360Mode.setColorFilter(R.color.white, PorterDuff.Mode.DST);
+                        mVRMode.setColorFilter(R.color.colorPrimary, PorterDuff.Mode.DST);
+                        mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_GLASS);
+                        mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
+                        mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_MOTION);
+                        mVRLibrary.setAntiDistortionEnabled(true);
+                    }
+                }
+            });
             is360mode = true;
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+            //---------------------------------------------------------------
+            // set to normal video mode
             mVRLibrary.switchDisplayMode(this, MDVRLibrary.DISPLAY_MODE_NORMAL);
             mVRLibrary.switchProjectionMode(this, MDVRLibrary.PROJECTION_MODE_PLANE_FIT);
             mVRLibrary.switchInteractiveMode(this, MDVRLibrary.INTERACTIVE_MODE_TOUCH);
+
+            // hiden 360 and vr mode button
+            m360Mode.setVisibility(View.GONE);
+            mVRMode.setVisibility(View.GONE);
         }
 
         //-------------------------------------------------
@@ -309,11 +339,11 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
 
 
     public void cancelBusy() {
-        findViewById(R.id.progress).setVisibility(View.GONE);
+        findViewById(R.id.layout_loader).setVisibility(View.GONE);
     }
 
     public void busy() {
-        findViewById(R.id.progress).setVisibility(View.VISIBLE);
+        findViewById(R.id.layout_loader).setVisibility(View.VISIBLE);
     }
 
 
