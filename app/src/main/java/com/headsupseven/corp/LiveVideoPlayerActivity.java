@@ -220,6 +220,9 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
             mVRMode.setVisibility(View.GONE);
         }
 
+
+        mBtnPlay.setImageResource(R.drawable.video_pause);
+        mBtnPlay.setImageResource(R.drawable.video_play);
         //-------------------------------------------------
         // init video player
         mMediaPlayer = new IjkMediaPlayer();
