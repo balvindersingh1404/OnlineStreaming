@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -171,9 +172,9 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
             m360Mode.setVisibility(View.VISIBLE);
-            m360Mode.setColorFilter(R.color.colorPrimary, PorterDuff.Mode.DST);
+            m360Mode.setPressed(true);
             mVRMode.setVisibility(View.VISIBLE);
-            mVRMode.setColorFilter(R.color.white, PorterDuff.Mode.DST);
+            mVRMode.setPressed(false);
 
             // setup event for button mode
             m360Mode.setOnClickListener(new View.OnClickListener() {
@@ -181,8 +182,8 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
                 public void onClick(View v) {
                     if(!is360mode){
                         is360mode = true;
-                        m360Mode.setColorFilter(R.color.colorPrimary, PorterDuff.Mode.DST);
-                        mVRMode.setColorFilter(R.color.white, PorterDuff.Mode.DST);
+                        m360Mode.setPressed(true);
+                        mVRMode.setPressed(false);
                         mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_NORMAL);
                         mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
                         mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_TOUCH);
@@ -195,8 +196,8 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
                 public void onClick(View v) {
                     if(is360mode){
                         is360mode = false;
-                        m360Mode.setColorFilter(R.color.white, PorterDuff.Mode.DST);
-                        mVRMode.setColorFilter(R.color.colorPrimary, PorterDuff.Mode.DST);
+                        m360Mode.setPressed(false);
+                        mVRMode.setPressed(true);
                         mVRLibrary.switchDisplayMode(LiveVideoPlayerActivity.this, MDVRLibrary.DISPLAY_MODE_GLASS);
                         mVRLibrary.switchProjectionMode(LiveVideoPlayerActivity.this, MDVRLibrary.PROJECTION_MODE_SPHERE);
                         mVRLibrary.switchInteractiveMode(LiveVideoPlayerActivity.this, MDVRLibrary.INTERACTIVE_MODE_MOTION);
