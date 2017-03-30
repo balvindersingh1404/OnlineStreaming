@@ -3,6 +3,7 @@ package com.headsupseven.corp;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -33,9 +34,12 @@ import com.asha.vrlib.MDVRLibrary;
 import com.asha.vrlib.model.BarrelDistortionConfig;
 import com.asha.vrlib.model.MDPinchConfig;
 import com.headsupseven.corp.api.APIHandler;
+import com.headsupseven.corp.application.MyApplication;
 
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Locale;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -44,17 +48,20 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
  * Created by Nam Nguyen on 2/1/2017.
  */
 
-public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaController.MediaPlayerControl {
+public class LiveVideoPlayerActivity extends AppCompatActivity {
 
     public Context mContext;
     private MDVRLibrary mVRLibrary;
 
     // UI
-    private RelativeLayout mTopView, mBottomView;
+    private RelativeLayout mTopView, mBottomView, mRootView;
     private ImageView mBtnBack, m360Mode, mVRMode;
     private ImageView mBtnPlay;
     private SeekBar mSeekBar;
     private TextView mPlayTime;
+    StringBuilder mFormatBuilder;
+    Formatter mFormatter;
+    private boolean mDragging;
 
     // video variables
     Boolean is360, isLive;
@@ -111,7 +118,14 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LiveVideoPlayerActivity.this.finish();
+                if (MyApplication.checkHomeActivty) {
+                    LiveVideoPlayerActivity.this.finish();
+                } else {
+                    Intent mm = new Intent(mContext, HomebaseActivity.class);
+                    mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(mm);
+                    LiveVideoPlayerActivity.this.finish();
+                }
             }
         });
     }
@@ -159,11 +173,20 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
                 .build(R.id.video_view);
 
         // init overlay UI
+        mRootView = (RelativeLayout)findViewById(R.id.root_view);
+        mTopView = (RelativeLayout)findViewById(R.id.top_view);
+        mBottomView = (RelativeLayout)findViewById(R.id.bottom_view);
+
         m360Mode = (ImageView)findViewById(R.id.view_360);
         mVRMode = (ImageView)findViewById(R.id.view_vr);
         mBtnPlay = (ImageView)findViewById(R.id.video_play_paush);
         mSeekBar = (SeekBar)findViewById(R.id.seek_video);
+        mSeekBar.setMax(1000);
+        mSeekBar.setOnSeekBarChangeListener(mSeekListener);
         mPlayTime = (TextView)findViewById(R.id.video_progress);
+
+        mFormatBuilder = new StringBuilder();
+        mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
         // init event
         //--------------------------------------------
         // if video is 360 mode
@@ -220,9 +243,17 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
             mVRMode.setVisibility(View.GONE);
         }
 
+        mBtnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isPlaying()){
+                    playerPause();
+                }else{
+                    playerResume();
+                }
+            }
+        });
 
-        mBtnPlay.setImageResource(R.drawable.video_pause);
-        mBtnPlay.setImageResource(R.drawable.video_play);
         //-------------------------------------------------
         // init video player
         mMediaPlayer = new IjkMediaPlayer();
@@ -252,7 +283,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         mMediaPlayer.setOnSeekCompleteListener(new IMediaPlayer.OnSeekCompleteListener() {
             @Override
             public void onSeekComplete(IMediaPlayer iMediaPlayer) {
-                mController.show(0);
+                //mController.show(0);
             }
         });
         mMediaPlayer.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
@@ -262,7 +293,6 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
                     showRatingDialog();
                     isShowRating = true;
                 }
-
             }
         });
         isShowRating = false;
@@ -324,15 +354,15 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
             }
         });
         // init media controller
-        mController = new MediaController(this) {
-            @Override
-            public void hide() {
-            }      // Prevent hiding of controls.
-        };
-        mController.setMediaPlayer(this);
-        View anchorView = findViewById(R.id.video_view);
-        mController.setAnchorView(anchorView);
-        mController.setEnabled(true);
+        //mController = new MediaController(this) {
+//            @Override
+//            public void hide() {
+//            }      // Prevent hiding of controls.
+//        };
+//        mController.setMediaPlayer(this);
+//        View anchorView = findViewById(R.id.video_view);
+//        mController.setAnchorView(anchorView);
+//        mController.setEnabled(true);
 
         if (isLive) {
             playerOpenURL(urlWatch);
@@ -341,6 +371,105 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         }
     }
 
+    private String stringForTime(int timeMs) {
+        int totalSeconds = timeMs / 1000;
+
+        int seconds = totalSeconds % 60;
+        int minutes = (totalSeconds / 60) % 60;
+        int hours   = totalSeconds / 3600;
+
+        mFormatBuilder.setLength(0);
+        if (hours > 0) {
+            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+        } else {
+            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+        }
+    }
+
+    private final Runnable mShowProgress = new Runnable() {
+        @Override
+        public void run() {
+            int pos = setProgress();
+            if (!mDragging && isPlaying()) {
+                mRootView.postDelayed(mShowProgress, 1000 - (pos % 1000));
+            }
+        }
+    };
+
+    private final SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onStartTrackingTouch(SeekBar bar) {
+            mDragging = true;
+            // By removing these pending progress messages we make sure
+            // that a) we won't update the progress while the user adjusts
+            // the seekbar and b) once the user is done dragging the thumb
+            // we will post one of these messages to the queue again and
+            // this ensures that there will be exactly one message queued up.
+            mRootView.removeCallbacks(mShowProgress);
+        }
+
+        @Override
+        public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
+            if (!fromuser) {
+                // We're not interested in programmatically generated changes to
+                // the progress bar's position.
+                return;
+            }
+
+            long duration = getDuration();
+            long newposition = (duration * progress) / 1000L;
+            //seekTo( (int) newposition);
+            if (mPlayTime != null)
+                mPlayTime.setText(stringForTime( (int) newposition));
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar bar) {
+            mDragging = false;
+
+            long duration = getDuration();
+            int position = bar.getProgress();
+            long newposition = (duration * position) / 1000L;
+            seekTo( (int) newposition);
+
+            setProgress();
+
+            if(isPlaying()){
+                mBtnPlay.setImageResource(R.drawable.video_pause);
+            }else{
+                mBtnPlay.setImageResource(R.drawable.video_play);
+            }
+
+            // Ensure that progress is properly updated in the future,
+            // the call to show() does not guarantee this because it is a
+            // no-op if we are already showing.
+            mRootView.post(mShowProgress);
+
+        }
+    };
+
+    private int setProgress() {
+        if (mDragging) {
+            return 0;
+        }
+        int position = getCurrentPosition();
+        int duration = getDuration();
+        if (mSeekBar != null) {
+            if (duration > 0) {
+                // use long to avoid overflow
+                long pos = 1000L * position / duration;
+                mSeekBar.setProgress( (int) pos);
+            }
+            int percent = getBufferPercentage();
+            mSeekBar.setSecondaryProgress(percent * 10);
+        }
+
+        String endTime = stringForTime(duration);
+        String currentTime = stringForTime(position);
+        mPlayTime.setText(currentTime + "/" + endTime);
+
+        return position;
+    }
 
     public void cancelBusy() {
         findViewById(R.id.layout_loader).setVisibility(View.GONE);
@@ -431,7 +560,9 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         if (mStatus == STATUS_STARTED || mStatus == STATUS_PAUSED) {
             mMediaPlayer.stop();
             mStatus = STATUS_STOPPED;
+            mBtnPlay.setImageResource(R.drawable.video_play);
         }
+        mRootView.removeCallbacks(mShowProgress);
     }
 
     public void playerPause() {
@@ -439,7 +570,9 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         if (mMediaPlayer.isPlaying() && mStatus == STATUS_STARTED) {
             mMediaPlayer.pause();
             mStatus = STATUS_PAUSED;
+            mBtnPlay.setImageResource(R.drawable.video_play);
         }
+        mRootView.removeCallbacks(mShowProgress);
     }
 
     public void playerStart() {
@@ -447,8 +580,9 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         if (mStatus == STATUS_PREPARED || mStatus == STATUS_PAUSED) {
             mMediaPlayer.start();
             mStatus = STATUS_STARTED;
-            mController.show(500000000);
+            mBtnPlay.setImageResource(R.drawable.video_pause);
         }
+        mRootView.post(mShowProgress);
     }
 
     public void playerResume() {
@@ -474,17 +608,14 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
                 mStatus != STATUS_PREPARING);
     }
 
-    @Override
     public void start() {
         playerStart();
     }
 
-    @Override
     public void pause() {
         playerPause();
     }
 
-    @Override
     public int getDuration() {
         if (isLive) return 0;
         if (isInPlaybackState()) {
@@ -493,7 +624,6 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         return 0;
     }
 
-    @Override
     public int getCurrentPosition() {
         if (isLive) return 0;
         if (isInPlaybackState()) {
@@ -502,7 +632,6 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         return 0;
     }
 
-    @Override
     public void seekTo(int pos) {
         if (isLive) return;
         if (isInPlaybackState()) {
@@ -513,36 +642,30 @@ public class LiveVideoPlayerActivity extends AppCompatActivity implements MediaC
         }
     }
 
-    @Override
     public boolean isPlaying() {
         return mStatus == STATUS_STARTED;
     }
 
-    @Override
     public int getBufferPercentage() {
         if (mMediaPlayer != null)
             return mCurrentBufferPercentage;
         return 0;
     }
 
-    @Override
     public boolean canPause() {
         return !isLive;
     }
 
-    @Override
     public boolean canSeekBackward() {
         if (isLive) return false;
         return true;
     }
 
-    @Override
     public boolean canSeekForward() {
         if (isLive) return false;
         return true;
     }
 
-    @Override
     public int getAudioSessionId() {
         if (isInPlaybackState())
             return mMediaPlayer.getAudioSessionId();

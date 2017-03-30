@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import com.headsupseven.corp.application.MyApplication;
 import com.headsupseven.corp.utils.TouchImageView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -44,7 +45,7 @@ public class NotificaionviewActivity extends AppCompatActivity {
     }
 
     private void initUI() {
-        Log.w("imageUri","are"+imageUri);
+        Log.w("imageUri", "are" + imageUri);
         image_view = (TouchImageView) this.findViewById(R.id.image_view);
         LinearLayout ll_back = (LinearLayout) this.findViewById(R.id.ll_back);
         progree_bar = (ProgressBar) this.findViewById(R.id.progree_bar);
@@ -52,7 +53,15 @@ public class NotificaionviewActivity extends AppCompatActivity {
         ll_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NotificaionviewActivity.this.finish();
+                if (MyApplication.checkHomeActivty) {
+                    NotificaionviewActivity.this.finish();
+                } else {
+                    Intent mm = new Intent(mContext, HomebaseActivity.class);
+                    mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(mm);
+                    NotificaionviewActivity.this.finish();
+                }
+
             }
         });
 
@@ -79,5 +88,16 @@ public class NotificaionviewActivity extends AppCompatActivity {
                 .into(mTarget);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (MyApplication.checkHomeActivty) {
+            NotificaionviewActivity.this.finish();
+        } else {
+            Intent mm = new Intent(mContext, HomebaseActivity.class);
+            mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(mm);
+            NotificaionviewActivity.this.finish();
+        }
+    }
 }
