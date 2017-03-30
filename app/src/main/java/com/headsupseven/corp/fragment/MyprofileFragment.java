@@ -16,6 +16,7 @@ import com.headsupseven.corp.HomebaseActivity;
 import com.headsupseven.corp.R;
 import com.headsupseven.corp.adapter.ProfileAdapter;
 import com.headsupseven.corp.api.APIHandler;
+import com.headsupseven.corp.application.MyApplication;
 import com.headsupseven.corp.customview.EndlessRecyclerViewScrollListener;
 import com.headsupseven.corp.customview.VideoViewShouldClose;
 import com.headsupseven.corp.model.HomeLsitModel;
@@ -111,15 +112,19 @@ public class MyprofileFragment extends Fragment {
         listView_explorer.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                int currPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
-                if (page * 12 <= totalItemsCount) {
+                int dataView = ((page) * MyApplication.Max_post_per_page) + 1;
+                if (dataView <= totalItemsCount) {
                     loadMoreData(page);
 
                 }
+
             }
         });
         serverDataProcess();
-        loadMoreData(0);
+        if (mProfileAdapter.getDataSize() == 0) {
+            loadMoreData(mProfileAdapter.getItemCount());
+
+        }
     }
 
     private void serverDataProcess() {
@@ -138,9 +143,10 @@ public class MyprofileFragment extends Fragment {
             serverDataProcess();
         }
     }
+
     public void loadMoreData(int page) {
         HashMap<String, String> param = new HashMap<String, String>();
-        param.put("max", "12");
+        param.put("max", "" + MyApplication.Max_post_per_page);
         param.put("page", "" + page);
         APIHandler.Instance().POST_BY_AUTHEN("user/app/" + APIHandler.Instance().user.userID + "/posts", param, new APIHandler.RequestComplete() {
             @Override
@@ -212,7 +218,6 @@ public class MyprofileFragment extends Fragment {
 
         }
     }
-    //===== for my profile fragment ============
 
 }
 

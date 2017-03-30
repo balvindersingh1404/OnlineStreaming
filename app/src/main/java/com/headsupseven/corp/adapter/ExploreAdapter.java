@@ -126,13 +126,13 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void deleteAllItems() {
         myDataset.removeAllElements();
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
     }
 
     public void addnewItem(HomeLsitModel dataObj) {
         int currentPos = getItemCount();
         myDataset.add(dataObj);
-        notifyItemInserted(currentPos);
+//        notifyItemInserted(currentPos);
     }
 
     private boolean isPositionHeader(int position) {

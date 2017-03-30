@@ -129,7 +129,7 @@ public class Headsup7Fragment extends Fragment {
         if (page == 0)
             mHeadsup7Adapter.deleteAllItem();
         HashMap<String, String> param = new HashMap<String, String>();
-        param.put("max", "10");
+        param.put("Headsup7Fragment", "Headsup7Fragment");
         param.put("page", "" + page);
         APIHandler.Instance().GET_BY_AUTHEN("feeds/headsup7", param, new APIHandler.RequestComplete() {
             @Override

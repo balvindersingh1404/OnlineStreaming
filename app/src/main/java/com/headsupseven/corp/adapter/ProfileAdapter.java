@@ -89,7 +89,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         myDataset.removeAllElements();
 
     }
+    public int getDataSize() {
+       return myDataset.size();
 
+    }
     public void addJSONboject(String responsee) {
         this.response = responsee;
         notifyItemChanged(0);

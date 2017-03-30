@@ -55,11 +55,13 @@ public class ExploreFragment extends Fragment {
     private LinearLayoutManager mLinearLayoutManager;
     private int typeforLazyLoader = 0;
     private Activity mActivity;
+    private boolean loaderData = false;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
     }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -137,19 +139,25 @@ public class ExploreFragment extends Fragment {
         listView_explorer.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
+                Log.w("loadsadsdads", "are" + page);
+                Log.w("totalItemsCount", "are" + totalItemsCount);
 
-                if ((page) * MyApplication.Max_post_per_page <= totalItemsCount) {
-                    if (typeforLazyLoader == 0) {
-                        homedata_refresh.setRefreshing(false);
-                        defaultloadMoreData(page);
-                    } else if (typeforLazyLoader == 1) {
-                        CategoryloadMoreData(page);
-                    } else if (typeforLazyLoader == 2) {
-                        TagloadMoreData(2);
+                int dataView = ((page) * MyApplication.Max_post_per_page) + 1;
+                if (dataView <= totalItemsCount) {
+                    if (!loaderData) {
+                        if (typeforLazyLoader == 0) {
+                            homedata_refresh.setRefreshing(false);
+                            defaultloadMoreData(page);
+                        } else if (typeforLazyLoader == 1) {
+                            CategoryloadMoreData(page);
+                        } else if (typeforLazyLoader == 2) {
+                            TagloadMoreData(2);
 
-                    } else if (typeforLazyLoader == 3) {
-                        searchLazyLoader(page);
+                        } else if (typeforLazyLoader == 3) {
+                            searchLazyLoader(page);
+                        }
                     }
+
                 }
             }
         });
@@ -206,6 +214,9 @@ public class ExploreFragment extends Fragment {
 
     //=================default server laod data====================
     private void defaultloadMoreData(int page) {
+        Log.w("pagepagepagepagepage", "are" + page);
+
+        loaderData = true;
         typeforLazyLoader = 0;
         HashMap<String, String> param = new HashMap<String, String>();
         param.put("max", "" + MyApplication.Max_post_per_page);
@@ -217,7 +228,6 @@ public class ExploreFragment extends Fragment {
                     @Override
                     public void run() {
                         ((HomebaseActivity) getActivity()).closeProgressDialog();
-
                         if (code == 200) {
                             responseDataShow(response);
                             mExploreListAdapter.notifyDataSetChanged();
@@ -230,6 +240,8 @@ public class ExploreFragment extends Fragment {
     //============== Category loader =======================
 
     public void CategoryloadMoreData(final int page) {
+        loaderData = true;
+
         typeforLazyLoader = 1;
         HashMap<String, String> mapCategory = mExploreListAdapter.loadCategory();
         String categoriesId = "";
@@ -269,6 +281,7 @@ public class ExploreFragment extends Fragment {
     //============== Tag loader =======================
 
     public void TagloadMoreData(final int page) {
+        loaderData = true;
         typeforLazyLoader = 2;
         HashMap<String, String> mapCategory = mExploreListAdapter.loadTag();
         String categoriesId = "";
@@ -316,7 +329,7 @@ public class ExploreFragment extends Fragment {
         HashMap<String, String> param = new HashMap<String, String>();
         param.put("s", "" + edt_search.getText().toString().trim());
         param.put("max", "" + MyApplication.Max_post_per_page);
-        param.put("page", "" + page);
+        param.put("page", "" + (page));
         APIHandler.Instance().GET_BY_AUTHEN("feeds/search", param, new APIHandler.RequestComplete() {
             @Override
             public void onRequestComplete(final int code, final String response) {
@@ -341,6 +354,8 @@ public class ExploreFragment extends Fragment {
         try {
             final JSONObject json_ob = new JSONObject(response);
             final JSONArray json = json_ob.getJSONArray("msg");
+            Log.w("json", "ar" + json.length());
+
             for (int index = 0; index < json.length(); index++) {
 
                 HomeLsitModel model = new HomeLsitModel();
@@ -372,10 +387,13 @@ public class ExploreFragment extends Fragment {
         } catch (Exception ex) {
 
         }
+        loaderData = false;
+
     }
 
     //load the category list from server
     public void webserverLoadCategoryList() {
+        loaderData = true;
         allCategoryList.removeAllElements();
         APIHandler.Instance().GET_BY_AUTHEN("category", new APIHandler.RequestComplete() {
             @Override
