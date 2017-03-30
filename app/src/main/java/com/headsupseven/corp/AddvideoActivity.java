@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.headsupseven.corp.adapter.CategoryAdapter;
 import com.headsupseven.corp.api.APIHandler;
+import com.headsupseven.corp.application.MyApplication;
 import com.headsupseven.corp.model.Categoryaddvideo;
 import com.headsupseven.corp.utils.ImageFilePath;
 import com.headsupseven.corp.utils.PopupAPI;
@@ -63,7 +64,6 @@ public class AddvideoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addvideo);
         mContext = this;
-
         if (Build.VERSION.SDK_INT >= 21) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -75,6 +75,17 @@ public class AddvideoActivity extends AppCompatActivity {
         setPermission();
         initUI();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        MyApplication.uploadDataFile = false;
     }
 
     private void initUI() {
@@ -89,6 +100,8 @@ public class AddvideoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AddvideoActivity.this.finish();
+                MyApplication.uploadDataFile = false;
+
             }
         });
         layout_spinner_Contact = (RelativeLayout) this.findViewById(R.id.layout_spinner_Contact);
@@ -137,6 +150,7 @@ public class AddvideoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 setPermission();
                 if (permissions.size() == 0) {
+                    MyApplication.uploadDataFile = true;
                     String videoType = post_spinner.getSelectedItem().toString();
                     if (videoType.equalsIgnoreCase("Gallery")) {
                         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -154,7 +168,7 @@ public class AddvideoActivity extends AppCompatActivity {
                         if (mCategoryaddvideo.isFlaABoolean()) {
                             authenPostData.put("PostType", "event-upload");
                             String Category_ID = mCategoryaddvideo.getID();
-                            Log.w("AdditionData","are"+Category_ID);
+                            Log.w("AdditionData", "are" + Category_ID);
                             authenPostData.put("AdditionData", Category_ID);
                         } else {
                             authenPostData.put("PostType", "live");
@@ -312,6 +326,7 @@ public class AddvideoActivity extends AppCompatActivity {
                 Uri selectedUri = data.getData();
                 String selectedImagePath = ImageFilePath.getPath(mContext, selectedUri);
                 if (selectedImagePath != null || !selectedImagePath.equalsIgnoreCase("")) {
+                    MyApplication.uploadDataFile = true;
                     uploadVideo(selectedImagePath);
                 }
 
@@ -341,14 +356,13 @@ public class AddvideoActivity extends AppCompatActivity {
         if (mCategoryaddvideo.isFlaABoolean()) {
             authenPostData.put("PostType", "event-upload");
             String Category_ID = mCategoryaddvideo.getID();
-            Log.w("AdditionData","are"+Category_ID);
+            Log.w("AdditionData", "are" + Category_ID);
             authenPostData.put("AdditionData", Category_ID);
         } else {
             authenPostData.put("PostType", "live");
             String Category_ID = mCategoryaddvideo.getID();
             authenPostData.put("Category", Category_ID);
         }
-
 
         HashMap<String, String> filePostData = new HashMap<String, String>();
         filePostData.put("videofile", selectedImagePath);
@@ -359,6 +373,7 @@ public class AddvideoActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Log.w("response", "are" + response);
+                        MyApplication.uploadDataFile = false;
                         mProgressDialog.dismiss();
                         try {
                             JSONObject mJsonObject = new JSONObject(response);

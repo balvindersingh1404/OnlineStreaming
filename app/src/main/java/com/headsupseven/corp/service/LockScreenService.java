@@ -20,7 +20,7 @@ public class LockScreenService extends Service {
     @SuppressWarnings("deprecation")
     public void onCreate() {
         KeyguardManager.KeyguardLock key;
-        KeyguardManager km = (KeyguardManager)getSystemService(KEYGUARD_SERVICE);
+        KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
 
         //This is deprecated, but it is a simple way to disable the lockscreen in code
         key = km.newKeyguardLock("IN");
@@ -31,6 +31,7 @@ public class LockScreenService extends Service {
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_BOOT_COMPLETED);
+        //filter.addAction(Intent.ACTION_USER_PRESENT);
 
         //Set up a receiver to listen for the Intents in this Service
         receiver = new LockScreenReceiver();

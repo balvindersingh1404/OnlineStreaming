@@ -1,7 +1,5 @@
 package com.headsupseven.corp;
 
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -14,7 +12,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONObject;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +36,6 @@ public class FCMMessageReceiverService extends FirebaseMessagingService {
     public void checkView(String order_status) {
 
         try {
-
             //{action=1, message=test notificaition, thumb-url=this is image url}
             JSONObject mJsonObject = new JSONObject(order_status);
             int action = mJsonObject.getInt("action");
@@ -47,26 +43,26 @@ public class FCMMessageReceiverService extends FirebaseMessagingService {
             sendNotificationPlace(message);
 
             //String thumb=mJsonObject.getString("thumb-url");
-
-            ActivityManager am = (ActivityManager) getApplicationContext()
-                    .getSystemService(Activity.ACTIVITY_SERVICE);
-            String packageName = am.getRunningTasks(1).get(0).topActivity
-                    .getPackageName();
-            List<ActivityManager.RunningTaskInfo> taskInfo = am
-                    .getRunningTasks(1);
-            String topActivity = taskInfo.get(0).topActivity
-                    .getClassName();
-            if (packageName.equalsIgnoreCase("com.headsupseven.corp")) {
-                Intent mIntent = new Intent(getApplicationContext(), NotificaionvideoActiivty.class);
-                mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(mIntent);
-            } else {
-                Intent mIntent = new Intent(getApplicationContext(), NotificaionvideoActiivty.class);
-                mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(mIntent);
-            }
+//
+//            ActivityManager am = (ActivityManager) getApplicationContext()
+//                    .getSystemService(Activity.ACTIVITY_SERVICE);
+//            String packageName = am.getRunningTasks(1).get(0).topActivity
+//                    .getPackageName();
+//            List<ActivityManager.RunningTaskInfo> taskInfo = am
+//                    .getRunningTasks(1);
+//            String topActivity = taskInfo.get(0).topActivity
+//                    .getClassName();
+//            if (packageName.equalsIgnoreCase("com.headsupseven.corp")) {
+//                Intent mIntent = new Intent(getApplicationContext(), NotificaionvideoActiivty.class);
+//                mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+//                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                startActivity(mIntent);
+//            } else {
+//                Intent mIntent = new Intent(getApplicationContext(), NotificaionvideoActiivty.class);
+//                mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+//                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                startActivity(mIntent);
+//            }
         } catch (Exception ex) {
             Log.w("Exception", "Exception" + ex.getMessage());
 

@@ -20,6 +20,7 @@ import net.ossrs.yasea.SrsRecordHandler;
 import java.io.IOException;
 import java.net.SocketException;
 import com.headsupseven.corp.R;
+import com.headsupseven.corp.application.MyApplication;
 
 /**
  * Created by Nam Nguyen on 2/1/2017.
@@ -37,7 +38,7 @@ public class LiveStreamBroadcasterActivity extends AppCompatActivity implements 
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_livestream_broadcaster);
-
+        MyApplication.uploadDataFile=true;
         mContext = this;
 
         if (Build.VERSION.SDK_INT >= 21) {
@@ -71,6 +72,7 @@ public class LiveStreamBroadcasterActivity extends AppCompatActivity implements 
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MyApplication.uploadDataFile = false;
                 LiveStreamBroadcasterActivity.this.finish();
             }
         });
@@ -93,8 +95,9 @@ public class LiveStreamBroadcasterActivity extends AppCompatActivity implements 
         super.onDestroy();
         mPublisher.stopPublish();
         mPublisher.stopRecord();
-    }
+        MyApplication.uploadDataFile = false;
 
+    }
     private void handleException(Exception e) {
         try {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();

@@ -13,6 +13,7 @@ import com.headsupseven.corp.model.AddmanagerList;
 
 public class MyApplication extends Application {
 
+    public static boolean uploadDataFile=false;
     public static  final int Max_post_per_page=10;
     public static AddmanagerList mAddmanagerList = null;
     public static boolean checkHomeActivty=false;

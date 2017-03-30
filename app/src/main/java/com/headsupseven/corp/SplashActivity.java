@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.headsupseven.corp.api.APIHandler;
@@ -33,7 +32,7 @@ public class SplashActivity extends AppCompatActivity {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         PersistentUser.SetPushkey(mContext, refreshedToken);
 
-        Log.w("refreshedToken","are"+refreshedToken);
+        Log.w("refreshedToken", "are" + refreshedToken);
 
 
         if (PersistentUser.isLock(mContext))
