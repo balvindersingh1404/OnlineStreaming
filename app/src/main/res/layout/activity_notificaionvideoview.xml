@@ -54,8 +54,8 @@
             <ProgressBar
                 android:id="@+id/progressBar1"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="60dp"
-                android:layout_height="30dp"
+                android:layout_width="30dp"
+                android:layout_height="15dp"
                 android:layout_gravity="center"
                 android:progressDrawable="@drawable/greenprogress" />
 
@@ -67,7 +67,7 @@
                 android:layout_marginLeft="5dp"
                 android:text="5%"
                 android:textColor="@color/white"
-                android:textSize="20sp"
+                android:textSize="12sp"
                 android:textStyle="normal" />
         </LinearLayout>
 
