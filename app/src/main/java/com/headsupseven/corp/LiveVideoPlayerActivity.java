@@ -15,6 +15,7 @@ import android.hardware.SensorManager;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Surface;
 import android.view.View;
 import android.view.Window;
@@ -137,8 +138,14 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         urlWatch = getIntent().getStringExtra("Url_Stream");
         urlVideo = getIntent().getStringExtra("Url_video");
 
-        busy();
+//        Log.w("isLive","are"+isLive);
+//        if(isLive)
+//            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        else
+//            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+
+        busy();
         mVRLibrary = MDVRLibrary.with(this)
                 .displayMode(MDVRLibrary.DISPLAY_MODE_NORMAL)
                 .interactiveMode(MDVRLibrary.INTERACTIVE_MODE_TOUCH)

@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import com.headsupseven.corp.CommentActivity;
 import com.headsupseven.corp.DonateActivity;
-import com.headsupseven.corp.EventDetailsActivity;
 import com.headsupseven.corp.HomebaseActivity;
 import com.headsupseven.corp.LiveVideoPlayerActivity;
 import com.headsupseven.corp.OtherProfileActivity;
@@ -186,7 +184,31 @@ public class HomeDataAdapter extends RecyclerView
                 viewHolder.tv_comment.setText("" + homeLsitModel.getComment());
                 viewHolder.even_title.setText(homeLsitModel.getPostName());
                 viewHolder.event_description.setText(homeLsitModel.getPostDescription());
-                viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                ///=============== check the post type==================
+                viewHolder.row_video_icon.setVisibility(View.INVISIBLE);
+                String post_type = homeLsitModel.getPostType();
+                if (post_type.equalsIgnoreCase("news")) {
+                    viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                    viewHolder.row_video_icon.setImageResource(R.drawable.news_icon);
+                } else if (post_type.equalsIgnoreCase("event")) {
+                    viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                    viewHolder.row_video_icon.setImageResource(R.drawable.events_icon);
+                } else {
+                    String videoType = homeLsitModel.getVideoType();
+                    if (videoType.equalsIgnoreCase("photo")) {
+                        viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                        viewHolder.row_video_icon.setImageResource(R.drawable.photos_icon);
+
+                    }
+                    if (videoType.contentEquals("360")) {
+                        viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                        viewHolder.row_video_icon.setImageResource(R.drawable.video_icon_360);
+                    } else {
+                        viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                        viewHolder.row_video_icon.setImageResource(R.drawable.ic_play);
+                    }
+                }
+                //=========End of post type==============
 
                 if (homeLsitModel.isLiked())
                     viewHolder.like_unlike.setImageResource(R.drawable.like_active);

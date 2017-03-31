@@ -404,6 +404,27 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     .load(thumbURl)
                     .into(holder.event_image);
 
+            holder.row_video_icon.setVisibility(View.INVISIBLE);
+            String post_type = mHomeLsitModel.getPostType();
+            if (post_type.equalsIgnoreCase("news")) {
+                holder.row_video_icon.setVisibility(View.VISIBLE);
+                holder.row_video_icon.setImageResource(R.drawable.news_icon);
+            } else if (post_type.equalsIgnoreCase("event")) {
+                holder.row_video_icon.setVisibility(View.VISIBLE);
+                holder.row_video_icon.setImageResource(R.drawable.events_icon);
+            } else {
+                String videoType = mHomeLsitModel.getVideoType();
+                if (videoType.equalsIgnoreCase("photo")) {
+                    holder.row_video_icon.setVisibility(View.VISIBLE);
+                    holder.row_video_icon.setImageResource(R.drawable.photos_icon);                }
+                if (videoType.contentEquals("360")) {
+                    holder.row_video_icon.setVisibility(View.VISIBLE);
+                    holder.row_video_icon.setImageResource(R.drawable.video_icon_360);
+                } else {
+                    holder.row_video_icon.setVisibility(View.VISIBLE);
+                    holder.row_video_icon.setImageResource(R.drawable.ic_play);
+                }
+            }
         }
     }
 
@@ -540,93 +561,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "" + title);
         mContext.startActivity(Intent.createChooser(sharingIntent, "Share via Headsup7"));
     }
-
-//    public void searchExplorerByTag() {
-//        String tag = "";
-//        for (String key : mapTag.keySet()) {
-//            if (tag == "") {
-//                tag = key;
-//            } else {
-//                tag = tag + "," + key;
-//            }
-//        }
-//        if (tag.length() == 0)
-//            return;
-//
-//        mProgressDialog = new ProgressDialog(mContext);
-//        mProgressDialog.setCancelable(true);
-//        mProgressDialog.setMessage("Uploading...");
-//        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        mProgressDialog.show();
-//        HashMap<String, String> param = new HashMap<String, String>();
-//        param.put("tags", "" + tag);
-//        APIHandler.Instance().GET_BY_AUTHEN("feeds/search-by-tag", param, new APIHandler.RequestComplete() {
-//            @Override
-//            public void onRequestComplete(final int code, final String response) {
-//                Log.w("Tag ", "Date: " + response);
-//                ((HomebaseActivity) mContext).runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        //responseDataShow(response);
-//                        mProgressDialog.dismiss();
-//                    }
-//                });
-//
-//            }
-//        });
-//    }
-
-//    public void responseDataShow(final String response) {
-//        try {
-//            myDataset.clear();
-//            final JSONObject json_ob = new JSONObject(response);
-//            final JSONArray json = json_ob.getJSONArray("msg");
-//            for (int index = 0; index < json.length(); index++) {
-//
-//                HomeLsitModel model = new HomeLsitModel();
-//                JSONObject mObject = json.getJSONObject(index);
-//                model.setCreatedAt(mObject.getString("CreatedAt"));
-//                model.setUpdatedAt(mObject.getString("UpdatedAt"));
-//                model.setPublish(mObject.getString("Publish"));
-//                model.setCreatedBy(mObject.getString("CreatedBy"));
-//                model.setCreatedByName(mObject.getString("CreatedByName"));
-//                model.setDeviceID(mObject.getString("DeviceID"));
-//                model.setPostName(mObject.getString("PostName"));
-//                model.setPostDescription(mObject.getString("PostDescription"));
-//                model.setPostThumbUrl(mObject.getString("PostThumbUrl"));
-//                model.setView(mObject.getString("View"));
-//                model.setCreatedByAvatar(mObject.getString("CreatedByAvatar"));
-//                model.setLike(mObject.getString("Like"));
-//                model.setComment(mObject.getString("Comment"));
-//                model.setRate(mObject.getString("Rate"));
-//                model.setRateValue(mObject.getString("RateValue"));
-//                model.setPostType(mObject.getString("PostType"));
-//                model.setLiveStreamApp(mObject.getString("LiveStreamApp"));
-//                model.setLiveStreamName(mObject.getString("LiveStreamName"));
-//                model.setPostStreaming(mObject.getBoolean("IsPostStreaming"));
-//                model.setVideoType(mObject.getString("VideoType"));
-//                model.setVideoName(mObject.getString("VideoName"));
-//
-//                String PostType = mObject.getString("PostType");
-//                model.setLiked(mObject.getBoolean("Liked"));
-//
-//                model.setPostType(PostType);
-//
-//                if (PostType.contains("ads")) {
-//                    model.setFlagAdd(true);
-//                    model.setID(mObject.getInt("AdsID"));
-//                } else {
-//                    model.setID(mObject.getInt("ID"));
-//                    model.setFlagAdd(false);
-//                }
-//                myDataset.add(model);
-//            }
-//
-//        } catch (Exception ex) {
-//
-//        }
-//        notifyDataSetChanged();
-//    }
 
 
 }

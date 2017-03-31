@@ -58,6 +58,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     private LinearLayout li_clickView;
     private ImageView image_view;
     private ImageView charging;
+    private ImageView row_video_icon;
     private final BroadcastReceiver m_timeChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -120,7 +121,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
 
     private void init() {
 
-
+        row_video_icon = (ImageView) this.findViewById(R.id.row_video_icon);
         li_clickView = (LinearLayout) this.findViewById(R.id.li_clickView);
         video_view = (VideoView) this.findViewById(R.id.video_view);
         image_view = (ImageView) this.findViewById(R.id.image_view);
@@ -228,8 +229,26 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 final String video_name = msg.getString("video_name");
                 final String video_type = msg.getString("video_type");
 
-                Log.w("response", "are" + details);
 
+                if (post_type.equalsIgnoreCase("news")) {
+                    row_video_icon.setVisibility(View.VISIBLE);
+                    row_video_icon.setImageResource(R.drawable.news_icon);
+                } else if (post_type.equalsIgnoreCase("event")) {
+                    row_video_icon.setVisibility(View.VISIBLE);
+                    row_video_icon.setImageResource(R.drawable.events_icon);
+                } else {
+                    if (video_type.equalsIgnoreCase("photo")) {
+                        row_video_icon.setVisibility(View.VISIBLE);
+                        row_video_icon.setImageResource(R.drawable.photos_icon);
+                    }
+                    if (video_type.contentEquals("360")) {
+                        row_video_icon.setVisibility(View.VISIBLE);
+                        row_video_icon.setImageResource(R.drawable.video_icon_360);
+                    } else {
+                        row_video_icon.setVisibility(View.VISIBLE);
+                        row_video_icon.setImageResource(R.drawable.ic_play);
+                    }
+                }
 
                 mTarget = new Target() {
                     @Override
@@ -363,6 +382,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
         return isServiceFound;
 
     }
+
     //http://tips.androidhive.info/2015/04/android-how-to-check-if-the-app-is-in-background-or-foreground/
     public void checkServerData() {
         try {

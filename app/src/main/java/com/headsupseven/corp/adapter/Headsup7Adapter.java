@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.headsupseven.corp.CommentActivity;
@@ -271,17 +270,27 @@ public class Headsup7Adapter extends RecyclerView
                 viewHolder.row_video_icon.setVisibility(View.VISIBLE);
 
 
-                // many of the news articles have a play button on the image. remove the play button since they aren't videos   ."gift" "comment" "like" need to be removed if we are not allowing them (headsup7 tab)
-//                if (homeLsitModel.getPostType().equalsIgnoreCase("news")) {
-//                    viewHolder.rl_like_unlike.setVisibility(View.VISIBLE);
-//                    viewHolder.row_video_icon.setVisibility(View.VISIBLE);
-//
-//                } else {
-//                    viewHolder.rl_like_unlike.setVisibility(View.GONE);
-//                    viewHolder.row_video_icon.setVisibility(View.GONE);
-//                }
-
-
+                viewHolder.row_video_icon.setVisibility(View.INVISIBLE);
+                String post_type = homeLsitModel.getPostType();
+                if (post_type.equalsIgnoreCase("news")) {
+                    viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                    viewHolder.row_video_icon.setImageResource(R.drawable.news_icon);
+                } else if (post_type.equalsIgnoreCase("event")) {
+                    viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                    viewHolder.row_video_icon.setImageResource(R.drawable.events_icon);
+                } else {
+                    String videoType = homeLsitModel.getVideoType();
+                    if (videoType.equalsIgnoreCase("photo")) {
+                        viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                        viewHolder.row_video_icon.setImageResource(R.drawable.photos_icon);                    }
+                    if (videoType.contentEquals("360")) {
+                        viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                        viewHolder.row_video_icon.setImageResource(R.drawable.video_icon_360);
+                    } else {
+                        viewHolder.row_video_icon.setVisibility(View.VISIBLE);
+                        viewHolder.row_video_icon.setImageResource(R.drawable.ic_play);
+                    }
+                }
 
 
                 if (homeLsitModel.isLiked())
@@ -408,7 +417,7 @@ public class Headsup7Adapter extends RecyclerView
         private ImageView event_image, ic_live, ic_video_type;
         private TextView tv_name, tv_posttime, tv_watching, even_title, event_description, tv_like, tv_comment;
         private ImageView like_unlike;
-       // private RelativeLayout rl_like_unlike;
+        // private RelativeLayout rl_like_unlike;
 
         public DataObjectHolder(View itemView) {
             super(itemView);

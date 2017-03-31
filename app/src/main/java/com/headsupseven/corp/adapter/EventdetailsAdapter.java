@@ -193,6 +193,29 @@ public class EventdetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.ic_live.setVisibility(View.INVISIBLE);
             holder.ic_video_type.setVisibility(View.INVISIBLE);
             holder.vote.setText("VOTE");
+
+            String post_type = mHomeLsitModel.getPostType();
+            if (post_type.equalsIgnoreCase("news")) {
+                holder.row_video_icon.setVisibility(View.VISIBLE);
+                holder.row_video_icon.setImageResource(R.drawable.news_icon);
+            } else if (post_type.equalsIgnoreCase("event")) {
+                holder.row_video_icon.setVisibility(View.VISIBLE);
+                holder.row_video_icon.setImageResource(R.drawable.events_icon);
+            } else {
+                String videoType = mHomeLsitModel.getVideoType();
+                if (videoType.equalsIgnoreCase("photo")) {
+                    holder.row_video_icon.setVisibility(View.VISIBLE);
+                    holder.row_video_icon.setImageResource(R.drawable.photos_icon);
+                }
+                if (videoType.contentEquals("360")) {
+                    holder.row_video_icon.setVisibility(View.VISIBLE);
+                    holder.row_video_icon.setImageResource(R.drawable.video_icon_360);
+                } else {
+                    holder.row_video_icon.setVisibility(View.VISIBLE);
+                    holder.row_video_icon.setImageResource(R.drawable.ic_play);
+                }
+            }
+            ///
             holder.ll_like.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
