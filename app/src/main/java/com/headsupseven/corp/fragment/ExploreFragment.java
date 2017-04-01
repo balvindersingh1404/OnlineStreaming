@@ -108,8 +108,9 @@ public class ExploreFragment extends Fragment {
         homedata_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshContent();
                 mExploreListAdapter.deleteAllItemTag();
+                refreshContent();
+
             }
         });
 
@@ -214,7 +215,6 @@ public class ExploreFragment extends Fragment {
 
     //=================default server laod data====================
     private void defaultloadMoreData(int page) {
-        Log.w("pagepagepagepagepage", "are" + page);
 
         loaderData = true;
         typeforLazyLoader = 0;
@@ -311,8 +311,6 @@ public class ExploreFragment extends Fragment {
                     @Override
                     public void run() {
                         ((HomebaseActivity) getActivity()).closeProgressDialog();
-
-
                         responseDataShow(response);
 
                     }

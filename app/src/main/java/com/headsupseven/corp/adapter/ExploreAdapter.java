@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.github.lzyzsd.randomcolor.RandomColor;
 import com.headsupseven.corp.CommentActivity;
 import com.headsupseven.corp.DonateActivity;
 import com.headsupseven.corp.LiveVideoPlayerActivity;
@@ -45,14 +44,16 @@ import java.util.Vector;
 public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
-    private static final int TYPE_FOOTER = 2;
+    //  private static final int TYPE_FOOTER = 2;
     private String thumbURl = "";
     private Vector<HomeLsitModel> myDataset = new Vector<>();
     private Context mContext;
     private Vector<CategoryList> allCategoryList = new Vector<CategoryList>();
-    private HashMap<String, String> mapCategory = new HashMap<>();
     private Vector<SearchTag> allSearchTag = new Vector<SearchTag>();
+
     private HashMap<String, String> mapTag = new HashMap<>();
+    private HashMap<String, String> mapCategory = new HashMap<>();
+
     private VideoViewShouldClose videoCallback = null;
     private AdapterCallback mAdapterCallback = null;
 
@@ -62,12 +63,15 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void setAdapterCallback(AdapterCallback callback) {
         this.mAdapterCallback = callback;
     }
+
     public void setVideoTapCallback(VideoViewShouldClose callback) {
         this.videoCallback = callback;
     }
+
     public HomeLsitModel getModelAt(int index) {
         return myDataset.get(index);
     }
+
     public ExploreAdapter(Context context, Vector<HomeLsitModel> myDataset) {
         mContext = context;
         this.allCategoryList.clear();
@@ -81,23 +85,25 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int getItemViewType(int position) {
         if (isPositionHeader(position)) {
             return TYPE_HEADER;
-        } else if (isPositionFooter(position)) {
-            return TYPE_FOOTER;
         }
         return TYPE_ITEM;
     }
 
     public void deleteAllItemTag() {
-        this.allSearchTag.clear();
-        this.mapTag.clear();
-        notifyItemChanged(0);
-
+        ((Activity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mapCategory.clear();
+                mapTag.clear();
+                notifyDataSetChanged();
+            }
+        });
     }
+
     public void deleteAllItem() {
         myDataset.removeAllElements();
 
     }
-
 
     public int topFeedsID() {
         if (myDataset.size() > 0)
@@ -126,7 +132,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void deleteAllItems() {
         myDataset.removeAllElements();
-        //notifyDataSetChanged();
     }
 
     public void addnewItem(HomeLsitModel dataObj) {
@@ -173,7 +178,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder.ll_catories.removeAllViews();
             for (int i = 0; i < allCategoryList.size(); i++) {
 
-                CategoryList mCategoryList=allCategoryList.get(i);
+                CategoryList mCategoryList = allCategoryList.get(i);
 
                 final Button button = new Button(mContext);
                 button.setBackgroundColor(Color.parseColor("#DEDEDE"));
@@ -187,7 +192,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 if (mapCategory.containsKey(allCategoryList.get(i).getName())) {
                     button.setBackgroundColor(Color.parseColor("#00C5C1"));
-
                 }
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -203,12 +207,10 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //                            mapCategory.put(mCategoryList.getName(), mCategoryList.getID());
 //                        }
 
-                        Log.w("mCategoryList","are"+mCategoryList.getName());
-
                         mapTag.clear();
                         mapCategory.clear();
                         mapCategory.put(mCategoryList.getName(), mCategoryList.getID());
-                        notifyItemChanged(0);
+                        notifyDataSetChanged();
                         mAdapterCallback.onMethodCallback(1, "");
 
                     }
@@ -220,6 +222,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.layout_Tags.setVisibility(View.GONE);
             else
                 holder.layout_Tags.setVisibility(View.VISIBLE);
+
             holder.ll_tag.removeAllViews();
             for (int i = 0; i < allSearchTag.size(); i++) {
                 param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -237,7 +240,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 if (mapTag.containsKey(allSearchTag.get(i).getTagName())) {
                     button.setBackgroundColor(Color.parseColor("#00C5C1"));
-
                 }
 
                 button.setOnClickListener(new View.OnClickListener() {
@@ -258,7 +260,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         mapCategory.clear();
                         mapTag.clear();
                         mapTag.put(mSearchTag.getTagName(), mSearchTag.getID());
-                        notifyItemChanged(0);
+                        notifyDataSetChanged();
                         mAdapterCallback.onMethodCallback(2, "");
 
                     }
@@ -416,7 +418,8 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 String videoType = mHomeLsitModel.getVideoType();
                 if (videoType.equalsIgnoreCase("photo")) {
                     holder.row_video_icon.setVisibility(View.VISIBLE);
-                    holder.row_video_icon.setImageResource(R.drawable.photos_icon);                }
+                    holder.row_video_icon.setImageResource(R.drawable.photos_icon);
+                }
                 if (videoType.contentEquals("360")) {
                     holder.row_video_icon.setVisibility(View.VISIBLE);
                     holder.row_video_icon.setImageResource(R.drawable.video_icon_360);
