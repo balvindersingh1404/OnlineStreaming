@@ -1,6 +1,7 @@
 package com.headsupseven.corp.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,6 +57,7 @@ public class ExploreFragment extends Fragment {
     private int typeforLazyLoader = 0;
     private Activity mActivity;
     private boolean loaderData = false;
+    private ProgressDialog mProgressDialog;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
@@ -66,6 +68,8 @@ public class ExploreFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = activity;
+
+
     }
 
     @Override
@@ -76,9 +80,11 @@ public class ExploreFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        Log.w("setUserVisibleHint", "setUserVisibleHint");
         if (isVisibleToUser) {
             if (((HomebaseActivity) getActivity()) != null) {
                 ((HomebaseActivity) getActivity()).showProgressDialog();
+
             }
             webserverLoadCategoryList();
 
@@ -101,6 +107,8 @@ public class ExploreFragment extends Fragment {
     }
 
     public void initUI() {
+        Log.w("allHomeLsitModels", "are" + allHomeLsitModels.size());
+
         mExploreListAdapter = new ExploreAdapter(getActivity(), allHomeLsitModels);
         img_search = (ImageView) view.findViewById(R.id.img_search);
         edt_search = (EditText) view.findViewById(R.id.edt_search);
@@ -110,10 +118,8 @@ public class ExploreFragment extends Fragment {
             public void onRefresh() {
                 mExploreListAdapter.deleteAllItemTag();
                 refreshContent();
-
             }
         });
-
         listView_explorer = (RecyclerView) view.findViewById(R.id.listView_explorer);
         //----------------------------------------------------------------------
         mLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
@@ -210,6 +216,7 @@ public class ExploreFragment extends Fragment {
                 }
             }
         });
+
 
     }
 
@@ -391,6 +398,13 @@ public class ExploreFragment extends Fragment {
 
     //load the category list from server
     public void webserverLoadCategoryList() {
+//        mProgressDialog = new ProgressDialog(mContext);
+//        mProgressDialog.setCancelable(true);
+//        mProgressDialog.setMessage("Loading...");
+//        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        mProgressDialog.show();
+
+
         loaderData = true;
         allCategoryList.removeAllElements();
         APIHandler.Instance().GET_BY_AUTHEN("category", new APIHandler.RequestComplete() {
@@ -404,7 +418,10 @@ public class ExploreFragment extends Fragment {
                                 JSONObject mJsonObject = new JSONObject(response);
                                 int codeServer = mJsonObject.getInt("code");
                                 if (codeServer == 1) {
+
                                     JSONArray msg = mJsonObject.getJSONArray("msg");
+                                    Log.w("category", "" + msg.length());
+
                                     for (int index = 0; index < msg.length(); index++) {
                                         JSONObject mObject = msg.getJSONObject(index);
                                         CategoryList mCategoryList = new CategoryList();
@@ -441,6 +458,8 @@ public class ExploreFragment extends Fragment {
                                 int codeServer = mJsonObject.getInt("code");
                                 if (codeServer == 1) {
                                     JSONArray msg = mJsonObject.getJSONArray("msg");
+                                    Log.w("tag", "" + msg.length());
+
                                     for (int index = 0; index < msg.length(); index++) {
                                         JSONObject mObject = msg.getJSONObject(index);
                                         SearchTag mSearchTag = new SearchTag();

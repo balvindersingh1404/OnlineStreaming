@@ -140,7 +140,7 @@
             android:windowSoftInputMode="stateHidden"></activity>
 
         <activity
-            android:name="com.headsupseven.corp.NotificaionvideoActiivty"
+            android:name="com.headsupseven.corp.LockscreenActiivty"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize"></activity>

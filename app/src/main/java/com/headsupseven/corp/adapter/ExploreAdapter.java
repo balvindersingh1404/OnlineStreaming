@@ -67,20 +67,18 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void setVideoTapCallback(VideoViewShouldClose callback) {
         this.videoCallback = callback;
     }
-
     public HomeLsitModel getModelAt(int index) {
         return myDataset.get(index);
     }
-
     public ExploreAdapter(Context context, Vector<HomeLsitModel> myDataset) {
         mContext = context;
-        this.allCategoryList.clear();
-        this.allSearchTag.clear();
         this.mapTag.clear();
         this.mapCategory.clear();
         this.myDataset = myDataset;
     }
-
+    public int getDataSize() {
+        return myDataset.size();
+    }
     @Override
     public int getItemViewType(int position) {
         if (isPositionHeader(position)) {
@@ -88,7 +86,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
         return TYPE_ITEM;
     }
-
     public void deleteAllItemTag() {
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
@@ -102,9 +99,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void deleteAllItem() {
         myDataset.removeAllElements();
-
     }
-
     public int topFeedsID() {
         if (myDataset.size() > 0)
             return myDataset.get(0).getID();
