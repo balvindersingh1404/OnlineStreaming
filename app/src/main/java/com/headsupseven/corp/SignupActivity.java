@@ -100,7 +100,7 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
     private static final int ERROR_DIALOG_REQUEST_CODE = 11;
     private boolean mIntentInProgress;
     //for twitter
-    private TwitterAuthClient client;
+    private TwitterAuthClient mTwitterClient;
     private static final String TWITTER_KEY = "WFr2rsX2lo8pkvq9O2fNE5mFF";
     private static final String TWITTER_SECRET = "ogvWK1cB9l0fcUMwAkmZsJU7kfCxlyXxksfYNc2Bc15DMpEPMC";
 
@@ -234,7 +234,7 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
         img_twitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                client.authorize(SignupActivity.this, new Callback<TwitterSession>() {
+                mTwitterClient.authorize(SignupActivity.this, new Callback<TwitterSession>() {
                     @Override
                     public void success(Result<TwitterSession> twitterSessionResult) {
                         TwitterSession session = twitterSessionResult.data;
@@ -535,8 +535,8 @@ public class SignupActivity extends AppCompatActivity implements GoogleApiClient
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-        client.onActivityResult(requestCode, resultCode, data);
+        if (callbackManager != null) callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (mTwitterClient != null) mTwitterClient.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_PAYMENT) {
             if (resultCode == Activity.RESULT_OK) {

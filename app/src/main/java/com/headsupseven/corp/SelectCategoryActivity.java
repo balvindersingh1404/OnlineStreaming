@@ -74,8 +74,10 @@ public class SelectCategoryActivity extends AppCompatActivity {
 //
             }
         });
-
-        APIHandler.Instance().GET_BY_AUTHEN("category&page=0&max=100", new APIHandler.RequestComplete() {
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("page", "0");
+        param.put("max", "100");
+        APIHandler.Instance().GET_BY_AUTHEN("category", param, new APIHandler.RequestComplete() {
             @Override
             public void onRequestComplete(final int code, final String response) {
                 if (response.length() > 0) {

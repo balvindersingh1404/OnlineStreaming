@@ -56,10 +56,11 @@ public class ExploreFragment extends Fragment {
     private int typeforLazyLoader = 0;
     private Activity mActivity;
     private boolean loaderData = false;
-
+    private HomebaseActivity baseActivity;
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
+        baseActivity = (HomebaseActivity)getActivity();
     }
 
     @Override
@@ -77,11 +78,10 @@ public class ExploreFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            if (((HomebaseActivity) getActivity()) != null) {
-                ((HomebaseActivity) getActivity()).showProgressDialog();
+            if (baseActivity != null) {
+                baseActivity.showProgressDialog();
             }
             webserverLoadCategoryList();
-
         } else {
             // Do your Work
         }
@@ -272,6 +272,7 @@ public class ExploreFragment extends Fragment {
                     public void run() {
                         ((HomebaseActivity) getActivity()).closeProgressDialog();
                         responseDataShow(response);
+                        mExploreListAdapter.notifyDataSetChanged();
                     }
                 });
 
@@ -312,7 +313,7 @@ public class ExploreFragment extends Fragment {
                     public void run() {
                         ((HomebaseActivity) getActivity()).closeProgressDialog();
                         responseDataShow(response);
-
+                        mExploreListAdapter.notifyDataSetChanged();
                     }
                 });
 
@@ -334,11 +335,9 @@ public class ExploreFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
                         ((HomebaseActivity) getActivity()).closeProgressDialog();
-
-
                         responseDataShow(response);
+                        mExploreListAdapter.notifyDataSetChanged();
                     }
                 });
 
@@ -457,7 +456,6 @@ public class ExploreFragment extends Fragment {
                             }
                             mExploreListAdapter.deleteAllItems();
                             defaultloadMoreData(0);
-
                         }
 
                     });
