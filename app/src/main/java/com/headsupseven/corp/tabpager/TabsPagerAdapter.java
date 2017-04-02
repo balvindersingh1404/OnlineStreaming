@@ -14,7 +14,6 @@ import com.headsupseven.corp.fragment.MyprofileFragment;
 
 
 public class TabsPagerAdapter extends FragmentPagerAdapter {
-
     public TabsPagerAdapter(FragmentManager fm) {
         super(fm);
     }

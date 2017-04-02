@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.headsupseven.corp.NotificaionvideoActiivty;
+import com.headsupseven.corp.LockscreenActiivty;
 import com.headsupseven.corp.application.MyApplication;
 
 import java.util.List;
@@ -51,8 +51,8 @@ public class LockScreenReceiver extends BroadcastReceiver {
                 .getRunningTasks(1);
         String topActivity = taskInfo.get(0).topActivity
                 .getClassName();
-        if (!topActivity.equalsIgnoreCase("com.headsupseven.corp.NotificaionvideoActiivty")) {
-            Intent i = new Intent(context, NotificaionvideoActiivty.class);
+        if (!topActivity.equalsIgnoreCase("com.headsupseven.corp.LockscreenActiivty")) {
+            Intent i = new Intent(context, LockscreenActiivty.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
         }

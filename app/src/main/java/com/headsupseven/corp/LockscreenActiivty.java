@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
@@ -24,7 +23,7 @@ import android.widget.TextView;
 
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.application.MyApplication;
-import com.headsupseven.corp.customview.VideoView;
+import com.headsupseven.corp.media.IjkVideoView;
 import com.headsupseven.corp.renderers.ScaleRenderer;
 import com.headsupseven.corp.sliders.HorizontalSlider;
 import com.headsupseven.corp.slideunlock.ISlideListener;
@@ -43,13 +42,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import tv.danmaku.ijk.media.player.IMediaPlayer;
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+
 
 /**
  * Created by Prosanto on 2/23/17.
  */
 
-public class NotificaionvideoActiivty extends AppCompatActivity {
-    private VideoView video_view;
+public class LockscreenActiivty extends AppCompatActivity {
+    //private VideoView video_view;
+    private IjkVideoView video_view_IjkVideoView;
     private Context mContext;
     SlideLayout slider;
     IntentFilter s_intentFilter;
@@ -59,49 +62,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     private ImageView image_view;
     private ImageView charging;
     private ImageView row_video_icon;
-    private final BroadcastReceiver m_timeChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (action.equals(Intent.ACTION_TIME_CHANGED) ||
-                    action.equals(Intent.ACTION_TIMEZONE_CHANGED) ||
-                    action.equals(Intent.ACTION_TIME_TICK)) {
-
-                setDateTime();
-            }
-
-        }
-    };
-
-
-    private BroadcastReceiver mbcr = new BroadcastReceiver() {
-        //onReceive method will receive updates
-        public void onReceive(Context c, Intent i) {
-            int level = i.getIntExtra("level", 0);
-            ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
-            TextView tv = (TextView) findViewById(R.id.textView1);
-            pb.setProgress(level);
-            tv.setText(Integer.toString(level) + "%");
-
-
-            int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-            boolean bCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                    status == BatteryManager.BATTERY_STATUS_FULL;
-
-            if (bCharging) {
-                charging.setVisibility(View.VISIBLE);
-                Log.w("charging", "charging");
-            } else {
-                charging.setVisibility(View.GONE);
-                Log.w("not charging", "not charging");
-
-            }
-
-        }
-    };
-
-
+    private IMediaPlayer miMediaPlayer;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,7 +84,9 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
 
         row_video_icon = (ImageView) this.findViewById(R.id.row_video_icon);
         li_clickView = (LinearLayout) this.findViewById(R.id.li_clickView);
-        video_view = (VideoView) this.findViewById(R.id.video_view);
+//        video_view = (VideoView) this.findViewById(R.id.video_view);
+        video_view_IjkVideoView = (IjkVideoView) this.findViewById(R.id.video_view_IjkVideoView);
+
         image_view = (ImageView) this.findViewById(R.id.image_view);
         charging = (ImageView) this.findViewById(R.id.imgCharging);
         tv_time = (TextView) this.findViewById(R.id.tv_time);
@@ -229,26 +192,8 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                 final String video_name = msg.getString("video_name");
                 final String video_type = msg.getString("video_type");
 
-
-                if (post_type.equalsIgnoreCase("news")) {
-                    row_video_icon.setVisibility(View.VISIBLE);
-                    row_video_icon.setImageResource(R.drawable.news_icon);
-                } else if (post_type.equalsIgnoreCase("event")) {
-                    row_video_icon.setVisibility(View.VISIBLE);
-                    row_video_icon.setImageResource(R.drawable.events_icon);
-                } else {
-                    if (video_type.equalsIgnoreCase("photo")) {
-                        row_video_icon.setVisibility(View.VISIBLE);
-                        row_video_icon.setImageResource(R.drawable.photos_icon);
-                    }
-                    if (video_type.contentEquals("360")) {
-                        row_video_icon.setVisibility(View.VISIBLE);
-                        row_video_icon.setImageResource(R.drawable.video_icon_360);
-                    } else {
-                        row_video_icon.setVisibility(View.VISIBLE);
-                        row_video_icon.setImageResource(R.drawable.ic_play);
-                    }
-                }
+                String video22 = "http://d1exh2z1dm71tm.cloudfront.net/recorded/neilios.1490980267144.FLV";
+                videoPlay(video22);
 
                 mTarget = new Target() {
                     @Override
@@ -271,42 +216,43 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                         .load(thumb)
                         .into(mTarget);
 
+                //============ show icon for post=============
+                if (post_type.equalsIgnoreCase("news")) {
+                    row_video_icon.setVisibility(View.VISIBLE);
+                    row_video_icon.setImageResource(R.drawable.news_icon);
+                } else if (post_type.equalsIgnoreCase("event")) {
+                    row_video_icon.setVisibility(View.VISIBLE);
+                    row_video_icon.setImageResource(R.drawable.events_icon);
+                } else {
+                    if (video_type.equalsIgnoreCase("photo")) {
+                        row_video_icon.setVisibility(View.VISIBLE);
+                        row_video_icon.setImageResource(R.drawable.photos_icon);
+                    }
+                    if (video_type.contentEquals("360")) {
+                        row_video_icon.setVisibility(View.VISIBLE);
+                        row_video_icon.setImageResource(R.drawable.video_icon_360);
+                    } else {
+                        row_video_icon.setVisibility(View.VISIBLE);
+                        row_video_icon.setImageResource(R.drawable.ic_play);
+                    }
+                }
                 //======== check the post type==========
                 if (post_type.equalsIgnoreCase("news")) {
-                    video_view.setVisibility(View.GONE);
+                    video_view_IjkVideoView.setVisibility(View.GONE);
                 } else if (post_type.equalsIgnoreCase("event")) {
-                    video_view.setVisibility(View.GONE);
+                    video_view_IjkVideoView.setVisibility(View.GONE);
 
                 } else {
-                    /// adds or post
                     if (video_type.equalsIgnoreCase("photo")) {
-                        video_view.setVisibility(View.GONE);
+                        video_view_IjkVideoView.setVisibility(View.GONE);
 
                     } else {
-                        video_view.setVisibility(View.VISIBLE);
-                        //===============Coding for play Video==================
-                        Uri uri = Uri.parse(video);
-                        video_view.setVideoURI(uri);
-                        video_view.requestFocus();
-                        video_view.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                            // Close the progress bar and play the video
-                            public void onPrepared(MediaPlayer mp) {
-                                video_view.start();
-                                image_view.setVisibility(View.GONE);
-                                video_view.mute();
-                            }
-                        });
-                        video_view.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                            }
-                        });
+                        video_view_IjkVideoView.setVisibility(View.VISIBLE);
+                        videoPlay(video);
                     }
 
                 }
                 //========image click option=========================
-
-
                 li_clickView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -318,14 +264,14 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                                 webViewIntent.putExtra("Title", video_name);
                                 webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(webViewIntent);
-                                NotificaionvideoActiivty.this.finish();
+                                LockscreenActiivty.this.finish();
 
                             } else if (post_type.equalsIgnoreCase("event")) {
                                 Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
                                 webViewIntent.putExtra("EventId", post_id);
                                 webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(webViewIntent);
-                                NotificaionvideoActiivty.this.finish();
+                                LockscreenActiivty.this.finish();
 
                             } else {
                                 if (video_type.equalsIgnoreCase("photo")) {
@@ -333,7 +279,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                                     webViewIntent.putExtra("imagePath", video);
                                     webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(webViewIntent);
-                                    NotificaionvideoActiivty.this.finish();
+                                    LockscreenActiivty.this.finish();
 
                                 } else {
                                     if (post_type.equalsIgnoreCase("ads")) {
@@ -345,7 +291,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                                         intent.putExtra("postID", Integer.parseInt(post_id));
                                         intent.putExtra("PostType", post_type);
                                         startActivity(intent);
-                                        NotificaionvideoActiivty.this.finish();
+                                        LockscreenActiivty.this.finish();
 
                                     } else {
                                         detailsOfPost(post_id);
@@ -367,7 +313,28 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
         } catch (Exception ex) {
             Log.w("Exception", "wre" + ex.getMessage());
         }
+    }
 
+    public void videoPlay(String video) {
+        video_view_IjkVideoView.setVisibility(View.VISIBLE);
+        // init player
+        IjkMediaPlayer.loadLibrariesOnce(null);
+        IjkMediaPlayer.native_profileBegin("libijkplayer.so");
+        Uri mVideoUri = Uri.parse(video);
+        video_view_IjkVideoView.setVideoURI(mVideoUri);
+        video_view_IjkVideoView.requestFocus();
+
+        video_view_IjkVideoView.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(IMediaPlayer iMediaPlayer) {
+                miMediaPlayer=iMediaPlayer;
+                miMediaPlayer.setLooping(true);
+                miMediaPlayer.setVolume(0, 0);
+                video_view_IjkVideoView.start();
+                image_view.setVisibility(View.GONE);
+
+            }
+        });
     }
 
     public static boolean isServiceRunning(Context context) {
@@ -378,7 +345,6 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
             Log.w("sd", "ae" + services.get(i).numRunning);
 
         }
-
         return isServiceFound;
 
     }
@@ -405,14 +371,14 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                     webViewIntent.putExtra("Title", video_name);
                     webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(webViewIntent);
-                    NotificaionvideoActiivty.this.finish();
+                    LockscreenActiivty.this.finish();
 
                 } else if (post_type.equalsIgnoreCase("event")) {
                     Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
                     webViewIntent.putExtra("EventId", post_id);
                     webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(webViewIntent);
-                    NotificaionvideoActiivty.this.finish();
+                    LockscreenActiivty.this.finish();
 
                 } else {
                     if (video_type.equalsIgnoreCase("photo")) {
@@ -420,7 +386,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                         webViewIntent.putExtra("imagePath", video);
                         webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(webViewIntent);
-                        NotificaionvideoActiivty.this.finish();
+                        LockscreenActiivty.this.finish();
 
                     } else {
                         if (post_type.equalsIgnoreCase("ads")) {
@@ -432,7 +398,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                             intent.putExtra("postID", Integer.parseInt(post_id));
                             intent.putExtra("PostType", post_type);
                             startActivity(intent);
-                            NotificaionvideoActiivty.this.finish();
+                            LockscreenActiivty.this.finish();
 
                         } else {
                             detailsOfPost(post_id);
@@ -547,7 +513,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
                                 intent.putExtra("postID", Integer.parseInt(postId));
                                 intent.putExtra("PostType", postType);
                                 startActivity(intent);
-                                NotificaionvideoActiivty.this.finish();
+                                LockscreenActiivty.this.finish();
 
 
                             } else if (0 > codePost) {
@@ -565,7 +531,7 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     }
 
     private synchronized void jumpMain() {
-        NotificaionvideoActiivty.this.finish();
+        LockscreenActiivty.this.finish();
     }
 
     private String getCurrentDateAndTime() {
@@ -574,7 +540,6 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
     }
 
     public long distance(Date date1, Date date2) {
-
         long diff = date1.getTime() - date2.getTime();
         long seconds = diff / 1000;
         long minutes = seconds / 60;
@@ -596,18 +561,45 @@ public class NotificaionvideoActiivty extends AppCompatActivity {
         String currentDateTimeString = sdf.format(d);
         tv_time.setText(currentDateTimeString + "");
         Calendar c = Calendar.getInstance();
-        System.out.println("Current time => " + currentDateTimeString);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = df.format(c.getTime());
-        // formattedDate have current date/time
         SimpleDateFormat ssdf = new SimpleDateFormat("EEE");
         Date date = new Date();
         String dayOfTheWeek = ssdf.format(date);
         tv_date.setText(formattedDate + " " + dayOfTheWeek);
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.w("do", "nothing");
-    }
+    private final BroadcastReceiver m_timeChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(Intent.ACTION_TIME_CHANGED) ||
+                    action.equals(Intent.ACTION_TIMEZONE_CHANGED) ||
+                    action.equals(Intent.ACTION_TIME_TICK)) {
+                setDateTime();
+            }
+        }
+    };
+
+    private BroadcastReceiver mbcr = new BroadcastReceiver() {
+        //onReceive method will receive updates
+        public void onReceive(Context c, Intent i) {
+            int level = i.getIntExtra("level", 0);
+            ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
+            TextView tv = (TextView) findViewById(R.id.textView1);
+            pb.setProgress(level);
+            tv.setText(Integer.toString(level) + "%");
+            int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            boolean bCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                    status == BatteryManager.BATTERY_STATUS_FULL;
+            if (bCharging) {
+                charging.setVisibility(View.VISIBLE);
+            } else {
+                charging.setVisibility(View.GONE);
+            }
+
+        }
+    };
+
 }

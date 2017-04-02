@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.headsupseven.corp.NotificaionvideoActiivty;
+import com.headsupseven.corp.LockscreenActiivty;
 
 
 public class LockscreenIntentReceiver extends BroadcastReceiver {
@@ -22,7 +22,7 @@ public class LockscreenIntentReceiver extends BroadcastReceiver {
 	}
 	// Display lock screen
 	private void start_lockscreen(Context context) {
-		Intent mIntent = new Intent(context, NotificaionvideoActiivty.class);
+		Intent mIntent = new Intent(context, LockscreenActiivty.class);
 		mIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(mIntent);
 	}
