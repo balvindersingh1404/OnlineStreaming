@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -13,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.headsupseven.corp.application.MyApplication;
+import com.headsupseven.corp.utils.Helper;
 
 /**
  * Created by Nam Nguyen on 3/16/2017.
@@ -45,6 +47,15 @@ public class WebViewActivity extends AppCompatActivity {
 
         busy();
 
+        if (Helper.isAppRunning(WebViewActivity.this, "com.headsupseven.corp.HomebaseActivity")) {
+            Log.w("App is  running", "App is  running");
+            // App is running
+        } else {
+            // App is not running
+            Log.w("App is not running", "App is not running");
+
+        }
+
         // init UI
         mWebView = (WebView) findViewById(R.id.screen_web_view);
         mWebView.loadUrl(url);
@@ -72,7 +83,6 @@ public class WebViewActivity extends AppCompatActivity {
             WebViewActivity.this.finish();
         } else {
             Intent mm = new Intent(mContext, HomebaseActivity.class);
-            mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(mm);
             WebViewActivity.this.finish();
         }
@@ -85,7 +95,7 @@ public class WebViewActivity extends AppCompatActivity {
             WebViewActivity.this.finish();
         } else {
             Intent mm = new Intent(mContext, HomebaseActivity.class);
-            mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            mm.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(mm);
             WebViewActivity.this.finish();
         }

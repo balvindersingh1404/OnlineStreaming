@@ -37,6 +37,7 @@ import com.asha.vrlib.model.BarrelDistortionConfig;
 import com.asha.vrlib.model.MDPinchConfig;
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.application.MyApplication;
+import com.headsupseven.corp.utils.Helper;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -128,7 +129,16 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                         .getRunningTasks(1);
                 String topActivity = taskInfo.get(0).topActivity
                         .getClassName();
-                Log.w("", "" + topActivity);
+
+                if (Helper.isAppRunning(LiveVideoPlayerActivity.this, "com.headsupseven.corp.HomebaseActivity")) {
+                    Log.w("App is  running", "App is  running");
+                    // App is running
+                } else {
+                    // App is not running
+                    Log.w("App is not running", "App is not running");
+
+                }
+
 
                 if (MyApplication.checkHomeActivty) {
                     LiveVideoPlayerActivity.this.finish();

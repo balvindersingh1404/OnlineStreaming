@@ -74,6 +74,8 @@ public class LockscreenActiivty extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         mContext = this;
+        Log.w("LockscreenActiivty", "LockscreenActiivty");
+
         //http://www.coders-hub.com/2013/11/how-to-get-battery-level-using.html#.WNI-8xKGOuU
         init();
     }
@@ -345,6 +347,7 @@ public class LockscreenActiivty extends AppCompatActivity {
 
                 if (post_type.equalsIgnoreCase("news")) {
                     Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
+                    webViewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     webViewIntent.putExtra("Url", video);
                     webViewIntent.putExtra("Title", video_name);
                     startActivity(webViewIntent);

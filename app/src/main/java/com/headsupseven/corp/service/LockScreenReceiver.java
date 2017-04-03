@@ -26,21 +26,7 @@ public class LockScreenReceiver extends BroadcastReceiver {
                 openLocakScreen(context);
             }
         }
-//
-//        else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-//            // and do whatever you need to do here
-//            wasScreenOn = true;
-//            Log.e("test", "wasScreenOn" + wasScreenOn);
-//        } else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
-//            Log.e("test", "userpresent");
-//        }
-//
-//        //If the screen was just turned on or it just booted up, start your Lock Activity
-//        if (action.equals(Intent.ACTION_SCREEN_OFF) || action.equals(Intent.ACTION_BOOT_COMPLETED)) {
-//
-//        }
     }
-
     public void openLocakScreen(Context context) {
         ActivityManager am = (ActivityManager) context
                 .getSystemService(Activity.ACTIVITY_SERVICE);
@@ -48,26 +34,24 @@ public class LockScreenReceiver extends BroadcastReceiver {
                 .getRunningTasks(1);
         String topActivity = taskInfo.get(0).topActivity
                 .getClassName();
+
         if (MyApplication.wasScreenOn) {
-            Log.w("Application open ", "" + true);
             if (!topActivity.equalsIgnoreCase("com.headsupseven.corp.LockscreenActiivty")) {
                 boolean backgroup = isApplicationSentToBackground(context);
-                Log.w("backgroup", "" + backgroup);
-
                 if (backgroup) {
                     Intent i = new Intent(context, LockscreenActiivty.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     context.startActivity(i);
 
                 } else {
-                    Log.w("sadsdsfdsfsdfdsf", "sfdsfgdgdfgfdg");
+                    ///======= app does not open=============
                     Intent i = new Intent(context, LockscreenActiivty.class);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     context.startActivity(i);
                 }
             }
         } else {
-            Log.w("Application open ", "" + false);
             Intent i = new Intent(context, LockscreenActiivty.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
