@@ -142,8 +142,11 @@
         <activity
             android:name="com.headsupseven.corp.LockscreenActiivty"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize">
+
+        </activity>
 
 
         <activity

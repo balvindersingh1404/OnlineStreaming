@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.headsupseven.corp.LockscreenActiivty;
 import com.headsupseven.corp.application.MyApplication;
@@ -27,6 +26,7 @@ public class LockScreenReceiver extends BroadcastReceiver {
             }
         }
     }
+
     public void openLocakScreen(Context context) {
         ActivityManager am = (ActivityManager) context
                 .getSystemService(Activity.ACTIVITY_SERVICE);
@@ -46,7 +46,7 @@ public class LockScreenReceiver extends BroadcastReceiver {
                 } else {
                     ///======= app does not open=============
                     Intent i = new Intent(context, LockscreenActiivty.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 //                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     context.startActivity(i);
                 }
