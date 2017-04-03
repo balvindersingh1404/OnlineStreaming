@@ -1,5 +1,6 @@
 package com.headsupseven.corp;
 
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -21,9 +22,10 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.headsupseven.corp.api.APIHandler;
-import com.headsupseven.corp.service.ChatService;
+import com.headsupseven.corp.service.*;
 import com.headsupseven.corp.utils.PersistentUser;
 import com.navdrawer.SimpleSideDrawer;
+import com.headsupseven.corp.service.LockScreenService;
 
 import org.json.JSONObject;
 
@@ -72,8 +74,24 @@ public class BaseActivity extends AppCompatActivity {
         }
         androidQuery = new AQuery(mContext);
         startService(new Intent(this, ChatService.class));
+
+        // start lockscreen service if it not.
+//        if (!isMyServiceRunning(LockScreenService.class)){
+//            startService(new Intent(this, LockScreenService.class));
+//        }
+
         initUIBaseActivity();
 
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void initUIBaseActivity() {
