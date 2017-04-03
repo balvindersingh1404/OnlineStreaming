@@ -1,7 +1,6 @@
 package com.headsupseven.corp;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +38,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -51,7 +49,6 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
  */
 
 public class LockscreenActiivty extends AppCompatActivity {
-    //private VideoView video_view;
     private IjkVideoView video_view_IjkVideoView;
     private Context mContext;
     SlideLayout slider;
@@ -63,6 +60,7 @@ public class LockscreenActiivty extends AppCompatActivity {
     private ImageView charging;
     private ImageView row_video_icon;
     private IMediaPlayer miMediaPlayer;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,9 +104,11 @@ public class LockscreenActiivty extends AppCompatActivity {
             @Override
             public void onSlideDone(SlideLayout slider, boolean done) {
                 if (done) {
-                    // restore start state
-                    Log.w("slide done", "");
-                    jumpMain();
+//                    if (!MyApplication.wasScreenOn) {
+//                        loginInformationOtherCall(2);
+//                    }
+
+                    LockscreenActiivty.this.finish();
                     slider.reset();
                 } else {
 
@@ -172,8 +172,6 @@ public class LockscreenActiivty extends AppCompatActivity {
 
 
         }
-
-
     }
 
 
@@ -191,9 +189,6 @@ public class LockscreenActiivty extends AppCompatActivity {
                 final String video_description = msg.getString("video_description");
                 final String video_name = msg.getString("video_name");
                 final String video_type = msg.getString("video_type");
-
-                String video22 = "http://d1exh2z1dm71tm.cloudfront.net/recorded/neilios.1490980267144.FLV";
-                videoPlay(video22);
 
                 mTarget = new Target() {
                     @Override
@@ -262,14 +257,12 @@ public class LockscreenActiivty extends AppCompatActivity {
                                 Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
                                 webViewIntent.putExtra("Url", video);
                                 webViewIntent.putExtra("Title", video_name);
-                                webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(webViewIntent);
                                 LockscreenActiivty.this.finish();
 
                             } else if (post_type.equalsIgnoreCase("event")) {
                                 Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
                                 webViewIntent.putExtra("EventId", post_id);
-                                webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(webViewIntent);
                                 LockscreenActiivty.this.finish();
 
@@ -277,7 +270,6 @@ public class LockscreenActiivty extends AppCompatActivity {
                                 if (video_type.equalsIgnoreCase("photo")) {
                                     Intent webViewIntent = new Intent(mContext, NotificaionviewActivity.class);
                                     webViewIntent.putExtra("imagePath", video);
-                                    webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(webViewIntent);
                                     LockscreenActiivty.this.finish();
 
@@ -301,8 +293,7 @@ public class LockscreenActiivty extends AppCompatActivity {
 
                             }
                         } else {
-                            Log.w("ads", "ads");
-                            loginInformationOtherCall();
+                            loginInformationOtherCall(0);
                         }
 
 
@@ -327,7 +318,7 @@ public class LockscreenActiivty extends AppCompatActivity {
         video_view_IjkVideoView.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(IMediaPlayer iMediaPlayer) {
-                miMediaPlayer=iMediaPlayer;
+                miMediaPlayer = iMediaPlayer;
                 miMediaPlayer.setLooping(true);
                 miMediaPlayer.setVolume(0, 0);
                 video_view_IjkVideoView.start();
@@ -337,19 +328,6 @@ public class LockscreenActiivty extends AppCompatActivity {
         });
     }
 
-    public static boolean isServiceRunning(Context context) {
-        boolean isServiceFound = false;
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> services = activityManager.getRunningTasks(Integer.MAX_VALUE);
-        for (int i = 0; i < services.size(); i++) {
-            Log.w("sd", "ae" + services.get(i).numRunning);
-
-        }
-        return isServiceFound;
-
-    }
-
-    //http://tips.androidhive.info/2015/04/android-how-to-check-if-the-app-is-in-background-or-foreground/
     public void checkServerData() {
         try {
 
@@ -369,14 +347,12 @@ public class LockscreenActiivty extends AppCompatActivity {
                     Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
                     webViewIntent.putExtra("Url", video);
                     webViewIntent.putExtra("Title", video_name);
-                    webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(webViewIntent);
                     LockscreenActiivty.this.finish();
 
                 } else if (post_type.equalsIgnoreCase("event")) {
                     Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
                     webViewIntent.putExtra("EventId", post_id);
-                    webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(webViewIntent);
                     LockscreenActiivty.this.finish();
 
@@ -384,7 +360,6 @@ public class LockscreenActiivty extends AppCompatActivity {
                     if (video_type.equalsIgnoreCase("photo")) {
                         Intent webViewIntent = new Intent(mContext, NotificaionviewActivity.class);
                         webViewIntent.putExtra("imagePath", video);
-                        webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(webViewIntent);
                         LockscreenActiivty.this.finish();
 
@@ -415,7 +390,7 @@ public class LockscreenActiivty extends AppCompatActivity {
         }
     }
 
-    public void loginInformationOtherCall() {
+    public void loginInformationOtherCall(final int type) {
 
         HashMap<String, String> authenPostData = new HashMap<String, String>();
         authenPostData.put("UserName", PersistentUser.getUserName(mContext));
@@ -438,11 +413,17 @@ public class LockscreenActiivty extends AppCompatActivity {
                                     JSONObject msgData = reader.getJSONObject("msg");
                                     APIHandler.Instance().user.SetAuthenData(msgData);
                                     APIHandler.Instance().InitChatClient();
+                                    if (type == 0) {
+                                        checkServerData();
 
-                                    checkServerData();
+                                    } else {
+                                        PersistentUser.setLogin(mContext);
+                                        Intent mm = new Intent(mContext, HomebaseActivity.class);
+                                        startActivity(mm);
+                                        LockscreenActiivty.this.finish();
+                                    }
                                 }
                             } catch (Exception ex) {
-                                Log.w("Exception", "wre" + ex.getMessage());
 
                             }
                         }
@@ -530,9 +511,6 @@ public class LockscreenActiivty extends AppCompatActivity {
         });
     }
 
-    private synchronized void jumpMain() {
-        LockscreenActiivty.this.finish();
-    }
 
     private String getCurrentDateAndTime() {
         SimpleDateFormat simple = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
