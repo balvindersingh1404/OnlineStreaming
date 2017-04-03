@@ -1,6 +1,7 @@
 package com.headsupseven.corp;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -40,6 +41,7 @@ import com.headsupseven.corp.application.MyApplication;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -119,6 +121,15 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                ActivityManager am = (ActivityManager)mContext
+                        .getSystemService(Activity.ACTIVITY_SERVICE);
+                List<ActivityManager.RunningTaskInfo> taskInfo = am
+                        .getRunningTasks(1);
+                String topActivity = taskInfo.get(0).topActivity
+                        .getClassName();
+                Log.w("", "" + topActivity);
+
                 if (MyApplication.checkHomeActivty) {
                     LiveVideoPlayerActivity.this.finish();
                 } else {

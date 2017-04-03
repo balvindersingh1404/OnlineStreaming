@@ -83,6 +83,8 @@ public class HomebaseActivity extends AppCompatActivity {
         androidQuery = new AQuery(mContext);
         MyApplication.checkHomeActivty=true;
         MyApplication.uploadDataFile = false;
+        MyApplication.wasScreenOn=true;
+
         startService(new Intent(this, ChatService.class));
         initUIBaseActivity();
 

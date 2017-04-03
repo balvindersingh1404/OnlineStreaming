@@ -104,9 +104,11 @@ public class LockscreenActiivty extends AppCompatActivity {
             @Override
             public void onSlideDone(SlideLayout slider, boolean done) {
                 if (done) {
-                    if (!MyApplication.wasScreenOn) {
-                        loginInformationOtherCall(2);
-                    }
+//                    if (!MyApplication.wasScreenOn) {
+//                        loginInformationOtherCall(2);
+//                    }
+
+                    LockscreenActiivty.this.finish();
                     slider.reset();
                 } else {
 
@@ -255,14 +257,12 @@ public class LockscreenActiivty extends AppCompatActivity {
                                 Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
                                 webViewIntent.putExtra("Url", video);
                                 webViewIntent.putExtra("Title", video_name);
-                                webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(webViewIntent);
                                 LockscreenActiivty.this.finish();
 
                             } else if (post_type.equalsIgnoreCase("event")) {
                                 Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
                                 webViewIntent.putExtra("EventId", post_id);
-                                webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(webViewIntent);
                                 LockscreenActiivty.this.finish();
 
@@ -270,7 +270,6 @@ public class LockscreenActiivty extends AppCompatActivity {
                                 if (video_type.equalsIgnoreCase("photo")) {
                                     Intent webViewIntent = new Intent(mContext, NotificaionviewActivity.class);
                                     webViewIntent.putExtra("imagePath", video);
-                                    webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(webViewIntent);
                                     LockscreenActiivty.this.finish();
 
@@ -348,14 +347,12 @@ public class LockscreenActiivty extends AppCompatActivity {
                     Intent webViewIntent = new Intent(mContext, WebViewActivity.class);
                     webViewIntent.putExtra("Url", video);
                     webViewIntent.putExtra("Title", video_name);
-                    webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(webViewIntent);
                     LockscreenActiivty.this.finish();
 
                 } else if (post_type.equalsIgnoreCase("event")) {
                     Intent webViewIntent = new Intent(mContext, EventDetailsActivity.class);
                     webViewIntent.putExtra("EventId", post_id);
-                    webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(webViewIntent);
                     LockscreenActiivty.this.finish();
 
@@ -363,7 +360,6 @@ public class LockscreenActiivty extends AppCompatActivity {
                     if (video_type.equalsIgnoreCase("photo")) {
                         Intent webViewIntent = new Intent(mContext, NotificaionviewActivity.class);
                         webViewIntent.putExtra("imagePath", video);
-                        webViewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(webViewIntent);
                         LockscreenActiivty.this.finish();
 
@@ -423,7 +419,6 @@ public class LockscreenActiivty extends AppCompatActivity {
                                     } else {
                                         PersistentUser.setLogin(mContext);
                                         Intent mm = new Intent(mContext, HomebaseActivity.class);
-                                        mm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(mm);
                                         LockscreenActiivty.this.finish();
                                     }

@@ -1,6 +1,5 @@
 package com.headsupseven.corp;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,9 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.headsupseven.corp.application.MyApplication;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Nam Nguyen on 3/16/2017.
@@ -71,12 +67,7 @@ public class WebViewActivity extends AppCompatActivity {
     }
 
     public void BackButtonActiion() {
-//        ArrayList<String> runningactivities = new ArrayList<String>();
-//        ActivityManager activityManager = (ActivityManager) getBaseContext().getSystemService(Context.ACTIVITY_SERVICE);
-//        List<ActivityManager.RunningTaskInfo> services = activityManager.getRunningTasks(Integer.MAX_VALUE);
-//        for (int i1 = 0; i1 < services.size(); i1++) {
-//            runningactivities.add(0, services.get(i1).topActivity.toString());
-//        }
+
         if (MyApplication.checkHomeActivty) {
             WebViewActivity.this.finish();
         } else {
@@ -86,6 +77,7 @@ public class WebViewActivity extends AppCompatActivity {
             WebViewActivity.this.finish();
         }
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -98,6 +90,7 @@ public class WebViewActivity extends AppCompatActivity {
             WebViewActivity.this.finish();
         }
     }
+
     public void cancelBusy() {
         findViewById(R.id.progress).setVisibility(View.GONE);
     }
