@@ -13,8 +13,6 @@ import com.headsupseven.corp.application.MyApplication;
 import java.util.List;
 
 public class LockScreenReceiver extends BroadcastReceiver {
-    public static boolean wasScreenOn = true;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.e("test", "" + MyApplication.uploadDataFile);
