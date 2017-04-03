@@ -381,16 +381,6 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                 return true;
             }
         });
-        // init media controller
-        //mController = new MediaController(this) {
-//            @Override
-//            public void hide() {
-//            }      // Prevent hiding of controls.
-//        };
-//        mController.setMediaPlayer(this);
-//        View anchorView = findViewById(R.id.video_view);
-//        mController.setAnchorView(anchorView);
-//        mController.setEnabled(true);
 
         if (isLive) {
             playerOpenURL(urlWatch);
