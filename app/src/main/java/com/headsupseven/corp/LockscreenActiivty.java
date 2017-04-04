@@ -120,7 +120,8 @@ public class LockscreenActiivty extends AppCompatActivity {
 
         if (PersistentUser.getlastModified(mContext).equalsIgnoreCase("")) {
             HashMap<String, String> param = new HashMap<String, String>();
-            APIHandler.Instance().GET_BY_AUTHEN("android-lockscreen", new APIHandler.RequestComplete() {
+            param.put("uid", APIHandler.GetDeviceID(this));
+            APIHandler.Instance().GET_BY_AUTHEN("android-lockscreen",param, new APIHandler.RequestComplete() {
                 @Override
                 public void onRequestComplete(final int code, final String response) {
                     ((Activity) mContext).runOnUiThread(new Runnable() {
@@ -147,7 +148,8 @@ public class LockscreenActiivty extends AppCompatActivity {
                 if (minutes >= 10) {
 
                     HashMap<String, String> param = new HashMap<String, String>();
-                    APIHandler.Instance().GET_BY_AUTHEN("android-lockscreen", new APIHandler.RequestComplete() {
+                    param.put("uid", APIHandler.GetDeviceID(this));
+                    APIHandler.Instance().GET_BY_AUTHEN("android-lockscreen", param, new APIHandler.RequestComplete() {
                         @Override
                         public void onRequestComplete(final int code, final String response) {
                             ((Activity) mContext).runOnUiThread(new Runnable() {

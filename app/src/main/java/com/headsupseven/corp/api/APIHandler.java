@@ -1,7 +1,11 @@
 package com.headsupseven.corp.api;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.headsupseven.corp.api.chat.ChatManager;
@@ -27,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 
 
@@ -646,6 +651,71 @@ public class APIHandler {
         protected void onPostExecute(String result) {
             this.mCallback.onRequestComplete(responseCode, responseBody);
         }
+    }
+
+    public static String GetDeviceID(Context ctx) {
+        final SharedPreferences prefs = ctx.getSharedPreferences(
+                "Headsup7AppPreferences", Context.MODE_PRIVATE);
+        String deviceID =  prefs.getString("unique_device_id", "");
+        if(!deviceID.isEmpty()){
+            return deviceID;
+        }
+        //-----------------------------------
+        try {
+            //------------------------------------------------
+            //NOTE: get by serial
+            String _serial = (String) Build.class.getField("SERIAL").get(
+                    null);
+            if (!_serial.isEmpty()) {
+                deviceID = _serial;
+            }
+        }catch(Exception e){
+
+        }
+        //----------------------------------
+        if (deviceID.isEmpty()){
+            //------------------------------------------------
+            //NOTE: we get it by Android ID
+            String _serial = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
+            if (!_serial.isEmpty()) {
+                deviceID = _serial;
+                // save
+                final SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("unique_device_id", deviceID);
+                editor.commit();
+                // return
+                return deviceID;
+            }else{
+                //------------------------------------------------
+                //NOTE: last choice to generate ID is random it
+                deviceID = RandomString(32);
+                // save
+                final SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("unique_device_id", deviceID);
+                editor.commit();
+                // return
+                return deviceID;
+            }
+        }else{
+            // save
+            final SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("unique_device_id", deviceID);
+            editor.commit();
+            // return
+            return deviceID;
+        }
+    }
+
+    public static String RandomString(int length) {
+        Random generator = new Random();
+        StringBuilder randomStringBuilder = new StringBuilder();
+        int randomLength = generator.nextInt(length);
+        char tempChar;
+        for (int i = 0; i < randomLength; i++){
+            tempChar = (char) (generator.nextInt(96) + 32);
+            randomStringBuilder.append(tempChar);
+        }
+        return randomStringBuilder.toString();
     }
 
 
