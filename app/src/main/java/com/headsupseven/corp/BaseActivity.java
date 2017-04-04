@@ -146,11 +146,15 @@ public class BaseActivity extends AppCompatActivity {
         li_survay = (LinearLayout) this.findViewById(R.id.li_survay);
         li_survay.setOnClickListener(listener);
 
-        layout_accounttype = (LinearLayout) this.findViewById(R.id.layout_accounttype);
-        if (APIHandler.Instance().user.account_type.contains("regular"))
-            layout_accounttype.setVisibility(View.GONE);
-        else
-            layout_accounttype.setVisibility(View.VISIBLE);
+        if (APIHandler.Instance().user.account_type.contains("regular")){
+            li_inbox.setVisibility(View.GONE);
+            li_add_manage.setVisibility(View.GONE);
+        }
+        else{
+            li_inbox.setVisibility(View.VISIBLE);
+            li_add_manage.setVisibility(View.VISIBLE);
+        }
+
 
         layout_notification.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -470,12 +470,10 @@ public class AddvideoActivity extends AppCompatActivity {
         tv_Start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 dialog.dismiss();
                 finish();
             }
         });
-
         dialog.show();
     }
 

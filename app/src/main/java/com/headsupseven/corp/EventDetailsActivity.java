@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -114,14 +115,15 @@ public class EventDetailsActivity extends AppCompatActivity {
         tv_join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (APIHandler.Instance().user.account_type.contains("regular")){
+                    ShowUpgradeAccountDialog();
+                    return;
+                }
                 if (tv_join.getText().toString().equalsIgnoreCase("Joined")) {
                     PopupAPI.showToast(mContext, "already join contest");
-
                 } else if (tv_join.getText().toString().equalsIgnoreCase("Join Now")) {
                     deletePopp();
-
                 }
-
             }
 
         });
@@ -132,6 +134,36 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void ShowUpgradeAccountDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawable(
+                new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.setContentView(R.layout.dialog_viodeupload);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        ImageView cancelDialog = (ImageView) dialog.findViewById(R.id.cross_btn);
+        TextView tv_Start = (TextView) dialog.findViewById(R.id.tv_Start);
+        TextView tv_details = (TextView) dialog.findViewById(R.id.text_details);
+        //tv_details.setText("Only Content-Creator can join event. Please upgrade account in order join this event.");
+
+        cancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+        tv_Start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+        dialog.show();
     }
 
     public void forJOinWebServiceCall() {

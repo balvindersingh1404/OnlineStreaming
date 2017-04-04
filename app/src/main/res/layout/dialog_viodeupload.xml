@@ -29,7 +29,8 @@
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="30dp"
                     android:background="@drawable/white_backround_rectshape"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:id="@+id/relativeLayout">
 
 
                 </RelativeLayout>
@@ -55,20 +56,25 @@
 
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:gravity="center_horizontal"
+                    android:layout_width="fill_parent"
                     android:layout_height="match_parent"
+                    android:layout_alignEnd="@+id/relativeLayout"
+                    android:layout_alignLeft="@+id/relativeLayout"
+                    android:layout_alignRight="@+id/relativeLayout"
+                    android:layout_alignStart="@+id/relativeLayout"
                     android:layout_below="@+id/top_bar_layout"
-                    android:orientation="vertical">
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:weightSum="1">
 
                     <TextView
                         android:id="@+id/text_details"
                         android:layout_width="match_parent"
-                        android:gravity="center_horizontal"
                         android:layout_height="wrap_content"
-                        android:text="Only Content creator\ncan Upload Video or Live Stream"
-                        android:textColor="#000"
                         android:layout_marginTop="40dp"
+                        android:gravity="center_horizontal"
+                        android:text="Only Content-Creator can access this feature. Please upgrade your account to start."
+                        android:textColor="#000"
                         android:textSize="16sp"
                         android:textStyle="normal" />
 
@@ -76,11 +82,11 @@
                         android:id="@+id/tv_Start"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
-                        android:gravity="center"
                         android:layout_marginLeft="60dp"
-                        android:layout_marginTop="40dp"
                         android:layout_marginRight="60dp"
+                        android:layout_marginTop="40dp"
                         android:background="#1BC6C2"
+                        android:gravity="center"
                         android:text="Okay"
                         android:textColor="@color/white"
                         android:textSize="16dp" />
