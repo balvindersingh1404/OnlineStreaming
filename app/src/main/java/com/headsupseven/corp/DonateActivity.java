@@ -71,14 +71,14 @@ public class DonateActivity extends BaseActivity {
         donate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(DonateActivity.this, "Donate clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(DonateActivity.this, "Donate clicked", Toast.LENGTH_SHORT).show();
             }
         });
         tv_donate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (amount_donate.getText().toString().trim().equalsIgnoreCase("")) {
-                    PopupAPI.showToast(mContext, "Pease enter amount");
+                    PopupAPI.showToast(mContext, "Please enter amount");
                 } else {
                     webserviceupgrade();
                 }
@@ -109,7 +109,6 @@ public class DonateActivity extends BaseActivity {
 
                             } else {
                                 PopupAPI.make(mContext, "Error", mcode.getString("msg"));
-
                             }
 
                         } catch (Exception ex) {
