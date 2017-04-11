@@ -111,11 +111,34 @@ public class SettingsActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_PAYMENT = 1;
 
     public void onBuyPressed() {
-        PayPalPayment thingToBuy = getThingToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
-        Intent intent = new Intent(SettingsActivity.this, PaymentActivity.class);
-        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, APIHandler.Instance().config);
-        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
-        startActivityForResult(intent, REQUEST_CODE_PAYMENT);
+        HashMap<String, String> param = new HashMap<String, String>();
+        APIHandler.Instance().POST_BY_AUTHEN("payment/upgrade-account", param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                SettingsActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject mcode = new JSONObject(response);
+                            int code2 = mcode.getInt("code");
+                            if (code2 == 1) {
+                                PopupAPI.showToast(mContext, mcode.getString("msg"));
+                            } else if (code2 == -1012) {
+                                PayPalPayment thingToBuy = getThingToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
+                                Intent intent = new Intent(SettingsActivity.this, PaymentActivity.class);
+                                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, APIHandler.Instance().config);
+                                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
+                                startActivityForResult(intent, REQUEST_CODE_PAYMENT);
+                            }else{
+                                PopupAPI.make(mContext, "Error", mcode.getString("msg"));
+                            }
+                        } catch (Exception ex) {
+
+                        }
+                    }
+                });
+            }
+        });
     }
 
     private PayPalPayment getThingToBuy(String paymentIntent) {
@@ -131,11 +154,13 @@ public class SettingsActivity extends AppCompatActivity {
                         data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if (confirm != null) {
                     try {
-                        webserviceupgrade();
-                        // webCallRegistraion();
+                        String paylem = confirm.toJSONObject().toString(4);
+                        JSONObject mJsonObject = new JSONObject(paylem);
+                        JSONObject response = mJsonObject.getJSONObject("response");
+                        String id = response.getString("id");
 
-                        Log.i(TAG, confirm.toJSONObject().toString(4));
-                        Log.i(TAG, confirm.getPayment().toJSONObject().toString(4));
+                        webserviceupgrade(id);
+
                     } catch (JSONException e) {
                         Log.e(TAG, "an extremely unlikely failure occurred: ", e);
                     }
@@ -153,31 +178,29 @@ public class SettingsActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void webserviceupgrade() {
-
+    public void webserviceupgrade(String paypal_d) {
         HashMap<String, String> param = new HashMap<String, String>();
-        APIHandler.Instance().POST_BY_AUTHEN("payment/upgrade-account", param, new APIHandler.RequestComplete() {
+        param.put("paypal-id", paypal_d);
+        APIHandler.Instance().POST_BY_AUTHEN("payment/add-balance-upgrade", param, new APIHandler.RequestComplete() {
             @Override
             public void onRequestComplete(final int code, final String response) {
                 SettingsActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         try {
+                            Log.w("response", "are" + response);
                             JSONObject mcode = new JSONObject(response);
                             int code2 = mcode.getInt("code");
                             if (code2 == 1) {
                                 PopupAPI.showToast(mContext, mcode.getString("msg"));
-
                             } else {
                                 PopupAPI.make(mContext, "Error", mcode.getString("msg"));
                             }
                         } catch (Exception ex) {
-
+                            Log.w("webserviceupgrade", "are" + ex.getMessage());
                         }
                     }
                 });
-
-//
             }
         });
     }
