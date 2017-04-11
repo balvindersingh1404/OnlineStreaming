@@ -119,7 +119,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private PayPalPayment getThingToBuy(String paymentIntent) {
-        return new PayPalPayment(new BigDecimal("15"), "USD", "Upgrade For 1 Year",
+        return new PayPalPayment(new BigDecimal("15.5"), "USD", "Upgrade For 1 Year",
                 paymentIntent);
     }
 
@@ -170,10 +170,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                             } else {
                                 PopupAPI.make(mContext, "Error", mcode.getString("msg"));
-
                             }
-
-
                         } catch (Exception ex) {
 
                         }
