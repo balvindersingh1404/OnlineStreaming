@@ -1,1 +1,1 @@
-include ':app', ':yasealib', ':chatlib', ':vrlib'
+include ':app', ':yasealib', ':vrlib'

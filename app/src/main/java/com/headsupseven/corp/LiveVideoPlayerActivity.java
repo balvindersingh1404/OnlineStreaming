@@ -16,6 +16,8 @@ import android.hardware.SensorManager;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
@@ -35,15 +38,24 @@ import com.asha.vrlib.MD360DirectorFactory;
 import com.asha.vrlib.MDVRLibrary;
 import com.asha.vrlib.model.BarrelDistortionConfig;
 import com.asha.vrlib.model.MDPinchConfig;
+import com.headsupseven.corp.adapter.CommentslistAdapter;
 import com.headsupseven.corp.api.APIHandler;
 import com.headsupseven.corp.application.MyApplication;
+import com.headsupseven.corp.customview.Channgecustomview;
+import com.headsupseven.corp.customview.SimpleDividerItemDecoration;
+import com.headsupseven.corp.model.CommentList;
 import com.headsupseven.corp.utils.Helper;
+import com.headsupseven.corp.utils.PopupAPI;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -87,19 +99,127 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
     private int mSeekWhenPrepared;
     private int mCurrentBufferPercentage;
     private boolean isShowRating = false;
+    //========for landscape================
+    private LinearLayout landscape_video_comment;
+    private ImageView landscape_post_like;
+    private TextView landscape_post_comments;
+    private TextView landscape_post_gift;
+    //=====
+    private RelativeLayout potrait_video_comment;
+    private ImageView potrait_post_like;
+    private TextView potrait_post_comments;
+    private TextView potrai_post_gift;
+    private RecyclerView recyclerView;
+    private LinearLayout comment_list_li;
+    private int postId = 0;
+    private CommentslistAdapter mCommentslistAdapter;
+    private Vector<CommentList> allCommentLists = new Vector<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_live_video_player_new);
-
         mContext = this;
-        PlayUsingVitamio();
-
-        String urlData = "";
         PostType = getIntent().getStringExtra("PostType");
-        int postId = getIntent().getIntExtra("postID", 0);
+        postId = getIntent().getIntExtra("postID", 0);
+
+        landscape_video_comment = (LinearLayout) this.findViewById(R.id.landscape_video_comment);
+        potrait_video_comment = (RelativeLayout) this.findViewById(R.id.potrait_video_comment);
+        landscape_video_comment.setVisibility(View.GONE);
+        potrait_video_comment.setVisibility(View.GONE);
+
+        landscape_post_like = (ImageView) this.findViewById(R.id.landscape_post_like);
+        potrait_post_like = (ImageView) this.findViewById(R.id.potrait_post_like);
+        landscape_post_comments = (TextView) this.findViewById(R.id.landscape_post_comments);
+        potrait_post_comments = (TextView) this.findViewById(R.id.potrait_post_comments);
+        landscape_post_gift = (TextView) this.findViewById(R.id.landscape_post_gift);
+        potrai_post_gift = (TextView) this.findViewById(R.id.potrai_post_gift);
+        recyclerView = (RecyclerView) this.findViewById(R.id.listView_comment);
+        comment_list_li = (LinearLayout) this.findViewById(R.id.comment_list_li);
+
+        //=======Like click Option==========
+        landscape_post_like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (PostType.equalsIgnoreCase("ads")) {
+                    String urlData = "ads/" + postId + "/like";
+                    webCallForAdsLike(urlData);
+                } else {
+                    String urlData = "feeds/" + postId + "/like";
+                    webCallForAdsLike(urlData);
+
+                }
+            }
+        });
+
+        potrait_post_like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (PostType.equalsIgnoreCase("ads")) {
+                    String urlData = "ads/" + postId + "/like";
+                    webCallForAdsLike(urlData);
+                } else {
+                    String urlData = "feeds/" + postId + "/like";
+                    webCallForAdsLike(urlData);
+
+                }
+            }
+        });
+        //=======Gift click Option==========
+        landscape_post_gift.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, DonateActivity.class);
+                intent.putExtra("user_Name", "");
+                intent.putExtra("CreatedBy", "");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+
+            }
+        });
+        potrai_post_gift.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, DonateActivity.class);
+                intent.putExtra("user_Name", "");
+                intent.putExtra("CreatedBy", "");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+
+            }
+        });
+        //=======Comments click Option==========
+        landscape_post_comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Channgecustomview.commentTextView = null;
+                Channgecustomview.homeLsitModel = null;
+                Intent intent = new Intent(mContext, CommentActivity.class);
+                intent.putExtra("Postid", postId);
+                intent.putExtra("PostType", PostType);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+            }
+        });
+
+        potrait_post_comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Channgecustomview.commentTextView = null;
+                Channgecustomview.homeLsitModel = null;
+                Intent intent = new Intent(mContext, CommentActivity.class);
+                intent.putExtra("Postid", postId);
+                intent.putExtra("PostType", PostType);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+            }
+        });
+
+
+        PlayUsingVitamio();
+        String urlData = "";
+
         if (PostType.equalsIgnoreCase("ads")) {
             urlData = "ads/" + postId + "/add-view";
         } else {
@@ -123,7 +243,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                ActivityManager am = (ActivityManager)mContext
+                ActivityManager am = (ActivityManager) mContext
                         .getSystemService(Activity.ACTIVITY_SERVICE);
                 List<ActivityManager.RunningTaskInfo> taskInfo = am
                         .getRunningTasks(1);
@@ -150,6 +270,92 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    //================================Like web-service call==================================
+    public void webCallForAdsLike(String urlData) {
+        //api/feeds/10/like
+        HashMap<String, String> param = new HashMap<String, String>();
+        APIHandler.Instance().POST_BY_AUTHEN(urlData, param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject mJsonObject = new JSONObject(response);
+                            int codePost = mJsonObject.getInt("code");
+                            String msg = mJsonObject.getString("msg");
+                            if (codePost == 1) {
+
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+
+    //===============================Get Comment list ========================
+    public void getCommnentList() {
+        String urlData = "";
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("max", "" + MyApplication.Max_post_per_page);
+        param.put("page", "0");
+        if (PostType.equalsIgnoreCase("ads")) {
+            urlData = "ads/" + postId + "/get-comments";
+        } else {
+            urlData = "feeds/" + postId + "/get-comments";
+        }
+
+        APIHandler.Instance().POST_BY_AUTHEN(urlData, param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                LiveVideoPlayerActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject mJsonObject = new JSONObject(response);
+                            int codeServer = mJsonObject.getInt("code");
+                            if (codeServer == 1) {
+                                JSONArray msg = mJsonObject.getJSONArray("msg");
+                                for (int index = 0; index < msg.length(); index++) {
+                                    JSONObject mObject = msg.getJSONObject(index);
+                                    CommentList mCategoryList = new CommentList();
+                                    mCategoryList.setID(mObject.getString("ID"));
+                                    mCategoryList.setCreatedAt(mObject.getString("CreatedAt"));
+                                    mCategoryList.setUserId(mObject.getString("UserId"));
+                                    mCategoryList.setPostId(mObject.getString("PostId"));
+                                    mCategoryList.setContent(mObject.getString("Content"));
+                                    mCategoryList.setUserNmae(mObject.getString("UserName"));
+                                    mCategoryList.setUserPic(mObject.getString("AvatarUrl"));
+                                    if (2 > index)
+                                        mCommentslistAdapter.addnewItem(mCategoryList);
+                                }
+
+                                comment_list_li.setVisibility(View.VISIBLE);
+                                if (msg.length() > 0)
+                                    mCommentslistAdapter.notifyDataSetChanged();
+                                else {
+                                    comment_list_li.setVisibility(View.GONE);
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            PopupAPI.make(mContext, "Error", "Can't connect to server");
+
+                        }
+
+                    }
+                });
+
+
+            }
+        });
+
     }
 
 
@@ -201,17 +407,17 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                 .build(R.id.video_view);
 
         // init overlay UI
-        mRootView = (RelativeLayout)findViewById(R.id.root_view);
-        mTopView = (RelativeLayout)findViewById(R.id.top_view);
-        mBottomView = (RelativeLayout)findViewById(R.id.bottom_view);
+        mRootView = (RelativeLayout) findViewById(R.id.root_view);
+        mTopView = (RelativeLayout) findViewById(R.id.top_view);
+        mBottomView = (RelativeLayout) findViewById(R.id.bottom_view);
 
-        m360Mode = (ImageView)findViewById(R.id.view_360);
-        mVRMode = (ImageView)findViewById(R.id.view_vr);
-        mBtnPlay = (ImageView)findViewById(R.id.video_play_paush);
-        mSeekBar = (SeekBar)findViewById(R.id.seek_video);
+        m360Mode = (ImageView) findViewById(R.id.view_360);
+        mVRMode = (ImageView) findViewById(R.id.view_vr);
+        mBtnPlay = (ImageView) findViewById(R.id.video_play_paush);
+        mSeekBar = (SeekBar) findViewById(R.id.seek_video);
         mSeekBar.setMax(1000);
         mSeekBar.setOnSeekBarChangeListener(mSeekListener);
-        mPlayTime = (TextView)findViewById(R.id.video_progress);
+        mPlayTime = (TextView) findViewById(R.id.video_progress);
 
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
@@ -220,6 +426,10 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         // if video is 360 mode
         if (is360) {
             // set default select is 360 video player
+            landscape_video_comment.setVisibility(View.VISIBLE);
+            potrait_video_comment.setVisibility(View.GONE);
+
+
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
             m360Mode.setVisibility(View.VISIBLE);
@@ -231,7 +441,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
             m360Mode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(!is360mode){
+                    if (!is360mode) {
                         is360mode = true;
                         m360Mode.setPressed(true);
                         mVRMode.setPressed(false);
@@ -245,7 +455,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
             mVRMode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(is360mode){
+                    if (is360mode) {
                         is360mode = false;
                         m360Mode.setPressed(false);
                         mVRMode.setPressed(true);
@@ -258,7 +468,22 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
             });
             is360mode = true;
         } else {
+
+            landscape_video_comment.setVisibility(View.GONE);
+            potrait_video_comment.setVisibility(View.VISIBLE);
+
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setNestedScrollingEnabled(false);
+            mCommentslistAdapter = new CommentslistAdapter(mContext, allCommentLists);
+            recyclerView.setAdapter(mCommentslistAdapter);
+            recyclerView.addItemDecoration(new SimpleDividerItemDecoration(LiveVideoPlayerActivity.this));
+
+
+            getCommnentList();
 
             //---------------------------------------------------------------
             // set to normal video mode
@@ -274,9 +499,9 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         mBtnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isPlaying()){
+                if (isPlaying()) {
                     playerPause();
-                }else{
+                } else {
                     playerResume();
                 }
             }
@@ -362,7 +587,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         mMediaPlayer.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
-                switch (i){
+                switch (i) {
                     case IMediaPlayer.MEDIA_ERROR_IO:
                         break;
                     case IMediaPlayer.MEDIA_ERROR_MALFORMED:
@@ -394,7 +619,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
 
         int seconds = totalSeconds % 60;
         int minutes = (totalSeconds / 60) % 60;
-        int hours   = totalSeconds / 3600;
+        int hours = totalSeconds / 3600;
 
         mFormatBuilder.setLength(0);
         if (hours > 0) {
@@ -438,7 +663,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
             long newposition = (duration * progress) / 1000L;
             //seekTo( (int) newposition);
             if (mPlayTime != null)
-                mPlayTime.setText(stringForTime( (int) newposition));
+                mPlayTime.setText(stringForTime((int) newposition));
         }
 
         @Override
@@ -448,13 +673,13 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
             long duration = getDuration();
             int position = bar.getProgress();
             long newposition = (duration * position) / 1000L;
-            seekTo( (int) newposition);
+            seekTo((int) newposition);
 
             setProgress();
 
-            if(isPlaying()){
+            if (isPlaying()) {
                 mBtnPlay.setImageResource(R.drawable.video_pause);
-            }else{
+            } else {
                 mBtnPlay.setImageResource(R.drawable.video_play);
             }
 
@@ -476,7 +701,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
             if (duration > 0) {
                 // use long to avoid overflow
                 long pos = 1000L * position / duration;
-                mSeekBar.setProgress( (int) pos);
+                mSeekBar.setProgress((int) pos);
             }
             int percent = getBufferPercentage();
             mSeekBar.setSecondaryProgress(percent * 10);
