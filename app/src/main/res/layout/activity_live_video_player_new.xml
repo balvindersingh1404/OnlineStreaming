@@ -132,23 +132,23 @@
                 android:id="@+id/video_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:text="10.00/100"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:visibility="invisible" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="5dp"
-                android:text="Comments"
+                android:text="10.00/100"
                 android:textColor="@color/white"
-                android:textSize="14sp" />
+                android:textSize="12sp"
+                android:visibility="visible" />
+
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_marginBottom="5dp"-->
+                <!--android:text="Comments"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:textSize="14sp" />-->
 
             <ImageView
                 android:id="@+id/image_ic_full_video"
