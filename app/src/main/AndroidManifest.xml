@@ -292,6 +292,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
+        <activity
+            android:name="com.headsupseven.corp.RecoverpasswordActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
