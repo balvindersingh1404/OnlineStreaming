@@ -5,11 +5,55 @@
     android:layout_height="match_parent"
     android:background="@color/black">
 
+    <!--Top view-->
+    <RelativeLayout
+        android:id="@+id/top_view"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:id="@+id/back_player"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/back" />
+
+        <ImageView
+            android:id="@+id/view_360"
+            android:layout_width="54dp"
+            android:layout_height="24dp"
+            android:layout_alignTop="@+id/view_vr"
+            android:layout_marginEnd="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_toLeftOf="@+id/view_vr"
+            android:layout_toStartOf="@+id/view_vr"
+            android:background="@drawable/btn_360" />
+
+
+        <ImageView
+            android:id="@+id/view_vr"
+            android:layout_width="32dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/btn_vr" />
+
+
+    </RelativeLayout>
+    <!--Video view-->
+
     <RelativeLayout
         android:id="@+id/rl_video"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/root_layout_video_comment"
+        android:layout_above="@+id/portait_full_mood"
         android:layout_below="@+id/top_view">
 
         <android.opengl.GLSurfaceView
@@ -45,6 +89,7 @@
                 android:textSize="20sp" />
 
         </LinearLayout>
+        <!--Bottom view-->
 
         <RelativeLayout
             android:id="@+id/bottom_view"
@@ -92,7 +137,27 @@
                 android:gravity="center"
                 android:text="10.00/100"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp"
+                android:text="Comments"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/image_ic_full_video"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/ic_full_video" />
 
         </RelativeLayout>
 
@@ -100,199 +165,119 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/top_view"
+        android:id="@+id/portait_full_mood"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:layout_height="300dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-        <ImageView
-            android:id="@+id/back_player"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/back" />
-
-        <ImageView
-            android:id="@+id/view_360"
-            android:layout_width="54dp"
-            android:layout_height="24dp"
-            android:layout_alignTop="@+id/view_vr"
-            android:layout_marginEnd="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_toLeftOf="@+id/view_vr"
-            android:layout_toStartOf="@+id/view_vr"
-            android:background="@drawable/btn_360" />
-
-
-        <ImageView
-            android:id="@+id/view_vr"
-            android:layout_width="32dp"
-            android:layout_height="24dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/btn_vr" />
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/root_layout_video_comment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-        <!--bottom -->
         <RelativeLayout
-            android:id="@+id/potrait_video_comment"
+            android:id="@+id/rl_like"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:orientation="vertical"
-            android:visibility="visible">
+            android:layout_height="40dp">
 
-            <RelativeLayout
-                android:id="@+id/rl_like"
-                android:layout_width="match_parent"
-                android:layout_height="40dp">
+            <ImageView
+                android:id="@+id/post_like"
+                android:layout_width="35dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/like_active" />
 
-                <ImageView
-                    android:id="@+id/potrait_post_like"
-                    android:layout_width="35dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:src="@drawable/like_active" />
+            <TextView
+                android:id="@+id/like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/post_like"
+                android:paddingTop="10dp"
+                android:text="0"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/potrai_post_gift"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/colorselecte"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="Gift"
-                    android:textColor="@color/white" />
+            <TextView
+                android:id="@+id/post_gift"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/colorselecte"
+                android:gravity="center_vertical"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="Gift"
+                android:textColor="@color/white" />
 
-            </RelativeLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/rl_like">
 
             <LinearLayout
-                android:id="@+id/comment_list_li"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:visibility="visible"
-                android:layout_below="@+id/rl_like"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/rl_bottom"
                 android:orientation="vertical">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/listView_comment"
                     android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
                     android:layout_above="@+id/view_01"
                     android:layout_below="@+id/top_view"
-                    android:layout_margin="10dp"
-                    android:layout_height="fill_parent">
-                </android.support.v7.widget.RecyclerView>
+                    android:layout_margin="10dp"></android.support.v7.widget.RecyclerView>
 
-                <!---->
-                <!--<ListView-->
-                    <!--android:id="@+id/comment_list"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:divider="@color/white"-->
-                    <!--android:dividerHeight="1dp">-->
-                <!--</ListView>-->
             </LinearLayout>
 
 
-            <TextView
-                android:id="@+id/potrait_post_comments"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="20dp"
-                android:layout_below="@+id/comment_list_li"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
-                android:layout_centerHorizontal="true"
-                android:background="@color/colorselecte"
-                android:gravity="center_vertical"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:text="Comments"
-                android:textColor="@color/white" />
-
-        </RelativeLayout>
-        <!--for landscape-->
-        <LinearLayout
-            android:id="@+id/landscape_video_comment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-
             <RelativeLayout
+                android:id="@+id/rl_bottom"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_below="@+id/rl_video">
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/ash_ash">
 
-                <ImageView
-                    android:id="@+id/landscape_post_like"
-                    android:layout_width="35dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:background="@drawable/like_active" />
-
-                <TextView
-                    android:id="@+id/landscape_post_comments"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/colorselecte"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="Comments"
-                    android:textColor="@color/white" />
+                    android:layout_margin="3dp"
+                    android:background="@drawable/round_app_white">
 
+                    <EditText
+                        android:id="@+id/edit_Comment"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="15sp"
+                        android:layout_marginRight="5dp"
+                        android:layout_toLeftOf="@+id/send_comment"
+                        android:background="@android:color/transparent"
+                        android:hint="Write Comment"
+                        android:textColorHint="@color/colorPrimaryDark"
+                        android:textSize="14sp"
+                        android:textStyle="italic" />
 
-                <TextView
-                    android:id="@+id/landscape_post_gift"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/colorselecte"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="Gift"
-                    android:textColor="@color/white" />
-
+                    <ImageView
+                        android:id="@+id/send_comment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/send" />
+                </RelativeLayout>
             </RelativeLayout>
+        </RelativeLayout>
 
 
-        </LinearLayout>
     </RelativeLayout>
-
-
-    <!--- playvideo-->
-
-    <!-- Loader-->
 
 
 </RelativeLayout>

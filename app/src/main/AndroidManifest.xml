@@ -59,6 +59,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="com.headsupseven.corp.LiveVideoPlayerActivity"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

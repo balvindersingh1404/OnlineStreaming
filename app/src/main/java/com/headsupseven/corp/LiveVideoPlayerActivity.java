@@ -19,10 +19,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Display;
 import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -99,18 +101,18 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
     private int mSeekWhenPrepared;
     private int mCurrentBufferPercentage;
     private boolean isShowRating = false;
-    //========for landscape================
-    private LinearLayout landscape_video_comment;
-    private ImageView landscape_post_like;
-    private TextView landscape_post_comments;
-    private TextView landscape_post_gift;
-    //=====
-    private RelativeLayout potrait_video_comment;
-    private ImageView potrait_post_like;
-    private TextView potrait_post_comments;
-    private TextView potrai_post_gift;
+//    //========for landscape================
+
+    private RelativeLayout portait_full_mood;
+    private ImageView post_like;
+    private TextView like_count;
+    private TextView post_gift;
     private RecyclerView recyclerView;
-    private LinearLayout comment_list_li;
+    private EditText edit_Comment;
+    private ImageView send_comment;
+    private ImageView image_ic_full_video;
+
+
     private int postId = 0;
     private CommentslistAdapter mCommentslistAdapter;
     private Vector<CommentList> allCommentLists = new Vector<>();
@@ -124,36 +126,18 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         PostType = getIntent().getStringExtra("PostType");
         postId = getIntent().getIntExtra("postID", 0);
 
-        landscape_video_comment = (LinearLayout) this.findViewById(R.id.landscape_video_comment);
-        potrait_video_comment = (RelativeLayout) this.findViewById(R.id.potrait_video_comment);
-        landscape_video_comment.setVisibility(View.GONE);
-        potrait_video_comment.setVisibility(View.GONE);
 
-        landscape_post_like = (ImageView) this.findViewById(R.id.landscape_post_like);
-        potrait_post_like = (ImageView) this.findViewById(R.id.potrait_post_like);
-        landscape_post_comments = (TextView) this.findViewById(R.id.landscape_post_comments);
-        potrait_post_comments = (TextView) this.findViewById(R.id.potrait_post_comments);
-        landscape_post_gift = (TextView) this.findViewById(R.id.landscape_post_gift);
-        potrai_post_gift = (TextView) this.findViewById(R.id.potrai_post_gift);
+        portait_full_mood = (RelativeLayout) this.findViewById(R.id.portait_full_mood);
+        post_like = (ImageView) this.findViewById(R.id.post_like);
+        like_count = (TextView) this.findViewById(R.id.like_count);
+        post_gift = (TextView) this.findViewById(R.id.post_gift);
         recyclerView = (RecyclerView) this.findViewById(R.id.listView_comment);
-        comment_list_li = (LinearLayout) this.findViewById(R.id.comment_list_li);
+        edit_Comment = (EditText) this.findViewById(R.id.edit_Comment);
+        send_comment = (ImageView) this.findViewById(R.id.send_comment);
+        image_ic_full_video = (ImageView) this.findViewById(R.id.image_ic_full_video);
 
         //=======Like click Option==========
-        landscape_post_like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (PostType.equalsIgnoreCase("ads")) {
-                    String urlData = "ads/" + postId + "/like";
-                    webCallForAdsLike(urlData);
-                } else {
-                    String urlData = "feeds/" + postId + "/like";
-                    webCallForAdsLike(urlData);
-
-                }
-            }
-        });
-
-        potrait_post_like.setOnClickListener(new View.OnClickListener() {
+        post_like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (PostType.equalsIgnoreCase("ads")) {
@@ -167,7 +151,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
             }
         });
         //=======Gift click Option==========
-        landscape_post_gift.setOnClickListener(new View.OnClickListener() {
+        post_gift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, DonateActivity.class);
@@ -178,48 +162,30 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
 
             }
         });
-        potrai_post_gift.setOnClickListener(new View.OnClickListener() {
+        send_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, DonateActivity.class);
-                intent.putExtra("user_Name", "");
-                intent.putExtra("CreatedBy", "");
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
-
+                if (edit_Comment.getText().toString().trim().length() > 0)
+                    webRequestAddcomment(edit_Comment.getText().toString().trim());
             }
         });
-        //=======Comments click Option==========
-        landscape_post_comments.setOnClickListener(new View.OnClickListener() {
+        image_ic_full_video = (ImageView) this.findViewById(R.id.image_ic_full_video);
+        image_ic_full_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Channgecustomview.commentTextView = null;
-                Channgecustomview.homeLsitModel = null;
-                Intent intent = new Intent(mContext, CommentActivity.class);
-                intent.putExtra("Postid", postId);
-                intent.putExtra("PostType", PostType);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
+                if (getScreenOrientation() == 1) {
+                    portait_full_mood.setVisibility(View.GONE);
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                } else {
+                    portait_full_mood.setVisibility(View.VISIBLE);
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+                }
             }
         });
-
-        potrait_post_comments.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Channgecustomview.commentTextView = null;
-                Channgecustomview.homeLsitModel = null;
-                Intent intent = new Intent(mContext, CommentActivity.class);
-                intent.putExtra("Postid", postId);
-                intent.putExtra("PostType", PostType);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
-            }
-        });
-
 
         PlayUsingVitamio();
         String urlData = "";
-
         if (PostType.equalsIgnoreCase("ads")) {
             urlData = "ads/" + postId + "/add-view";
         } else {
@@ -250,16 +216,6 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                 String topActivity = taskInfo.get(0).topActivity
                         .getClassName();
 
-                if (Helper.isAppRunning(LiveVideoPlayerActivity.this, "com.headsupseven.corp.HomebaseActivity")) {
-                    Log.w("App is  running", "App is  running");
-                    // App is running
-                } else {
-                    // App is not running
-                    Log.w("App is not running", "App is not running");
-
-                }
-
-
                 if (MyApplication.checkHomeActivty) {
                     LiveVideoPlayerActivity.this.finish();
                 } else {
@@ -270,6 +226,24 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // 1 for Configuration.ORIENTATION_PORTRAIT
+    // 2 for Configuration.ORIENTATION_LANDSCAPE
+    // 0 for Configuration.ORIENTATION_SQUARE
+    public int getScreenOrientation() {
+        Display getOrient = getWindowManager().getDefaultDisplay();
+        int orientation = Configuration.ORIENTATION_UNDEFINED;
+        if (getOrient.getWidth() == getOrient.getHeight()) {
+            orientation = Configuration.ORIENTATION_SQUARE;
+        } else {
+            if (getOrient.getWidth() < getOrient.getHeight()) {
+                orientation = Configuration.ORIENTATION_PORTRAIT;
+            } else {
+                orientation = Configuration.ORIENTATION_LANDSCAPE;
+            }
+        }
+        return orientation;
     }
 
     //================================Like web-service call==================================
@@ -310,7 +284,6 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         } else {
             urlData = "feeds/" + postId + "/get-comments";
         }
-
         APIHandler.Instance().POST_BY_AUTHEN(urlData, param, new APIHandler.RequestComplete() {
             @Override
             public void onRequestComplete(final int code, final String response) {
@@ -332,15 +305,8 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                                     mCategoryList.setContent(mObject.getString("Content"));
                                     mCategoryList.setUserNmae(mObject.getString("UserName"));
                                     mCategoryList.setUserPic(mObject.getString("AvatarUrl"));
-                                    if (2 > index)
-                                        mCommentslistAdapter.addnewItem(mCategoryList);
-                                }
+                                    mCommentslistAdapter.addnewItem(mCategoryList);
 
-                                comment_list_li.setVisibility(View.VISIBLE);
-                                if (msg.length() > 0)
-                                    mCommentslistAdapter.notifyDataSetChanged();
-                                else {
-                                    comment_list_li.setVisibility(View.GONE);
                                 }
                             }
 
@@ -358,6 +324,49 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
 
     }
 
+    public void webRequestAddcomment(final String text) {
+        String urlData = "";
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("content", text);
+        if (PostType.equalsIgnoreCase("ads")) {
+            urlData = "ads/" + postId + "/add-comment";
+        } else {
+            urlData = "feeds/" + postId + "/add-comment";
+        }
+        APIHandler.Instance().POST_BY_AUTHEN(urlData, param, new APIHandler.RequestComplete() {
+            @Override
+            public void onRequestComplete(final int code, final String response) {
+                LiveVideoPlayerActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject mcode = new JSONObject(response);
+                            int code2 = mcode.getInt("code");
+                            if (code2 == 1) {
+
+                                CommentList mCategoryList = new CommentList();
+                                mCategoryList.setID("" + APIHandler.Instance().user.userID);
+                                mCategoryList.setUserId("" + APIHandler.Instance().user.userID);
+                                String name = APIHandler.Instance().user.full_name;
+                                mCategoryList.setUserNmae("" + name);
+                                mCategoryList.setContent(text);
+                                mCategoryList.setUserPic(APIHandler.Instance().user.avatar_url);
+                                mCommentslistAdapter.addnewItem(mCategoryList);
+                                edit_Comment.setText("");
+
+                            } else {
+                                PopupAPI.make(mContext, "Error", "" + mcode.getString("msg"));
+
+                            }
+                        } catch (Exception ex) {
+                            PopupAPI.make(mContext, "Error", "" + ex.getMessage());
+
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     public void PlayUsingVitamio() {
         isLive = getIntent().getBooleanExtra("is_Live", false);
@@ -421,15 +430,23 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
 
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
+        //=============== Comment List ===============================
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
+        mCommentslistAdapter = new CommentslistAdapter(mContext, allCommentLists);
+        recyclerView.setAdapter(mCommentslistAdapter);
+        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(LiveVideoPlayerActivity.this));
+        getCommnentList();
+
+
         // init event
         //--------------------------------------------
         // if video is 360 mode
         if (is360) {
             // set default select is 360 video player
-            landscape_video_comment.setVisibility(View.VISIBLE);
-            potrait_video_comment.setVisibility(View.GONE);
-
-
+            portait_full_mood.setVisibility(View.GONE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
             m360Mode.setVisibility(View.VISIBLE);
@@ -469,21 +486,10 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
             is360mode = true;
         } else {
 
-            landscape_video_comment.setVisibility(View.GONE);
-            potrait_video_comment.setVisibility(View.VISIBLE);
+            portait_full_mood.setVisibility(View.VISIBLE);
 
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-            recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setNestedScrollingEnabled(false);
-            mCommentslistAdapter = new CommentslistAdapter(mContext, allCommentLists);
-            recyclerView.setAdapter(mCommentslistAdapter);
-            recyclerView.addItemDecoration(new SimpleDividerItemDecoration(LiveVideoPlayerActivity.this));
-
-
-            getCommnentList();
 
             //---------------------------------------------------------------
             // set to normal video mode
