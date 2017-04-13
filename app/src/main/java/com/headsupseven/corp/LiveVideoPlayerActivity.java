@@ -117,6 +117,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
     private CommentslistAdapter mCommentslistAdapter;
     private Vector<CommentList> allCommentLists = new Vector<>();
     private String likecount = "";
+    private boolean liked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +128,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         PostType = getIntent().getStringExtra("PostType");
         postId = getIntent().getIntExtra("postID", 0);
         likecount = getIntent().getStringExtra("likecount");
+        liked = getIntent().getBooleanExtra("liked", false);
 
         portait_full_mood = (RelativeLayout) this.findViewById(R.id.portait_full_mood);
         post_like = (ImageView) this.findViewById(R.id.post_like);
@@ -153,6 +155,11 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                 }
             }
         });
+        if (liked){
+            post_like.setImageResource(R.drawable.like_active);
+        }else{
+            post_like.setImageResource(R.drawable.like_deactive);
+        }
         //=======Gift click Option==========
         post_gift.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,11 +278,13 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                                     like = like + 1;
                                     like_count.setText("" + like);
                                     like_count.setTag("" + like);
+                                    post_like.setImageResource(R.drawable.like_active);
                                 } else {
                                     int like = Integer.parseInt(like_count.getTag().toString().trim());
                                     like = like - 1;
                                     like_count.setText("" + like);
                                     like_count.setTag("" + like);
+                                    post_like.setImageResource(R.drawable.like_deactive);
                                 }
 
                             }

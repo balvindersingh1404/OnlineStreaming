@@ -72,6 +72,7 @@ public class NotificationAdapter extends BaseAdapter {
                                 intent.putExtra("Url_Stream", LiveStreamName);
                                 intent.putExtra("Url_video", VideoName);
                                 intent.putExtra("likecount",msg.getString("Like"));
+                                intent.putExtra("liked", msg.getBoolean("Liked"));
 
                                 intent.putExtra("is_360", !is_360.contentEquals("normal"));
                                 intent.putExtra("is_Live", is_Live);

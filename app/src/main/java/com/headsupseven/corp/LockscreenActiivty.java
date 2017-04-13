@@ -283,6 +283,7 @@ public class LockscreenActiivty extends AppCompatActivity {
                                         intent.putExtra("Url_Stream", video);
                                         intent.putExtra("Url_video", video);
                                         intent.putExtra("likecount","0");
+                                        intent.putExtra("liked", false);
 
                                         intent.putExtra("is_360", !video_type.contentEquals("normal"));
                                         intent.putExtra("is_Live", false);
@@ -500,6 +501,7 @@ public class LockscreenActiivty extends AppCompatActivity {
                                 intent.putExtra("Url_video", VideoName);
                                 intent.putExtra("is_360", !is_360.contentEquals("normal"));
                                 intent.putExtra("likecount",msg.getString("Like"));
+                                intent.putExtra("liked",msg.getBoolean("Liked"));
 
                                 intent.putExtra("is_Live", is_Live);
                                 intent.putExtra("postID", Integer.parseInt(postId));

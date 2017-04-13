@@ -329,6 +329,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         intent.putExtra("Url_video", mHomeLsitModel.getVideoName());
                         intent.putExtra("PostType", mHomeLsitModel.getPostType());
                         intent.putExtra("likecount", mHomeLsitModel.getLike());
+                        intent.putExtra("liked", mHomeLsitModel.isLiked());
 
                         intent.putExtra("is_360", !mHomeLsitModel.getVideoType().contentEquals("normal"));
                         intent.putExtra("is_Live", mHomeLsitModel.isPostStreaming());

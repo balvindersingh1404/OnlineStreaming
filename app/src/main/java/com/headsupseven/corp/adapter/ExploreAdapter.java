@@ -345,6 +345,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         intent.putExtra("postID", mHomeLsitModel.getID());
                         intent.putExtra("PostType", mHomeLsitModel.getPostType());
                         intent.putExtra("likecount", mHomeLsitModel.getLike());
+                        intent.putExtra("liked", mHomeLsitModel.isLiked());
 
                         mContext.startActivity(intent);
 
