@@ -282,6 +282,8 @@ public class LockscreenActiivty extends AppCompatActivity {
                                         Intent intent = new Intent(mContext, LiveVideoPlayerActivity.class);
                                         intent.putExtra("Url_Stream", video);
                                         intent.putExtra("Url_video", video);
+                                        intent.putExtra("likecount","0");
+
                                         intent.putExtra("is_360", !video_type.contentEquals("normal"));
                                         intent.putExtra("is_Live", false);
                                         intent.putExtra("postID", Integer.parseInt(post_id));
@@ -375,6 +377,8 @@ public class LockscreenActiivty extends AppCompatActivity {
                             intent.putExtra("Url_video", video);
                             intent.putExtra("is_360", !video_type.contentEquals("normal"));
                             intent.putExtra("is_Live", false);
+                            intent.putExtra("likecount","0");
+
                             intent.putExtra("postID", Integer.parseInt(post_id));
                             intent.putExtra("PostType", post_type);
                             startActivity(intent);
@@ -495,6 +499,8 @@ public class LockscreenActiivty extends AppCompatActivity {
                                 intent.putExtra("Url_Stream", LiveStreamName);
                                 intent.putExtra("Url_video", VideoName);
                                 intent.putExtra("is_360", !is_360.contentEquals("normal"));
+                                intent.putExtra("likecount",msg.getString("Like"));
+
                                 intent.putExtra("is_Live", is_Live);
                                 intent.putExtra("postID", Integer.parseInt(postId));
                                 intent.putExtra("PostType", postType);

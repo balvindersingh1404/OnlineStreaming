@@ -67,9 +67,12 @@ public class NotificationAdapter extends BaseAdapter {
                                 boolean is_Live = msg.getBoolean("IsPostStreaming");
                                 String postType = msg.getString("PostType");
 
+
                                 Intent intent = new Intent(mContext, LiveVideoPlayerActivity.class);
                                 intent.putExtra("Url_Stream", LiveStreamName);
                                 intent.putExtra("Url_video", VideoName);
+                                intent.putExtra("likecount",msg.getString("Like"));
+
                                 intent.putExtra("is_360", !is_360.contentEquals("normal"));
                                 intent.putExtra("is_Live", is_Live);
                                 intent.putExtra("postID", Integer.parseInt(postId));

@@ -152,6 +152,7 @@ public class HomeDataAdapter extends RecyclerView
 //                            intent.putExtra("Url_video", APIHandler.Instance().BuildLiveStreamVideoRecorded(homeLsitModel.getVideoName()));
                             intent.putExtra("Url_video", homeLsitModel.getVideoName());
                             intent.putExtra("PostType", homeLsitModel.getPostType());
+                            intent.putExtra("likecount", homeLsitModel.getLike());
 
                             intent.putExtra("is_360", !homeLsitModel.getVideoType().contentEquals("normal"));
                             intent.putExtra("is_Live", homeLsitModel.isPostStreaming());

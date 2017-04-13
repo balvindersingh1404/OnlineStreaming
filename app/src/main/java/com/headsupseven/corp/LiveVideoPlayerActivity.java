@@ -116,6 +116,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
     private int postId = 0;
     private CommentslistAdapter mCommentslistAdapter;
     private Vector<CommentList> allCommentLists = new Vector<>();
+    private String likecount = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +126,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         mContext = this;
         PostType = getIntent().getStringExtra("PostType");
         postId = getIntent().getIntExtra("postID", 0);
-
+        likecount = getIntent().getStringExtra("likecount");
 
         portait_full_mood = (RelativeLayout) this.findViewById(R.id.portait_full_mood);
         post_like = (ImageView) this.findViewById(R.id.post_like);
@@ -135,6 +136,8 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         edit_Comment = (EditText) this.findViewById(R.id.edit_Comment);
         send_comment = (ImageView) this.findViewById(R.id.send_comment);
         image_ic_full_video = (ImageView) this.findViewById(R.id.image_ic_full_video);
+        like_count.setText(likecount);
+        like_count.setTag(likecount);
 
         //=======Like click Option==========
         post_like.setOnClickListener(new View.OnClickListener() {
@@ -253,6 +256,7 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
         APIHandler.Instance().POST_BY_AUTHEN(urlData, param, new APIHandler.RequestComplete() {
             @Override
             public void onRequestComplete(final int code, final String response) {
+                Log.w("response", "are" + response);
                 ((Activity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -260,7 +264,19 @@ public class LiveVideoPlayerActivity extends AppCompatActivity {
                             JSONObject mJsonObject = new JSONObject(response);
                             int codePost = mJsonObject.getInt("code");
                             String msg = mJsonObject.getString("msg");
+                            PopupAPI.showToast(mContext, msg);
                             if (codePost == 1) {
+                                if (msg.equalsIgnoreCase("Like post success")) {
+                                    int like = Integer.parseInt(like_count.getTag().toString().trim());
+                                    like = like + 1;
+                                    like_count.setText("" + like);
+                                    like_count.setTag("" + like);
+                                } else {
+                                    int like = Integer.parseInt(like_count.getTag().toString().trim());
+                                    like = like - 1;
+                                    like_count.setText("" + like);
+                                    like_count.setTag("" + like);
+                                }
 
                             }
                         } catch (Exception e) {

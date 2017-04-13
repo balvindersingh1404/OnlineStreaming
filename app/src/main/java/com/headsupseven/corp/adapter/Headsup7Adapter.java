@@ -223,6 +223,7 @@ public class Headsup7Adapter extends RecyclerView
                                 intent.putExtra("is_Live", homeLsitModel.isPostStreaming());
                                 intent.putExtra("postID", homeLsitModel.getID());
                                 intent.putExtra("PostType", homeLsitModel.getPostType());
+                                intent.putExtra("likecount", homeLsitModel.getLike());
 
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
