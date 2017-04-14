@@ -74,6 +74,12 @@ public class FortgotpasswordActivity extends AppCompatActivity {
                                     // TODO: should save on cached
                                     PersistentUser.setForgetMode(mContext, msgObj.toString());
 
+                                    FortgotpasswordActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            PopupAPI.make(mContext, "Success", "We was sent an email to you with a validate code.");
+                                        }
+                                    });
                                     // change to recovery screen
                                     Intent mm = new Intent(mContext, RecoverpasswordActivity.class);
                                     startActivity(mm);
