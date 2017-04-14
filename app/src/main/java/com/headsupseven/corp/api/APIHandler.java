@@ -9,6 +9,7 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.headsupseven.corp.api.chat.ChatManager;
+import com.headsupseven.corp.model.ForgetCodeModel;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import org.json.JSONObject;
@@ -81,6 +82,7 @@ public class APIHandler {
     public final static String StorageURL = "http://" + HeadsUpServerIP + ":8080/";
 
     public User user = null;
+    public ForgetCodeModel forgetMode = null;
     public final static String SHARED_KEY = "dwam0d128d1n";
     public final static String SHARED_USERNAME = "user_name";
     //======================================================================

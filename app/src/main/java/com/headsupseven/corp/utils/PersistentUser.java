@@ -11,6 +11,7 @@ public class PersistentUser {
     private static final String USERNAME = "username";
     private static final String USERDETAILS = "userdetails";
     private static final String PASSWORD = "password";
+    private static final String FORGET_MODE = "forget_mode";
     private static final String SOCIALLOGINEMAIL = "social_logn_email";
     private static final String lastModified = "lastModified";
     private static final String LOCKDETAILS = "lock_video_list";
@@ -122,6 +123,28 @@ public class PersistentUser {
         return ctx.getSharedPreferences(PREFS_FILE_NAME, Context.MODE_PRIVATE)
                 .getString(PASSWORD, "");
     }
+
+    public static void setForgetMode(final Context ctx, final String data) {
+        final SharedPreferences prefs = ctx.getSharedPreferences(
+                PREFS_FILE_NAME, Context.MODE_PRIVATE);
+        final Editor editor = prefs.edit();
+        editor.putString(FORGET_MODE, data);
+        editor.commit();
+    }
+
+    public static String getForgetMode(final Context ctx) {
+        return ctx.getSharedPreferences(PREFS_FILE_NAME, Context.MODE_PRIVATE)
+                .getString(FORGET_MODE, "");
+    }
+
+    public static void removeForgetMode(final Context ctx) {
+        final SharedPreferences prefs = ctx.getSharedPreferences(
+                PREFS_FILE_NAME, Context.MODE_PRIVATE);
+        final Editor editor = prefs.edit();
+        editor.remove(FORGET_MODE);
+        editor.commit();
+    }
+
     public static void setSlider(Context c) {
         final SharedPreferences prefs = c.getSharedPreferences(PREFS_FILE_NAME,
                 Context.MODE_PRIVATE);
